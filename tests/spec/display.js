@@ -6,6 +6,23 @@ describe("Display", function() {
 			c.style.left = "100px";
 			c.style.top = "100px";
 			c.style.visibility = "hidden";
+			Object.defineProperties(c, {
+				offsetWidth: { configurable: true, get: function() { return parseFloat(c.style.width) || c.width; } },
+				offsetHeight: { configurable: true, get: function() { return parseFloat(c.style.height) || c.height; } }
+			});
+			c.getBoundingClientRect = function() {
+				var scale = Number((c.style.transform.match(/^scale\(([^)]+)\)$/) || [])[1]) || 1;
+				var width = c.offsetWidth * scale;
+				var height = c.offsetHeight * scale;
+				return {
+					left: parseFloat(c.style.left) || 0,
+					top: parseFloat(c.style.top) || 0,
+					right: (parseFloat(c.style.left) || 0) + width,
+					bottom: (parseFloat(c.style.top) || 0) + height,
+					width: width,
+					height: height
+				};
+			};
 			document.body.appendChild(c);
 			document.body.scrollLeft = 0;
 			document.body.scrollTop = 0;

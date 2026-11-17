@@ -1,5 +1,5 @@
 import Map, { CreateCallback } from "./map.js";
-declare type Point = [number, number];
+type Point = [number, number];
 export interface Options {
     /** Number of cells to create on the horizontal (number of rooms horizontally) */
     cellWidth: number;
@@ -20,7 +20,7 @@ export interface Room {
     celly: number;
 }
 /**
- * Dungeon generator which uses the "orginal" Rogue dungeon generation algorithm. See https://github.com/Davidslv/rogue-like/blob/master/docs/references/Mark_Damon_Hughes/07_Roguelike_Dungeon_Generation.md
+ * Dungeon generator which uses the "original" Rogue dungeon generation algorithm. See https://github.com/Davidslv/rogue-like/blob/master/docs/references/Mark_Damon_Hughes/07_Roguelike_Dungeon_Generation.md
  * @author hyakugei
  */
 export default class Rogue extends Map {

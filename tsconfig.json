@@ -7,6 +7,8 @@
 		"declaration": true,
 		"noUnusedLocals": true,
 		"noUnusedParameters": true,
+		"types": ["node"],
+		"rootDir": "src",
 		"outDir": "lib"
 	},
 

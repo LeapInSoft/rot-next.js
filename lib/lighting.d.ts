@@ -1,5 +1,5 @@
 import FOV from "./fov/fov.js";
-declare type LightColor = [number, number, number];
+type LightColor = [number, number, number];
 /** Callback to retrieve cell reflectivity (0..1) */
 interface ReflectivityCallback {
     (x: number, y: number): number;

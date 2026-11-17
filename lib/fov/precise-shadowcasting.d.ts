@@ -1,5 +1,5 @@
 import FOV, { VisibilityCallback } from "./fov.js";
-declare type Arc = [number, number];
+type Arc = [number, number];
 /**
  * @class Precise shadowcasting algorithm
  * @augments ROT.FOV

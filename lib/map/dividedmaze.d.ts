@@ -1,5 +1,5 @@
 import Map, { CreateCallback } from "./map.js";
-declare type Room = [number, number, number, number];
+type Room = [number, number, number, number];
 /**
  * @class Recursively divided maze, http://en.wikipedia.org/wiki/Maze_generation_algorithm#Recursive_division_method
  * @augments ROT.Map

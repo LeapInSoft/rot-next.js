@@ -7,8 +7,8 @@ interface Options {
 interface ConnectionCallback {
     (from: Point, to: Point): void;
 }
-declare type Point = [number, number];
-declare type PointMap = {
+type Point = [number, number];
+type PointMap = {
     [key: string]: Point;
 };
 /**

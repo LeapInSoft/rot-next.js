@@ -1,4 +1,4 @@
-export declare type Color = [number, number, number];
+export type Color = [number, number, number];
 export declare function fromString(str: string): Color;
 /**
  * Add two or more colors

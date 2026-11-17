@@ -7,7 +7,7 @@ interface Options {
     roomDugPercentage: number;
     timeLimit: number;
 }
-declare type Point = [number, number];
+type Point = [number, number];
 /**
  * @class Dungeon generator which tries to fill the space evenly. Generates independent rooms and tries to connect them.
  * @augments ROT.Map.Dungeon
@@ -35,8 +35,8 @@ export default class Uniform extends Dungeon {
      */
     _generateRoom(): Room | null;
     /**
-     * Generates connectors beween rooms
-     * @returns {bool} success Was this attempt successfull?
+     * Generates connectors between rooms
+     * @returns {bool} success Was this attempt successful?
      */
     _generateCorridors(): boolean;
     /**

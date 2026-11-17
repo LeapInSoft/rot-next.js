@@ -6,7 +6,7 @@ interface Options {
     /** Prior value, default = 0.001 */
     prior: number;
 }
-declare type Events = {
+type Events = {
     [key: string]: number;
 };
 /**
