@@ -1,3 +1,5 @@
+import { describe, expect, it } from "vitest";
+
 describe("Map.Dungeon", function() {
 	var names = ["Digger", "Uniform"];
 

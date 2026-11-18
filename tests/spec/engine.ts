@@ -1,3 +1,5 @@
+import { beforeEach, describe, expect, it } from "vitest";
+
 describe("Engine", function() {
 	var RESULT = 0;
 	var E = null;

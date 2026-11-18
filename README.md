@@ -43,7 +43,7 @@ The pre-bundled rot.js package can be loaded as a CommonJS module. There is an [
 
 ## Contributing
 
-ROguelike Toolkit is largely considered "feature-complete", but bugfixes, documentation, and some new features are welcomed. Development should happen in the `/src` folder, and then the build process creates the `/lib`, `/dist`, and `/doc` folders before serving the project. Tests run in Node with Vitest.
+ROguelike Toolkit is largely considered "feature-complete", but bugfixes, documentation, and some new features are welcomed. Development should happen in the `/src` folder, and then the build process creates the `/lib`, `/dist`, and `/doc` folders before serving the project. TypeScript tests are type-checked and run in Node with Vitest.
 
 ![Visual layout of the build process](./build.png)
 

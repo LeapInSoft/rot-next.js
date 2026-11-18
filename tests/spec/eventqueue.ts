@@ -1,3 +1,5 @@
+import { describe, expect, it } from "vitest";
+
 describe("EventQueue", function() {
 	it("should return added event", function() {
 		var q = new ROT.EventQueue();

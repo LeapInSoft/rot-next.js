@@ -1,18 +1,21 @@
+import { describe, expect, it } from "vitest";
+import type { Color } from "../../lib/color.js";
+
 describe("Color", function() {
 	describe("add", function() {
 		it("should add two colors", function() {
-			expect(ROT.Color.add([1,2,3], [3,4,5])).toEqual([4,6,8]);
+			expect(ROT.Color.add([1,2,3] as Color, [3,4,5] as Color)).toEqual([4,6,8]);
 		});
 		it("should add three colors", function() {
-			expect(ROT.Color.add([1,2,3], [3,4,5], [100,200,300])).toEqual([104,206,308]);
+			expect(ROT.Color.add([1,2,3] as Color, [3,4,5] as Color, [100,200,300] as Color)).toEqual([104,206,308]);
 		});
 		it("should add one color (noop)", function() {
-			expect(ROT.Color.add([1,2,3])).toEqual([1,2,3]);
+			expect(ROT.Color.add([1,2,3] as Color)).toEqual([1,2,3]);
 		});
 
 		it("should not modify first argument values", function() {
-			var c1 = [1,2,3];
-			var c2 = [3,4,5];
+			var c1: Color = [1,2,3];
+			var c2: Color = [3,4,5];
 			ROT.Color.add(c1, c2);
 			expect(c1).toEqual([1,2,3]);
 		});
@@ -20,24 +23,24 @@ describe("Color", function() {
 
 	describe("add_", function() {
 		it("should add two colors", function() {
-			expect(ROT.Color.add_([1,2,3], [3,4,5])).toEqual([4,6,8]);
+			expect(ROT.Color.add_([1,2,3] as Color, [3,4,5] as Color)).toEqual([4,6,8]);
 		});
 		it("should add three colors", function() {
-			expect(ROT.Color.add_([1,2,3], [3,4,5], [100,200,300])).toEqual([104,206,308]);
+			expect(ROT.Color.add_([1,2,3] as Color, [3,4,5] as Color, [100,200,300] as Color)).toEqual([104,206,308]);
 		});
 		it("should add one color (noop)", function() {
-			expect(ROT.Color.add_([1,2,3])).toEqual([1,2,3]);
+			expect(ROT.Color.add_([1,2,3] as Color)).toEqual([1,2,3]);
 		});
 
 		it("should modify first argument values", function() {
-			var c1 = [1,2,3];
-			var c2 = [3,4,5];
+			var c1: Color = [1,2,3];
+			var c2: Color = [3,4,5];
 			ROT.Color.add_(c1, c2);
 			expect(c1).toEqual([4,6,8]);
 		});
 		it("should return first argument", function() {
-			var c1 = [1,2,3];
-			var c2 = [3,4,5];
+			var c1: Color = [1,2,3];
+			var c2: Color = [3,4,5];
 			var c3 = ROT.Color.add_(c1, c2);
 			expect(c1).toBe(c3);
 		});
@@ -45,47 +48,47 @@ describe("Color", function() {
 
 	describe("multiply", function() {
 		it("should multiply two colors", function() {
-			expect(ROT.Color.multiply([100,200,300], [51,51,51])).toEqual([20,40,60]);
+			expect(ROT.Color.multiply([100,200,300] as Color, [51,51,51] as Color)).toEqual([20,40,60]);
 		});
 		it("should multiply three colors", function() {
-			expect(ROT.Color.multiply([100,200,300], [51,51,51], [510,510,510])).toEqual([40,80,120]);
+			expect(ROT.Color.multiply([100,200,300] as Color, [51,51,51] as Color, [510,510,510] as Color)).toEqual([40,80,120]);
 		});
 		it("should multiply one color (noop)", function() {
-			expect(ROT.Color.multiply([1,2,3])).toEqual([1,2,3]);
+			expect(ROT.Color.multiply([1,2,3] as Color)).toEqual([1,2,3]);
 		});
 		it("should not modify first argument values", function() {
-			var c1 = [1,2,3];
-			var c2 = [3,4,5];
+			var c1: Color = [1,2,3];
+			var c2: Color = [3,4,5];
 			ROT.Color.multiply(c1, c2);
 			expect(c1).toEqual([1,2,3]);
 		});
 		it("should round values", function() {
-			expect(ROT.Color.multiply([100,200,300], [10, 10, 10])).toEqual([4,8,12]);
+			expect(ROT.Color.multiply([100,200,300] as Color, [10, 10, 10] as Color)).toEqual([4,8,12]);
 		});
 	});
 
 	describe("multiply_", function() {
 		it("should multiply two colors", function() {
-			expect(ROT.Color.multiply_([100,200,300], [51,51,51])).toEqual([20,40,60]);
+			expect(ROT.Color.multiply_([100,200,300] as Color, [51,51,51] as Color)).toEqual([20,40,60]);
 		});
 		it("should multiply three colors", function() {
-			expect(ROT.Color.multiply_([100,200,300], [51,51,51], [510,510,510])).toEqual([40,80,120]);
+			expect(ROT.Color.multiply_([100,200,300] as Color, [51,51,51] as Color, [510,510,510] as Color)).toEqual([40,80,120]);
 		});
 		it("should multiply one color (noop)", function() {
-			expect(ROT.Color.multiply_([1,2,3])).toEqual([1,2,3]);
+			expect(ROT.Color.multiply_([1,2,3] as Color)).toEqual([1,2,3]);
 		});
 		it("should modify first argument values", function() {
-			var c1 = [100,200,300];
-			var c2 = [51,51,51];
+			var c1: Color = [100,200,300];
+			var c2: Color = [51,51,51];
 			ROT.Color.multiply_(c1, c2);
 			expect(c1).toEqual([20,40,60]);
 		});
 		it("should round values", function() {
-			expect(ROT.Color.multiply_([100,200,300], [10, 10, 10])).toEqual([4,8,12]);
+			expect(ROT.Color.multiply_([100,200,300] as Color, [10, 10, 10] as Color)).toEqual([4,8,12]);
 		});
 		it("should return first argument", function() {
-			var c1 = [1,2,3];
-			var c2 = [3,4,5];
+			var c1: Color = [1,2,3];
+			var c2: Color = [3,4,5];
 			var c3 = ROT.Color.multiply_(c1, c2);
 			expect(c1).toBe(c3);
 		});
@@ -147,7 +150,7 @@ describe("Color", function() {
 
 	describe("randomize", function() {
 		it("should maintain constant diff when a number is used", function() {
-			var c = ROT.Color.randomize([100, 100, 100], 100);
+			var c = ROT.Color.randomize([100, 100, 100] as Color, 100);
 			expect(c[0]).toBe(c[1]);
 			expect(c[1]).toBe(c[2]);
 		});
@@ -155,7 +158,7 @@ describe("Color", function() {
 
 	describe("rgb2hsl and hsl2rgb", function() {
 		it("should correctly convert to HSL and back", function() {
-			var rgb = [
+			var rgb: Color[] = [
 				[255, 255, 255],
 				[0, 0, 0],
 				[255, 0, 0],
@@ -172,7 +175,7 @@ describe("Color", function() {
 		});
 
 		it("should round converted values", function() {
-			var hsl = [0.5, 0, 0.3];
+			var hsl: Color = [0.5, 0, 0.3];
 			var rgb = ROT.Color.hsl2rgb(hsl);
 			for (var i=0;i<rgb.length;i++) {
 				expect(Math.round(rgb[i])).toEqual(rgb[i]);

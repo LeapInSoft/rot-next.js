@@ -3,8 +3,8 @@ import { defineConfig } from "vitest/config";
 export default defineConfig({
 	test: {
 		environment: "happy-dom",
-		include: ["tests/spec/**/*.js"],
-		setupFiles: ["./tests/setup.js"],
+		include: ["tests/spec/**/*.ts"],
+		setupFiles: ["./tests/setup.ts"],
 		globals: true
 	}
 });

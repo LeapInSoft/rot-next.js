@@ -1,4 +1,7 @@
+import { describe, expect, it } from "vitest";
+
 describe("Util", function() {
+	var format = ROT.Util.format as typeof ROT.Util.format & {map: {[key:string]: string}};
 	describe("String", function() {
 		describe("capitalize", function() {
 			it("should capitalize first letter", function() {
@@ -42,8 +45,8 @@ describe("Util", function() {
 			});
 
 			it("should perform custom mapping", function() {
-				var oldMap = ROT.Util.format.map;
-				ROT.Util.format.map = {
+				var oldMap = format.map;
+				format.map = {
 					s: "test1",
 					xxx: "test2"
 				}
@@ -52,17 +55,17 @@ describe("Util", function() {
 					test2:function() { return "bar"; },
 				}
 				expect(ROT.Util.format("%s %S %x %xxx %Xxx %XXX", obj, obj, obj, obj, obj)).toBe("foo Foo %x bar Bar Bar");
-				ROT.Util.format.map = oldMap;
+				format.map = oldMap;
 			});
 
 			it("should pass params", function() {
-				var oldMap = ROT.Util.format.map;
-				ROT.Util.format.map = { foo: "foo" };
+				var oldMap = format.map;
+				format.map = { foo: "foo" };
 				var obj = {
 					foo:function($) { return $+$; }
 				}
 				expect(ROT.Util.format("%{foo,bar}", obj)).toBe("barbar");
-				ROT.Util.format.map = oldMap;
+				format.map = oldMap;
 			});
 			it("should replace formatting strings", function() {
 				expect(ROT.Util.format("%s %s", 1, 2, 3)).toBe("1 2");

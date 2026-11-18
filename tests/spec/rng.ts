@@ -1,3 +1,5 @@
+import { describe, expect, it } from "vitest";
+
 describe("RNG", function() {
 	describe("getUniform", function() {
 		var value = ROT.RNG.getUniform();

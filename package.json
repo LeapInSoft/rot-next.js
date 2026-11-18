@@ -32,10 +32,11 @@
   "scripts": {
     "clean": "node scripts/clean.js",
     "typecheck": "tsc --project tsconfig.json",
+    "typecheck:tests": "tsc --project tsconfig.tests.json",
     "bundle": "rollup --config rollup.config.mjs",
     "docs": "typedoc --out doc --readme none --excludePrivate --excludeProtected --validation.invalidLink --name \"rot.js\" src/index.ts",
     "build": "npm run clean && npm run typecheck && npm run bundle && npm run docs",
-    "test": "vitest run"
+    "test": "npm run typecheck && npm run typecheck:tests && vitest run"
   },
   "repository": {
     "type": "git",

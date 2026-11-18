@@ -1,4 +1,8 @@
+import { describe, expect, it } from "vitest";
+
 describe("FOV", function() {
+	type LightCallback = ((x: number, y: number) => boolean) & {center: [number, number]};
+
 	var MAP8_RING0 = [
 		"#####",
 		"#####",
@@ -104,7 +108,7 @@ describe("FOV", function() {
 	];
 
 	var buildLightCallback = function(map) {
-		var center = [0, 0];
+		var center: [number, number] = [0, 0];
 		/* locate center */
 		for (var j=0;j<map.length;j++) {
 			for (var i=0;i<map[j].length;i++) {
@@ -118,8 +122,7 @@ describe("FOV", function() {
 			var ch = map[y].charAt(x);
 			return (ch != "#");
 		};
-		result.center = center;
-		return result;
+		return Object.assign(result, {center});
 	}
 
 	var checkResult = function(fov, center, result) {
@@ -187,7 +190,7 @@ describe("FOV", function() {
 
 	describe("Precise Shadowcasting", function() {
 		describe("8-topology", function() {
-			var topology = 8;
+			var topology = 8 as const;
 			it("should compute visible ring0", function() {
 				var lightPasses = buildLightCallback(MAP8_RING0);
 				var fov = new ROT.FOV.PreciseShadowcasting(lightPasses, {topology:topology});
@@ -201,18 +204,21 @@ describe("FOV", function() {
 			it.skip("should compute single visible target", function() {
 				var lightPasses = buildLightCallback(MAP8_RING1);
 				var fov = new ROT.FOV.PreciseShadowcasting(lightPasses, {topology:topology});
+				// @ts-expect-error This removed API remains documented only by its skipped legacy tests.
 				var result = fov.computeSingle(lightPasses.center[0], lightPasses.center[1], 2, 0, 1);
 				expect(result).toBe(1);
 			});
 			it.skip("should compute single invisible target", function() {
 				var lightPasses = buildLightCallback(MAP8_RING0);
 				var fov = new ROT.FOV.PreciseShadowcasting(lightPasses, {topology:topology});
+				// @ts-expect-error This removed API remains documented only by its skipped legacy tests.
 				var result = fov.computeSingle(lightPasses.center[0], lightPasses.center[1], 2, 0, 1);
 				expect(result).toBe(0);
 			});
 			it.skip("should compute single partially visible target", function() {
 				var lightPasses = buildLightCallback(MAP8_PARTIAL);
 				var fov = new ROT.FOV.PreciseShadowcasting(lightPasses, {topology:topology});
+				// @ts-expect-error This removed API remains documented only by its skipped legacy tests.
 				var result = fov.computeSingle(lightPasses.center[0], lightPasses.center[1], 2, 0, 1);
 				expect(result).toBe(0.5);
 			});

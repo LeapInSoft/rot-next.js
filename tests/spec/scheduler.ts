@@ -1,20 +1,6 @@
+import { beforeEach, describe, expect, it } from "vitest";
+
 describe("Scheduler", function() {
-	expect.extend({
-		toSchedule(actual, expected) {
-			actual = actual.map(JSON.stringify);
-			expected = expected.map(JSON.stringify);
-
-			var pass = true;
-			for (var i=0;i<Math.max(expected.length, actual.length);i++) {
-				if (actual[i] !== expected[i]) { pass = false; }
-			}
-
-			var notText = pass ? " not" : "";
-			var message = "Expected " + actual + notText + " to be scheduled as " + expected;
-			return { pass: pass, message: function() { return message; } };
-		}
-	});
-
 	describe("Simple", function() {
 		var S = new ROT.Scheduler.Simple();
 		var A1 = "A1";
@@ -28,7 +14,7 @@ describe("Scheduler", function() {
 			S.add(A3, true);
 			var result = [];
 			for (var i=0;i<6;i++) { result.push(S.next()); }
-			expect(result).toSchedule([A1, A2, A3, A1, A2, A3]);
+			expect(result).toEqual([A1, A2, A3, A1, A2, A3]);
 		});
 
 		it("should schedule one-time events", function() {
@@ -36,7 +22,7 @@ describe("Scheduler", function() {
 			S.add(A2, true);
 			var result = [];
 			for (var i=0;i<4;i++) { result.push(S.next()); }
-			expect(result).toSchedule([A1, A2, A2, A2]);
+			expect(result).toEqual([A1, A2, A2, A2]);
 		});
 
 		it("should remove repeated events", function() {
@@ -46,7 +32,7 @@ describe("Scheduler", function() {
 			S.remove(A2);
 			var result = [];
 			for (var i=0;i<4;i++) { result.push(S.next()); }
-			expect(result).toSchedule([A1, A3, A3, A3]);
+			expect(result).toEqual([A1, A3, A3, A3]);
 		});
 
 		it("should remove one-time events", function() {
@@ -56,7 +42,7 @@ describe("Scheduler", function() {
 			S.remove(A2);
 			var result = [];
 			for (var i=0;i<4;i++) { result.push(S.next()); }
-			expect(result).toSchedule([A1, A3, A3, A3]);
+			expect(result).toEqual([A1, A3, A3, A3]);
 		});
 
 		it("should remove properly (issue #187)", function() {
@@ -66,13 +52,13 @@ describe("Scheduler", function() {
 
 			var result = [];
 			for (var i=0;i<4;i++) { result.push(S.next()); }
-			expect(result).toSchedule([A1, A1, A1, A1]);
+			expect(result).toEqual([A1, A1, A1, A1]);
 		});
 	});
 
 	describe("Speed", function() {
 		var S = new ROT.Scheduler.Speed();
-		var A = {getSpeed:function(){return this.speed;}};
+		var A: {speed:number; getSpeed():number} = {speed:0, getSpeed:function(){return this.speed;}};
 		var A50 = Object.create(A); A50.speed = 50;
 		var A100a = Object.create(A); A100a.speed = 100;
 		var A100b = Object.create(A); A100b.speed = 100;
@@ -86,7 +72,7 @@ describe("Scheduler", function() {
 			var result = [];
 			for (var i=0;i<4;i++) { result.push(S.next()); }
 
-			expect(result).toSchedule([A100a, A100b, A100a, A100b]);
+			expect(result).toEqual([A100a, A100b, A100a, A100b]);
 		});
 
 		it("should schedule different speeds properly", function() {
@@ -95,7 +81,7 @@ describe("Scheduler", function() {
 			S.add(A200, true);
 			var result = [];
 			for (var i=0;i<7;i++) { result.push(S.next()); }
-			expect(result).toSchedule([A200, A100a, A200, A200, A50, A100a, A200]);
+			expect(result).toEqual([A200, A100a, A200, A200, A50, A100a, A200]);
 		});
 
 		it("should schedule with initial offsets", function() {
@@ -104,7 +90,7 @@ describe("Scheduler", function() {
 			S.add(A200, true);
 			var result = [];
 			for (var i=0;i<9;i++) { result.push(S.next()); }
-			expect(result).toSchedule([A100a, A50, A200, A100a, A200, A200, A100a, A200, A50]);
+			expect(result).toEqual([A100a, A50, A200, A100a, A200, A200, A100a, A200, A50]);
 		});
 
 		it("should look up the time of an event", function() {
@@ -129,7 +115,7 @@ describe("Scheduler", function() {
 			S.add(A3, true);
 			var result = [];
 			for (var i=0;i<6;i++) { result.push(S.next()); }
-			expect(result).toSchedule([A1, A2, A3, A1, A2, A3]);
+			expect(result).toEqual([A1, A2, A3, A1, A2, A3]);
 		});
 
 		it("should schedule with respect to extra argument", function() {
@@ -138,7 +124,7 @@ describe("Scheduler", function() {
 			S.add(A3, true);
 			var result = [];
 			for (var i=0;i<6;i++) { result.push(S.next()); }
-			expect(result).toSchedule([A1, A3, A2, A1, A3, A2]);
+			expect(result).toEqual([A1, A3, A2, A1, A3, A2]);
 		});
 
 		it("should schedule with respect to action duration", function() {
@@ -162,7 +148,7 @@ describe("Scheduler", function() {
 				S.setDuration(100); /* somewhere in the future */
 			}
 
-			expect(result).toSchedule([A1, A2, A3, A3, A2, A1]);
+			expect(result).toEqual([A1, A2, A3, A3, A2, A1]);
 		});
 	});
 
@@ -176,7 +162,7 @@ describe("Scheduler", function() {
 				s.add(A1, true);
 				var result = [];
 				for (var i=0;i<6;i++) { result.push(s.next()); }
-				expect(result).toSchedule([A1, A1, A1, A1, A1, A1]);
+				expect(result).toEqual([A1, A1, A1, A1, A1, A1]);
 			});
 		}));
 	});
