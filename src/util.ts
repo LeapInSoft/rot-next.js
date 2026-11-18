@@ -29,23 +29,23 @@ interface HasMap {
  * @param {any} [argv]
  */
 export function format(template: string, ...args: any[]): string {
-	let map = (format as HasMap).map;
+	const map = (format as HasMap).map;
 
-	let replacer = function(match: string, group1: string, group2: string, index: number) {
+	const replacer = function(match: string, group1: string, group2: string, index: number) {
 		if (template.charAt(index-1) == "%") { return match.substring(1); }
 		if (!args.length) { return match; }
 		let obj = args[0];
 
-		let group = group1 || group2;
-		let parts = group.split(",");
-		let name = parts.shift() || "";
-		let method = map[name.toLowerCase()];
+		const group = group1 || group2;
+		const parts = group.split(",");
+		const name = parts.shift() || "";
+		const method = map[name.toLowerCase()];
 		if (!method) { return match; }
 
 		obj = args.shift();
 		let replaced = obj[method].apply(obj, parts);
 
-		let first = name.charAt(0);
+		const first = name.charAt(0);
 		if (first != first.toLowerCase()) { replaced = capitalize(replaced); }
 
 		return replaced;

@@ -57,7 +57,7 @@ export class MinHeap<T> {
 		if (index === null) { return false; }
 
 		if (this.len() > 1) {
-			let last = this.heap.pop() as HeapWrapper<T>;
+			const last = this.heap.pop() as HeapWrapper<T>;
 			if (last.value != v) { // if the last one is being removed, do nothing
 				this.heap[index] = last;
 				this.updateDown(index);

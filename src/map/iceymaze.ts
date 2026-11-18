@@ -18,7 +18,7 @@ export default class IceyMaze extends Map {
 	create(callback: CreateCallback) {
 		let width = this._width;
 		let height = this._height;
-		let map = this._fillMap(1);
+		const map = this._fillMap(1);
 		
 		width -= (width % 2 ? 1 : 2);
 		height -= (height % 2 ? 1 : 2);
@@ -30,7 +30,7 @@ export default class IceyMaze extends Map {
 
 		let done = 0;
 		let blocked = false;
-		let dirs = [
+		const dirs = [
 			[0, 0],
 			[0, 0],
 			[0, 0],

@@ -70,7 +70,7 @@ export default class Lighting {
 	 * Set (or remove) a light source
 	 */
 	setLight(x: number, y: number, color: null | string | LightColor) {
-		let key = x + "," + y;
+		const key = x + "," + y;
 
 		if (color) {
 			this._lights[key] = (typeof(color) == "string" ? Color.fromString(color) as LightColor : color);
@@ -99,12 +99,12 @@ export default class Lighting {
 	 * Compute the lighting
 	 */
 	compute(lightingCallback: LightingCallback) {
-		let doneCells: {[key:string]:number} = {};
+		const doneCells: {[key:string]:number} = {};
 		let emittingCells: LightingMap = {};
-		let litCells: LightingMap = {};
+		const litCells: LightingMap = {};
 
-		for (let key in this._lights) { /* prepare emitters for first pass */
-			let light = this._lights[key];
+		for (const key in this._lights) { /* prepare emitters for first pass */
+			const light = this._lights[key];
 			emittingCells[key] = [0, 0, 0];
 			Color.add_(emittingCells[key], light);
 		}
@@ -115,10 +115,10 @@ export default class Lighting {
 			emittingCells = this._computeEmitters(litCells, doneCells);
 		}
 
-		for (let litKey in litCells) { /* let the user know what and how is lit */
-			let parts = litKey.split(",");
-			let x = parseInt(parts[0]);
-			let y = parseInt(parts[1]);
+		for (const litKey in litCells) { /* let the user know what and how is lit */
+			const parts = litKey.split(",");
+			const x = parseInt(parts[0]);
+			const y = parseInt(parts[1]);
 			lightingCallback(x, y, litCells[litKey]);
 		}
 
@@ -132,10 +132,10 @@ export default class Lighting {
 	 * @param doneCells These already emitted, forbid them from further calculations
 	 */
 	private _emitLight(emittingCells: LightingMap, litCells: LightingMap, doneCells: {[key:string]:number}) {
-		for (let key in emittingCells) {
-			let parts = key.split(",");
-			let x = parseInt(parts[0]);
-			let y = parseInt(parts[1]);
+		for (const key in emittingCells) {
+			const parts = key.split(",");
+			const x = parseInt(parts[0]);
+			const y = parseInt(parts[1]);
 			this._emitLightFromCell(x, y, emittingCells[key], litCells);
 			doneCells[key] = 1;
 		}
@@ -146,20 +146,20 @@ export default class Lighting {
 	 * Prepare a list of emitters for next pass
 	 */
 	private _computeEmitters(litCells: LightingMap, doneCells: {[key:string]:number}) {
-		let result: LightingMap = {};
+		const result: LightingMap = {};
 
-		for (let key in litCells) {
+		for (const key in litCells) {
 			if (key in doneCells) { continue; } /* already emitted */
 
-			let color = litCells[key];
+			const color = litCells[key];
 
 			let reflectivity;
 			if (key in this._reflectivityCache) {
 				reflectivity = this._reflectivityCache[key];
 			} else {
-				let parts = key.split(",");
-				let x = parseInt(parts[0]);
-				let y = parseInt(parts[1]);
+				const parts = key.split(",");
+				const x = parseInt(parts[0]);
+				const y = parseInt(parts[1]);
 				reflectivity = this._reflectivityCallback(x, y);
 				this._reflectivityCache[key] = reflectivity;
 			}
@@ -167,10 +167,10 @@ export default class Lighting {
 			if (reflectivity == 0) { continue; } /* will not reflect at all */
 
 			/* compute emission color */
-			let emission: LightColor = [0, 0, 0];
+			const emission: LightColor = [0, 0, 0];
 			let intensity = 0;
 			for (let i=0;i<3;i++) {
-				let part = Math.round(color[i]*reflectivity);
+				const part = Math.round(color[i]*reflectivity);
 				emission[i] = part;
 				intensity += part;
 			}
@@ -184,7 +184,7 @@ export default class Lighting {
 	 * Compute one iteration from one cell
 	 */
 	private _emitLightFromCell(x: number, y: number, color: LightColor, litCells: LightingMap) {
-		let key = x+","+y;
+		const key = x+","+y;
 		let fov : NumberMap;
 		if (key in this._fovCache) {
 			fov = this._fovCache[key];
@@ -192,8 +192,8 @@ export default class Lighting {
 			fov = this._updateFOV(x, y);
 		}
 
-		for (let fovKey in fov) {
-			let formFactor = fov[fovKey];
+		for (const fovKey in fov) {
+			const formFactor = fov[fovKey];
 
 			let result : LightColor;
 			if (fovKey in litCells) { /* already lit */
@@ -213,13 +213,13 @@ export default class Lighting {
 	 * Compute FOV ("form factor") for a potential light source at [x,y]
 	 */
 	private _updateFOV(x: number, y: number) {
-		let key1 = x+","+y;
-		let cache: NumberMap = {};
+		const key1 = x+","+y;
+		const cache: NumberMap = {};
 		this._fovCache[key1] = cache;
-		let range = this._options.range;
+		const range = this._options.range;
 		function cb(x: number, y: number, r: number, vis: number) {
-			let key2 = x+","+y;
-			let formFactor = vis * (1-r/range);
+			const key2 = x+","+y;
+			const formFactor = vis * (1-r/range);
 			if (formFactor == 0) { return; }
 			cache[key2] = formFactor;
 		};

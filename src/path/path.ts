@@ -54,11 +54,11 @@ export default abstract class Path {
 	abstract compute(fromX: number, fromY: number, callback: ComputeCallback): void;
 
 	_getNeighbors(cx: number, cy: number) {
-		let result = [];
+		const result = [];
 		for (let i=0;i<this._dirs.length;i++) {
-			let dir = this._dirs[i];
-			let x = cx + dir[0];
-			let y = cy + dir[1];
+			const dir = this._dirs[i];
+			const x = cx + dir[0];
+			const y = cy + dir[1];
 			
 			if (!this._passableCallback(x, y)) { continue; }
 			result.push([x, y]);

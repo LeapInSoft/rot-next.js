@@ -34,16 +34,16 @@ export default class Rect extends Canvas {
 	}
 
 	_drawWithCache(data: DisplayData) {
-		let [x, y, ch, fg, bg] = data;
+		const [x, y, ch, fg, bg] = data;
 
-		let hash = ""+ch+fg+bg;
+		const hash = ""+ch+fg+bg;
 		let canvas;
 		if (hash in this._canvasCache) {
 			canvas = this._canvasCache[hash];
 		} else {
-			let b = this._options.border;
+			const b = this._options.border;
 			canvas = document.createElement("canvas");
-			let ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
+			const ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
 			canvas.width = this._spacingX;
 			canvas.height = this._spacingY;
 			ctx.fillStyle = bg;
@@ -55,7 +55,7 @@ export default class Rect extends Canvas {
 				ctx.textAlign = "center";
 				ctx.textBaseline = "middle";
 
-				let chars = ([] as string[]).concat(ch);
+				const chars = ([] as string[]).concat(ch);
 				for (let i=0;i<chars.length;i++) {
 					ctx.fillText(chars[i], this._spacingX/2, Math.ceil(this._spacingY/2));
 				}
@@ -67,10 +67,10 @@ export default class Rect extends Canvas {
 	}
 
 	_drawNoCache(data: DisplayData, clearBefore: boolean) {
-		let [x, y, ch, fg, bg] = data;
+		const [x, y, ch, fg, bg] = data;
 
 		if (clearBefore) { 
-			let b = this._options.border;
+			const b = this._options.border;
 			this._ctx.fillStyle = bg;
 			this._ctx.fillRect(x*this._spacingX + b, y*this._spacingY + b, this._spacingX - b, this._spacingY - b);
 		}
@@ -79,30 +79,30 @@ export default class Rect extends Canvas {
 
 		this._ctx.fillStyle = fg;
 
-		let chars = ([] as string[]).concat(ch);
+		const chars = ([] as string[]).concat(ch);
 		for (let i=0;i<chars.length;i++) {
 			this._ctx.fillText(chars[i], (x+0.5) * this._spacingX, Math.ceil((y+0.5) * this._spacingY));
 		}
 	}
 
 	computeSize(availWidth: number, availHeight: number): [number, number] {
-		let width = Math.floor(availWidth / this._spacingX);
-		let height = Math.floor(availHeight / this._spacingY);
+		const width = Math.floor(availWidth / this._spacingX);
+		const height = Math.floor(availHeight / this._spacingY);
 		return [width, height];
 	}
 
 	computeFontSize(availWidth: number, availHeight: number) {
-		let boxWidth = Math.floor(availWidth / this._options.width);
+		const boxWidth = Math.floor(availWidth / this._options.width);
 		let boxHeight = Math.floor(availHeight / this._options.height);
 
 		/* compute char ratio */
-		let oldFont = this._ctx.font;
+		const oldFont = this._ctx.font;
 		this._ctx.font = "100px " + this._options.fontFamily;
-		let width = Math.ceil(this._ctx.measureText("W").width);
+		const width = Math.ceil(this._ctx.measureText("W").width);
 		this._ctx.font = oldFont;
-		let ratio = width / 100;
+		const ratio = width / 100;
 			
-		let widthFraction = ratio * boxHeight / boxWidth;
+		const widthFraction = ratio * boxHeight / boxWidth;
 		if (widthFraction > 1) { /* too wide with current aspect ratio */
 			boxHeight = Math.floor(boxHeight / widthFraction);
 		}

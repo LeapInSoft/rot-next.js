@@ -10,8 +10,8 @@ export function	fromString(str: string): Color {
 	} else {
 		if (str.charAt(0) == "#") { // hex rgb
 
-			let matched = str.match(/[0-9a-f]/gi) || [];
-			let values = matched.map((x:string) => parseInt(x, 16));
+			const matched = str.match(/[0-9a-f]/gi) || [];
+			const values = matched.map((x:string) => parseInt(x, 16));
 			if (values.length == 3) {
 				cached = values.map((x:number) => x*17) as Color;
 			} else {
@@ -38,7 +38,7 @@ export function	fromString(str: string): Color {
  * Add two or more colors
  */
 export function add(color1: Color, ...colors: Color[]): Color {
-	let result = color1.slice() as Color;
+	const result = color1.slice() as Color;
 	for (let i=0;i<3;i++) {
 		for (let j=0;j<colors.length;j++) {
 			result[i] += colors[j][i];
@@ -63,7 +63,7 @@ export function add_(color1: Color, ...colors: Color[]): Color {
  * Multiply (mix) two or more colors
  */
 export function multiply(color1: Color, ...colors: Color[]): Color {
-	let result = color1.slice() as Color;
+	const result = color1.slice() as Color;
 	for (let i=0;i<3;i++) {
 		for (let j=0;j<colors.length;j++) {
 			result[i] *= colors[j][i] / 255;
@@ -90,7 +90,7 @@ export function multiply_(color1: Color, ...colors: Color[]): Color {
  * Interpolate (blend) two colors with a given factor
  */
 export function interpolate(color1: Color, color2: Color, factor = 0.5): Color {
-	let result = color1.slice() as Color;
+	const result = color1.slice() as Color;
 	for (let i=0;i<3;i++) {
 		result[i] = Math.round(result[i] + factor*(color2[i]-color1[i]));
 	}
@@ -102,8 +102,8 @@ export const lerp = interpolate;
  * Interpolate (blend) two colors with a given factor in HSL mode
  */
 export function interpolateHSL(color1: Color, color2: Color, factor = 0.5): Color {
-	let hsl1 = rgb2hsl(color1);
-	let hsl2 = rgb2hsl(color2);
+	const hsl1 = rgb2hsl(color1);
+	const hsl2 = rgb2hsl(color2);
 	for (let i=0;i<3;i++) {
 		hsl1[i] += factor*(hsl2[i]-hsl1[i]);
 	}
@@ -118,7 +118,7 @@ export const lerpHSL = interpolateHSL;
  */
 export function randomize(color: Color, diff: number | Color): Color {
 	if (!(diff instanceof Array)) { diff = Math.round(RNG.getNormal(0, diff)); }
-	let result = color.slice() as Color;
+	const result = color.slice() as Color;
 	for (let i=0;i<3;i++) {
 		result[i] += (diff instanceof Array ? Math.round(RNG.getNormal(0, diff[i])) : diff);
 	}
@@ -129,17 +129,18 @@ export function randomize(color: Color, diff: number | Color): Color {
  * Converts an RGB color value to HSL. Expects 0..255 inputs, produces 0..1 outputs.
  */
 export function rgb2hsl(color: Color): Color {
-	let r = color[0]/255;
-	let g = color[1]/255;
-	let b = color[2]/255;
+	const r = color[0]/255;
+	const g = color[1]/255;
+	const b = color[2]/255;
 
-	let max = Math.max(r, g, b), min = Math.min(r, g, b);
-	let h = 0, s, l = (max + min) / 2;
+	const max = Math.max(r, g, b), min = Math.min(r, g, b);
+	let h = 0, s;
+	const l = (max + min) / 2;
 
 	if (max == min) {
 		s = 0; // achromatic
 	} else {
-		let d = max - min;
+		const d = max - min;
 		s = (l > 0.5 ? d / (2 - max - min) : d / (max + min));
 		switch (max) {
 			case r: h = (g - b) / d + (g < b ? 6 : 0); break;
@@ -171,23 +172,23 @@ export function hsl2rgb(color: Color): Color {
 		l = Math.round(l*255);
 		return [l, l, l];
 	} else {
-		let s = color[1];
-		let q = (l < 0.5 ? l * (1 + s) : l + s - l * s);
-		let p = 2 * l - q;
-		let r = hue2rgb(p, q, color[0] + 1/3);
-		let g = hue2rgb(p, q, color[0]);
-		let b = hue2rgb(p, q, color[0] - 1/3);
+		const s = color[1];
+		const q = (l < 0.5 ? l * (1 + s) : l + s - l * s);
+		const p = 2 * l - q;
+		const r = hue2rgb(p, q, color[0] + 1/3);
+		const g = hue2rgb(p, q, color[0]);
+		const b = hue2rgb(p, q, color[0] - 1/3);
 		return [Math.round(r*255), Math.round(g*255), Math.round(b*255)];
 	}
 }
 
 export function toRGB(color: Color) {
-	let clamped = color.map(x => clamp(x, 0, 255));
+	const clamped = color.map(x => clamp(x, 0, 255));
 	return `rgb(${clamped.join(",")})`;
 }
 
 export function toHex(color: Color) {
-	let clamped = color.map(x => clamp(x, 0, 255).toString(16).padStart(2, "0"));
+	const clamped = color.map(x => clamp(x, 0, 255).toString(16).padStart(2, "0"));
 	return `#${clamped.join("")}`;
 }
 

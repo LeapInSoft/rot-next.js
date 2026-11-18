@@ -54,9 +54,9 @@ export default class Uniform extends Dungeon {
 	 * @see ROT.Map#create
 	 */
 	create(callback?: CreateCallback) {
-		let t1 = Date.now();
+		const t1 = Date.now();
 		while (1) {
-			let t2 = Date.now();
+			const t2 = Date.now();
 			if (t2 - t1 > this._options.timeLimit) { return null; } /* time limit! */
 		
 			this._map = this._fillMap(1);
@@ -83,8 +83,8 @@ export default class Uniform extends Dungeon {
 	 * Generates a suitable amount of rooms
 	 */
 	_generateRooms() {
-		let w = this._width-2;
-		let h = this._height-2;
+		const w = this._width-2;
+		const h = this._height-2;
 
 		let room;
 		do {
@@ -103,7 +103,7 @@ export default class Uniform extends Dungeon {
 		while (count < this._roomAttempts) {
 			count++;
 			
-			let room = Room.createRandom(this._width, this._height, this._options);
+			const room = Room.createRandom(this._width, this._height, this._options);
 			if (!room.isValid(this._isWallCallback, this._canBeDugCallback)) { continue; }
 			
 			room.create(this._digCallback);
@@ -128,7 +128,7 @@ export default class Uniform extends Dungeon {
 			/* dig rooms into a clear map */
 			this._map = this._fillMap(1);
 			for (let i=0;i<this._rooms.length;i++) { 
-				let room = this._rooms[i];
+				const room = this._rooms[i];
 				room.clearDoors();
 				room.create(this._digCallback); 
 			}
@@ -139,18 +139,18 @@ export default class Uniform extends Dungeon {
 			
 			while (1) {
 				/* 1. pick random connected room */
-				let connected = RNG.getItem(this._connected);
+				const connected = RNG.getItem(this._connected);
 				if (!connected) { break; }
 				
 				/* 2. find closest unconnected */
-				let room1 = this._closestRoom(this._unconnected, connected);
+				const room1 = this._closestRoom(this._unconnected, connected);
 				if (!room1) { break; }
 				
 				/* 3. connect it to closest connected */
-				let room2 = this._closestRoom(this._connected, room1);
+				const room2 = this._closestRoom(this._connected, room1);
 				if (!room2) { break; }
 				
-				let ok = this._connectRooms(room1, room2);
+				const ok = this._connectRooms(room1, room2);
 				if (!ok) { break; } /* stop connecting, re-shuffle */
 				
 				if (!this._unconnected.length) { return true; } /* done; no rooms remain */
@@ -164,15 +164,15 @@ export default class Uniform extends Dungeon {
 	 */
 	_closestRoom(rooms: Room[], room: Room) {
 		let dist = Infinity;
-		let center = room.getCenter();
+		const center = room.getCenter();
 		let result = null;
 		
 		for (let i=0;i<rooms.length;i++) {
-			let r = rooms[i];
-			let c = r.getCenter();
-			let dx = c[0]-center[0];
-			let dy = c[1]-center[1];
-			let d = dx*dx+dy*dy;
+			const r = rooms[i];
+			const c = r.getCenter();
+			const dx = c[0]-center[0];
+			const dy = c[1]-center[1];
+			const d = dx*dx+dy*dy;
 			
 			if (d < dist) {
 				dist = d;
@@ -188,13 +188,12 @@ export default class Uniform extends Dungeon {
 			room1.debug();
 			room2.debug();
 		*/
-		let center1 = room1.getCenter();
-		let center2 = room2.getCenter();
+		const center1 = room1.getCenter();
+		const center2 = room2.getCenter();
 
-		let diffX = center2[0] - center1[0];
-		let diffY = center2[1] - center1[1];
+		const diffX = center2[0] - center1[0];
+		const diffY = center2[1] - center1[1];
 
-		let start: Point | null;
 		let end: Point | null;
 
 		let dirIndex1, dirIndex2, min, max, index;
@@ -212,7 +211,7 @@ export default class Uniform extends Dungeon {
 			index = 1;
 		}
 
-		start = this._placeInWall(room1, dirIndex1); /* corridor will start here */
+		const start = this._placeInWall(room1, dirIndex1); /* corridor will start here */
 		if (!start) { return false; }
 
 		if (start[index] >= min && start[index] <= max) { /* possible to connect with straight line (I-like) */
@@ -229,7 +228,7 @@ export default class Uniform extends Dungeon {
 			
 		} else if (start[index] < min-1 || start[index] > max+1) { /* need to switch target wall (L-like) */
 
-			let diff = start[index] - center2[index];
+			const diff = start[index] - center2[index];
 			let rotation = 0;
 			switch (dirIndex2) {
 				case 0:
@@ -242,21 +241,21 @@ export default class Uniform extends Dungeon {
 			end = this._placeInWall(room2, dirIndex2);
 			if (!end) { return false; }
 
-			let mid = [0, 0];
+			const mid = [0, 0];
 			mid[index] = start[index];
-			let index2 = (index+1)%2;
+			const index2 = (index+1)%2;
 			mid[index2] = end[index2];
 			this._digLine([start as Point, mid as Point, end as Point]);
 			
 		} else { /* use current wall pair, but adjust the line in the middle (S-like) */
 		
-			let index2 = (index+1)%2;
+			const index2 = (index+1)%2;
 			end = this._placeInWall(room2, dirIndex2);
 			if (!end) { return false; }
-			let mid = Math.round((end[index2] + start[index2])/2);
+			const mid = Math.round((end[index2] + start[index2])/2);
 
-			let mid1 = [0, 0];
-			let mid2 = [0, 0];
+			const mid1 = [0, 0];
+			const mid2 = [0, 0];
 			mid1[index] = start[index];
 			mid1[index2] = mid;
 			mid2[index] = end[index];
@@ -310,15 +309,15 @@ export default class Uniform extends Dungeon {
 			break;
 		}
 		
-		let avail: (Point | null)[] = [];
+		const avail: (Point | null)[] = [];
 		let lastBadIndex = -2;
 
 		for (let i=0;i<length;i++) {
-			let x = start[0] + i*dir[0];
-			let y = start[1] + i*dir[1];
+			const x = start[0] + i*dir[0];
+			const y = start[1] + i*dir[1];
 			avail.push(null);
 			
-			let isWall = (this._map[x][y] == 1);
+			const isWall = (this._map[x][y] == 1);
 			if (isWall) {
 				if (lastBadIndex != i-1) { avail[i] = [x, y]; }
 			} else {
@@ -338,9 +337,9 @@ export default class Uniform extends Dungeon {
 	 */
 	_digLine(points: Point[]) {
 		for (let i=1;i<points.length;i++) {
-			let start = points[i-1];
-			let end = points[i];
-			let corridor = new Corridor(start[0], start[1], end[0], end[1]);
+			const start = points[i-1];
+			const end = points[i];
+			const corridor = new Corridor(start[0], start[1], end[0], end[1]);
 			corridor.create(this._digCallback);
 			this._corridors.push(corridor);
 		}

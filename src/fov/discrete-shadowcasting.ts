@@ -13,14 +13,14 @@ export default class DiscreteShadowcasting extends FOV {
 		if (!this._lightPasses(x, y)) { return; }
 		
 		/* start and end angles */
-		let DATA: number[] = [];
+		const DATA: number[] = [];
 		
 		let A, B, cx, cy, blocks;
 
 		/* analyze surrounding cells in concentric rings, starting from the center */
 		for (let r=1; r<=R; r++) {
-			let neighbors = this._getCircle(x, y, r);
-			let angle = 360 / neighbors.length;
+			const neighbors = this._getCircle(x, y, r);
+			const angle = 360 / neighbors.length;
 
 			for (let i=0;i<neighbors.length;i++) {
 				cx = neighbors[i][0];
@@ -45,8 +45,8 @@ export default class DiscreteShadowcasting extends FOV {
 	 */
 	_visibleCoords(A: number, B: number, blocks: boolean, DATA: number[]): boolean {
 		if (A < 0) { 
-			let v1 = this._visibleCoords(0, B, blocks, DATA);
-			let v2 = this._visibleCoords(360+A, 360, blocks, DATA);
+			const v1 = this._visibleCoords(0, B, blocks, DATA);
+			const v2 = this._visibleCoords(360+A, 360, blocks, DATA);
 			return v1 || v2;
 		}
 		

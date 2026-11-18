@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 
 describe("RNG", function() {
 	describe("getUniform", function() {
-		var value = ROT.RNG.getUniform();
+		const value = ROT.RNG.getUniform();
 		it("should return a number", function() {
 			expect(typeof(value)).toEqual("number");
 		});
@@ -14,23 +14,23 @@ describe("RNG", function() {
 	});
 
 	describe("getUniformInt", function() {
-	var lowerBound = 5;
-	var upperBound = 10;
+	const lowerBound = 5;
+	const upperBound = 10;
 		it("should return a number", function() {
-		  var value = ROT.RNG.getUniformInt(lowerBound, upperBound);
+		  const value = ROT.RNG.getUniformInt(lowerBound, upperBound);
 			expect(typeof(value)).toEqual("number");
 		});
 		it("should not care which number is larger in the arguments", function() {
-			var seed = Math.round(Math.random()*1000000);
+			const seed = Math.round(Math.random()*1000000);
 			ROT.RNG.setSeed(seed);
-			var val1 = ROT.RNG.getUniformInt(lowerBound, upperBound);
+			const val1 = ROT.RNG.getUniformInt(lowerBound, upperBound);
 			ROT.RNG.setSeed(seed);
-			var val2 = ROT.RNG.getUniformInt(upperBound, lowerBound);
+			const val2 = ROT.RNG.getUniformInt(upperBound, lowerBound);
 			expect(val1).toEqual(val2);
 		});
 		it("should only return a number in the desired range", function() {
-			var value = ROT.RNG.getUniformInt(lowerBound, upperBound);
-			var value2 = ROT.RNG.getUniformInt(upperBound, lowerBound);
+			const value = ROT.RNG.getUniformInt(lowerBound, upperBound);
+			const value2 = ROT.RNG.getUniformInt(upperBound, lowerBound);
 			expect(value).not.toBeGreaterThan(upperBound);
 			expect(value).not.toBeLessThan(lowerBound);
 			expect(value2).not.toBeGreaterThan(upperBound);
@@ -44,17 +44,17 @@ describe("RNG", function() {
 		});
 
 		it("should return the same value for a given seed", function() {
-			var seed = Math.round(Math.random()*1000000);
+			const seed = Math.round(Math.random()*1000000);
 			ROT.RNG.setSeed(seed);
-			var val1 = ROT.RNG.getUniform();
+			const val1 = ROT.RNG.getUniform();
 			ROT.RNG.setSeed(seed);
-			var val2 = ROT.RNG.getUniform();
+			const val2 = ROT.RNG.getUniform();
 			expect(val1).toEqual(val2);
 		});
 
 		it("should return a precomputed value for a given seed", function() {
 			ROT.RNG.setSeed(12345);
-			var val = ROT.RNG.getUniform();
+			const val = ROT.RNG.getUniform();
 			expect(val).toEqual(0.01198604702949524);
 		});
 	});
@@ -63,10 +63,10 @@ describe("RNG", function() {
 		it("should return identical values after setting identical states", function() {
 			ROT.RNG.getUniform();
 			
-			var state = ROT.RNG.getState();
-			var val1 = ROT.RNG.getUniform();
+			const state = ROT.RNG.getState();
+			const val1 = ROT.RNG.getUniform();
 			ROT.RNG.setState(state);
-			var val2 = ROT.RNG.getUniform();
+			const val2 = ROT.RNG.getUniform();
 
 			expect(val1).toEqual(val2);
 		});
@@ -74,20 +74,20 @@ describe("RNG", function() {
 
 	describe("cloning", function() {
 		it("should be able to clone a RNG", function() {
-			var clone = ROT.RNG.clone();
+			const clone = ROT.RNG.clone();
 			expect(typeof(clone)).toEqual("object");
 		});
 
 		it("should clone a working RNG", function() {
-			var clone = ROT.RNG.clone();
-			var num = clone.getUniform();
+			const clone = ROT.RNG.clone();
+			const num = clone.getUniform();
 			expect(typeof(num)).toEqual("number");
 		});
 
 		it("should clone maintaining its state", function() {
-			var clone = ROT.RNG.clone();
-			var num1 = ROT.RNG.getUniform();
-			var num2 = clone.getUniform();
+			const clone = ROT.RNG.clone();
+			const num1 = ROT.RNG.getUniform();
+			const num2 = clone.getUniform();
 			expect(num1).toEqual(num2);
 		});
 	});

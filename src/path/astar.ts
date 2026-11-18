@@ -38,19 +38,19 @@ export default class AStar extends Path {
 		this._add(this._toX, this._toY, null);
 
 		while (this._todo.length) {
-			let item = this._todo.shift() as Item;
-			let id = item.x+","+item.y;
+			const item = this._todo.shift() as Item;
+			const id = item.x+","+item.y;
 			if (id in this._done) { continue; }
 			this._done[id] = item;
 			if (item.x == fromX && item.y == fromY) { break; }
 
-			let neighbors = this._getNeighbors(item.x, item.y);
+			const neighbors = this._getNeighbors(item.x, item.y);
 
 			for (let i=0;i<neighbors.length;i++) {
-				let neighbor = neighbors[i];
-				let x = neighbor[0];
-				let y = neighbor[1];
-				let id = x+","+y;
+				const neighbor = neighbors[i];
+				const x = neighbor[0];
+				const y = neighbor[1];
+				const id = x+","+y;
 				if (id in this._done) { continue; }
 				this._add(x, y, item); 
 			}
@@ -66,8 +66,8 @@ export default class AStar extends Path {
 	}
 
 	_add(x: number, y: number, prev: Item | null) {
-		let h = this._distance(x, y);
-		let obj = {
+		const h = this._distance(x, y);
+		const obj = {
 			x: x,
 			y: y,
 			prev: prev,
@@ -77,10 +77,10 @@ export default class AStar extends Path {
 		
 		/* insert into priority queue */
 		
-		let f = obj.g + obj.h;
+		const f = obj.g + obj.h;
 		for (let i=0;i<this._todo.length;i++) {
-			let item = this._todo[i];
-			let itemF = item.g + item.h;
+			const item = this._todo[i];
+			const itemF = item.g + item.h;
 			if (f < itemF || (f == itemF && h < item.h)) {
 				this._todo.splice(i, 0, obj);
 				return;
@@ -97,8 +97,8 @@ export default class AStar extends Path {
 			break;
 
 			case 6:
-				let dx = Math.abs(x - this._fromX);
-				let dy = Math.abs(y - this._fromY);
+				const dx = Math.abs(x - this._fromX);
+				const dy = Math.abs(y - this._fromY);
 				return dy + Math.max(0, (dx-dy)/2);
 			break;
 

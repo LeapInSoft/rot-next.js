@@ -29,13 +29,13 @@ function removeFromList(i: number, L: List, R: List) {
  */
 export default class EllerMaze extends Map {
 	create(callback: CreateCallback) {
-		let map = this._fillMap(1);
-		let w = Math.ceil((this._width-2)/2);
+		const map = this._fillMap(1);
+		const w = Math.ceil((this._width-2)/2);
 		
-		let rand = 9/24;
+		const rand = 9/24;
 		
-		let L: List = [];
-		let R: List = [];
+		const L: List = [];
+		const R: List = [];
 		
 		for (let i=0;i<w;i++) {
 			L.push(i);
@@ -48,8 +48,8 @@ export default class EllerMaze extends Map {
 			/* one row */
 			for (let i=0;i<w;i++) {
 				/* cell coords (will be always empty) */
-				let x = 2*i+1;
-				let y = j;
+				const x = 2*i+1;
+				const y = j;
 				map[x][y] = 0;
 				
 				/* right connection */
@@ -72,8 +72,8 @@ export default class EllerMaze extends Map {
 		/* last row */
 		for (let i=0;i<w;i++) {
 			/* cell coords (will be always empty) */
-			let x = 2*i+1;
-			let y = j;
+			const x = 2*i+1;
+			const y = j;
 			map[x][y] = 0;
 			
 			/* right connection */

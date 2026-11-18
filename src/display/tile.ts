@@ -14,10 +14,10 @@ export default class Tile extends Canvas {
 	}
 
 	draw(data: DisplayData, clearBefore: boolean) {
-		let [x, y, ch, fg, bg] = data;
+		const [x, y, ch, fg, bg] = data;
 
-		let tileWidth = this._options.tileWidth;
-		let tileHeight = this._options.tileHeight;
+		const tileWidth = this._options.tileWidth;
+		const tileHeight = this._options.tileHeight;
 
 		if (clearBefore) {
 			if (this._options.tileColorize) {
@@ -30,22 +30,22 @@ export default class Tile extends Canvas {
 
 		if (!ch) { return; }
 
-		let chars = ([] as string[]).concat(ch);
-		let fgs = ([] as string[]).concat(fg);
-		let bgs = ([] as string[]).concat(bg);
+		const chars = ([] as string[]).concat(ch);
+		const fgs = ([] as string[]).concat(fg);
+		const bgs = ([] as string[]).concat(bg);
 
 		for (let i=0;i<chars.length;i++) {
-			let tile = this._options.tileMap[chars[i]];
+			const tile = this._options.tileMap[chars[i]];
 			if (!tile) { throw new Error(`Char "${chars[i]}" not found in tileMap`); }
 			
 			if (this._options.tileColorize) { // apply colorization
-				let canvas = this._colorCanvas;
-				let context = canvas.getContext("2d") as CanvasRenderingContext2D;
+				const canvas = this._colorCanvas;
+				const context = canvas.getContext("2d") as CanvasRenderingContext2D;
 				context.globalCompositeOperation = "source-over";
 				context.clearRect(0, 0, tileWidth, tileHeight);
 
-				let fg = fgs[i];
-				let bg = bgs[i];
+				const fg = fgs[i];
+				const bg = bgs[i];
 
 				context.drawImage(
 					this._options.tileSet!,
@@ -77,8 +77,8 @@ export default class Tile extends Canvas {
 	}
 
 	computeSize(availWidth: number, availHeight: number): [number, number] {
-		let width = Math.floor(availWidth / this._options.tileWidth);
-		let height = Math.floor(availHeight / this._options.tileHeight);
+		const width = Math.floor(availWidth / this._options.tileWidth);
+		const height = Math.floor(availHeight / this._options.tileHeight);
 		return [width, height];
 	}
 

@@ -34,8 +34,8 @@ export default abstract class Canvas extends Backend {
 	}
 
 	eventToPosition(x: number, y: number): [number, number] {
-		let canvas = this._ctx.canvas;
-		let rect = canvas.getBoundingClientRect();
+		const canvas = this._ctx.canvas;
+		const rect = canvas.getBoundingClientRect();
 		x -= rect.left;
 		y -= rect.top;
 		

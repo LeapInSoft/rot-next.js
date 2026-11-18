@@ -9,7 +9,7 @@ describe("Path", function() {
 	 * .###.###
 	 * ....Z...
 	 */
-	var MAP48 = [ /* transposed */
+	const MAP48 = [ /* transposed */
 		[0, 0, 0, 0, 0],	
 		[0, 1, 0, 1, 0],	
 		[0, 1, 0, 1, 0],	
@@ -20,17 +20,17 @@ describe("Path", function() {
 		[0, 1, 1, 1, 0]
 	];
 	
-	var PASSABLE_CALLBACK_48 = function(x: number, y: number) {
+	const PASSABLE_CALLBACK_48 = function(x: number, y: number) {
 		if (x<0 || y<0 || x>=MAP48.length || y>=MAP48[0].length) { return false; }
 		return (MAP48[x][y] == 0);
 	}
 
-	var A = [0, 1];
-	var B = [2, 2];
-	var Z = [4, 4];
-	var X = [6, 2];
-	var PATH: number[] = [];
-	var PATH_CALLBACK = function(x: number, y: number) { PATH.push(x, y); }
+	const A = [0, 1];
+	const B = [2, 2];
+	const Z = [4, 4];
+	const X = [6, 2];
+	let PATH: number[] = [];
+	const PATH_CALLBACK = function(x: number, y: number) { PATH.push(x, y); }
 
 	/*
 	 * . . A # . B
@@ -39,7 +39,7 @@ describe("Path", function() {
 	 *  # . . # .
 	 * X # # # Z .
 	 */
-	var MAP6 = [ /* transposed */
+	const MAP6 = [ /* transposed */
 		[0, null, 0, null, 0],
 		[null, 0, null, 1, null],
 		[0, null, 0, null, 1],
@@ -53,18 +53,18 @@ describe("Path", function() {
 		[0, null, 0, null, 0]
 	];
 
-	var A6 = [4, 0];
-	var B6 = [10, 0];
-	var Z6 = [8, 4];
-	var X6 = [0, 4];
+	const A6 = [4, 0];
+	const B6 = [10, 0];
+	const Z6 = [8, 4];
+	const X6 = [0, 4];
 	
-	var PASSABLE_CALLBACK_6 = function(x: number, y: number) {
+	const PASSABLE_CALLBACK_6 = function(x: number, y: number) {
 		if (x<0 || y<0 || x>=MAP6.length || y>=MAP6[0].length) { return false; }
 		return (MAP6[x][y] == 0);
 	}
 
-	var VISITS = 0;
-	var PASSABLE_CALLBACK_VISIT = function(x: number, y: number) { VISITS++; return true; }
+	let VISITS = 0;
+	const PASSABLE_CALLBACK_VISIT = function(x: number, y: number) { VISITS++; return true; }
 	
 	beforeEach(function() {
 		PATH = [];
@@ -74,9 +74,9 @@ describe("Path", function() {
 	
 	describe("Dijkstra", function() {
 		describe("8-topology", function() {
-			var PATH_A = [0, 1, 0, 2, 0, 3, 1, 4, 2, 4, 3, 4, 4, 4];
-			var PATH_B = [2, 2, 1, 2, 0, 3, 1, 4, 2, 4, 3, 4, 4, 4];
-			var dijkstra = new ROT.Path.Dijkstra(Z[0], Z[1], PASSABLE_CALLBACK_48, {topology:8});
+			const PATH_A = [0, 1, 0, 2, 0, 3, 1, 4, 2, 4, 3, 4, 4, 4];
+			const PATH_B = [2, 2, 1, 2, 0, 3, 1, 4, 2, 4, 3, 4, 4, 4];
+			const dijkstra = new ROT.Path.Dijkstra(Z[0], Z[1], PASSABLE_CALLBACK_48, {topology:8});
 			
 			it("should compute correct path A", function() {
 				dijkstra.compute(A[0], A[1], PATH_CALLBACK);
@@ -95,9 +95,9 @@ describe("Path", function() {
 		}); /* 8-topology */
 
 		describe("4-topology", function() {
-			var PATH_A = [0, 1, 0, 2, 0, 3, 0, 4, 1, 4, 2, 4, 3, 4, 4, 4];
-			var PATH_B = [2, 2, 1, 2, 0, 2, 0, 3, 0, 4, 1, 4, 2, 4, 3, 4, 4, 4];
-			var dijkstra = new ROT.Path.Dijkstra(Z[0], Z[1], PASSABLE_CALLBACK_48, {topology:4});
+			const PATH_A = [0, 1, 0, 2, 0, 3, 0, 4, 1, 4, 2, 4, 3, 4, 4, 4];
+			const PATH_B = [2, 2, 1, 2, 0, 2, 0, 3, 0, 4, 1, 4, 2, 4, 3, 4, 4, 4];
+			const dijkstra = new ROT.Path.Dijkstra(Z[0], Z[1], PASSABLE_CALLBACK_48, {topology:4});
 			
 			it("should compute correct path A", function() {
 				dijkstra.compute(A[0], A[1], PATH_CALLBACK);
@@ -116,9 +116,9 @@ describe("Path", function() {
 		}); /* 4-topology */
 
 		describe("6-topology", function() {
-			var PATH_A = [4, 0, 2, 0, 1, 1, 2, 2, 3, 3, 5, 3, 6, 2, 8, 2, 9, 3, 8, 4];
-			var PATH_B = [10, 0, 9, 1, 8, 2, 9, 3, 8, 4];
-			var dijkstra = new ROT.Path.Dijkstra(Z6[0], Z6[1], PASSABLE_CALLBACK_6, {topology:6});
+			const PATH_A = [4, 0, 2, 0, 1, 1, 2, 2, 3, 3, 5, 3, 6, 2, 8, 2, 9, 3, 8, 4];
+			const PATH_B = [10, 0, 9, 1, 8, 2, 9, 3, 8, 4];
+			const dijkstra = new ROT.Path.Dijkstra(Z6[0], Z6[1], PASSABLE_CALLBACK_6, {topology:6});
 			
 			it("should compute correct path A", function() {
 				dijkstra.compute(A6[0], A6[1], PATH_CALLBACK);
@@ -140,9 +140,9 @@ describe("Path", function() {
 
 	describe("A*", function() {
 		describe("8-topology", function() {
-			var PATH_A = [0, 1, 0, 2, 0, 3, 1, 4, 2, 4, 3, 4, 4, 4];
-			var PATH_B = [2, 2, 1, 2, 0, 3, 1, 4, 2, 4, 3, 4, 4, 4];
-			var astar = new ROT.Path.AStar(Z[0], Z[1], PASSABLE_CALLBACK_48, {topology:8});
+			const PATH_A = [0, 1, 0, 2, 0, 3, 1, 4, 2, 4, 3, 4, 4, 4];
+			const PATH_B = [2, 2, 1, 2, 0, 3, 1, 4, 2, 4, 3, 4, 4, 4];
+			const astar = new ROT.Path.AStar(Z[0], Z[1], PASSABLE_CALLBACK_48, {topology:8});
 			
 			it("should compute correct path A", function() {
 				astar.compute(A[0], A[1], PATH_CALLBACK);
@@ -160,16 +160,16 @@ describe("Path", function() {
 			});
 
 			it("should efficiently compute path",function(){
-				var open_astar = new ROT.Path.AStar(0,0, PASSABLE_CALLBACK_VISIT);
+				const open_astar = new ROT.Path.AStar(0,0, PASSABLE_CALLBACK_VISIT);
 				open_astar.compute(50,0, PATH_CALLBACK);
 				expect(VISITS).toEqual(400);
 			});
 		}); /* 8-topology */
 
 		describe("4-topology", function() {
-			var PATH_A = [0, 1, 0, 2, 0, 3, 0, 4, 1, 4, 2, 4, 3, 4, 4, 4];
-			var PATH_B = [2, 2, 1, 2, 0, 2, 0, 3, 0, 4, 1, 4, 2, 4, 3, 4, 4, 4];
-			var astar = new ROT.Path.AStar(Z[0], Z[1], PASSABLE_CALLBACK_48, {topology:4});
+			const PATH_A = [0, 1, 0, 2, 0, 3, 0, 4, 1, 4, 2, 4, 3, 4, 4, 4];
+			const PATH_B = [2, 2, 1, 2, 0, 2, 0, 3, 0, 4, 1, 4, 2, 4, 3, 4, 4, 4];
+			const astar = new ROT.Path.AStar(Z[0], Z[1], PASSABLE_CALLBACK_48, {topology:4});
 			
 			it("should compute correct path A", function() {
 				astar.compute(A[0], A[1], PATH_CALLBACK);
@@ -188,9 +188,9 @@ describe("Path", function() {
 		}); /* 4-topology */
 
 		describe("6-topology", function() {
-			var PATH_A = [4, 0, 2, 0, 1, 1, 2, 2, 3, 3, 5, 3, 6, 2, 8, 2, 9, 3, 8, 4];
-			var PATH_B = [10, 0, 9, 1, 8, 2, 9, 3, 8, 4];
-			var astar = new ROT.Path.AStar(Z6[0], Z6[1], PASSABLE_CALLBACK_6, {topology:6});
+			const PATH_A = [4, 0, 2, 0, 1, 1, 2, 2, 3, 3, 5, 3, 6, 2, 8, 2, 9, 3, 8, 4];
+			const PATH_B = [10, 0, 9, 1, 8, 2, 9, 3, 8, 4];
+			const astar = new ROT.Path.AStar(Z6[0], Z6[1], PASSABLE_CALLBACK_6, {topology:6});
 			
 			it("should compute correct path A", function() {
 				astar.compute(A6[0], A6[1], PATH_CALLBACK);

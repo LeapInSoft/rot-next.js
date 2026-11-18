@@ -15,14 +15,14 @@ export default class PreciseShadowcasting extends FOV {
 		if (!this._lightPasses(x, y)) { return; }
 		
 		/* list of all shadows */
-		let SHADOWS: Arc[] = [];
+		const SHADOWS: Arc[] = [];
 		
 		let cx, cy, blocks, A1, A2, visibility;
 
 		/* analyze surrounding cells in concentric rings, starting from the center */
 		for (let r=1; r<=R; r++) {
-			let neighbors = this._getCircle(x, y, r);
-			let neighborCount = neighbors.length;
+			const neighbors = this._getCircle(x, y, r);
+			const neighborCount = neighbors.length;
 
 			for (let i=0;i<neighborCount;i++) {
 				cx = neighbors[i][0];
@@ -49,16 +49,16 @@ export default class PreciseShadowcasting extends FOV {
 	 */
 	_checkVisibility(A1: Arc, A2: Arc, blocks: boolean, SHADOWS: Arc[]): number {
 		if (A1[0] > A2[0]) { /* split into two sub-arcs */
-			let v1 = this._checkVisibility(A1, [A1[1], A1[1]], blocks, SHADOWS);
-			let v2 = this._checkVisibility([0, 1], A2, blocks, SHADOWS);
+			const v1 = this._checkVisibility(A1, [A1[1], A1[1]], blocks, SHADOWS);
+			const v2 = this._checkVisibility([0, 1], A2, blocks, SHADOWS);
 			return (v1+v2)/2;
 		}
 
 		/* index1: first shadow >= A1 */
 		let index1 = 0, edge1 = false;
 		while (index1 < SHADOWS.length) {
-			let old = SHADOWS[index1];
-			let diff = old[0]*A1[1] - A1[0]*old[1];
+			const old = SHADOWS[index1];
+			const diff = old[0]*A1[1] - A1[0]*old[1];
 			if (diff >= 0) { /* old >= A1 */
 				if (diff == 0 && !(index1 % 2)) { edge1 = true; }
 				break;
@@ -69,8 +69,8 @@ export default class PreciseShadowcasting extends FOV {
 		/* index2: last shadow <= A2 */
 		let index2 = SHADOWS.length, edge2 = false;
 		while (index2--) {
-			let old = SHADOWS[index2];
-			let diff = A2[0]*old[1] - old[0]*A2[1];
+			const old = SHADOWS[index2];
+			const diff = A2[0]*old[1] - old[0]*A2[1];
 			if (diff >= 0) { /* old <= A2 */
 				if (diff == 0 && (index2 % 2)) { edge2 = true; }
 				break;
@@ -91,21 +91,21 @@ export default class PreciseShadowcasting extends FOV {
 		let visibleLength;
 
 		/* compute the length of visible arc, adjust list of shadows (if blocking) */
-		let remove = index2-index1+1;
+		const remove = index2-index1+1;
 		if (remove % 2) {
 			if (index1 % 2) { /* first edge within existing shadow, second outside */
-				let P = SHADOWS[index1];
+				const P = SHADOWS[index1];
 				visibleLength = (A2[0]*P[1] - P[0]*A2[1]) / (P[1] * A2[1]);
 				if (blocks) { SHADOWS.splice(index1, remove, A2); }
 			} else { /* second edge within existing shadow, first outside */
-				let P = SHADOWS[index2];
+				const P = SHADOWS[index2];
 				visibleLength = (P[0]*A1[1] - A1[0]*P[1]) / (A1[1] * P[1]);
 				if (blocks) { SHADOWS.splice(index1, remove, A1); }
 			}
 		} else {
 			if (index1 % 2) { /* both edges within existing shadows */
-				let P1 = SHADOWS[index1];
-				let P2 = SHADOWS[index2];
+				const P1 = SHADOWS[index1];
+				const P2 = SHADOWS[index2];
 				visibleLength = (P2[0]*P1[1] - P1[0]*P2[1]) / (P1[1] * P2[1]);
 				if (blocks) { SHADOWS.splice(index1, remove); }
 			} else { /* both edges outside existing shadows */
@@ -114,7 +114,7 @@ export default class PreciseShadowcasting extends FOV {
 			}
 		}
 
-		let arcLength = (A2[0]*A1[1] - A1[0]*A2[1]) / (A1[1] * A2[1]);
+		const arcLength = (A2[0]*A1[1] - A1[0]*A2[1]) / (A1[1] * A2[1]);
 
 		return visibleLength/arcLength;
 	}

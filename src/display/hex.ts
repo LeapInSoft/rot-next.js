@@ -19,9 +19,9 @@ export default class Hex extends Canvas {
 	}
 
 	draw(data: DisplayData, clearBefore: boolean) {
-		let [x, y, ch, fg, bg] = data;
+		const [x, y, ch, fg, bg] = data;
 
-		let px = [
+		const px = [
 			(x+1) * this._spacingX,
 			y * this._spacingY + this._hexSize
 		];
@@ -36,7 +36,7 @@ export default class Hex extends Canvas {
 
 		this._ctx.fillStyle = fg;
 
-		let chars = ([] as string[]).concat(ch);
+		const chars = ([] as string[]).concat(ch);
 		for (let i=0;i<chars.length;i++) {
 			this._ctx.fillText(chars[i], px[0], Math.ceil(px[1]));
 		}
@@ -49,8 +49,8 @@ export default class Hex extends Canvas {
 			availWidth -= availHeight;
 		}
 
-		let width = Math.floor(availWidth / this._spacingX) - 1;
-		let height = Math.floor((availHeight - 2*this._hexSize) / this._spacingY + 1);
+		const width = Math.floor(availWidth / this._spacingX) - 1;
+		const height = Math.floor((availHeight - 2*this._hexSize) / this._spacingY + 1);
 		return [width, height];
 	}
 
@@ -61,21 +61,21 @@ export default class Hex extends Canvas {
 			availWidth -= availHeight;
 		}
 
-		let hexSizeWidth = 2*availWidth / ((this._options.width+1) * Math.sqrt(3)) - 1;
-		let hexSizeHeight = availHeight / (2 + 1.5*(this._options.height-1));
+		const hexSizeWidth = 2*availWidth / ((this._options.width+1) * Math.sqrt(3)) - 1;
+		const hexSizeHeight = availHeight / (2 + 1.5*(this._options.height-1));
 		let hexSize = Math.min(hexSizeWidth, hexSizeHeight);
 
 		// compute char ratio
-		let oldFont = this._ctx.font;
+		const oldFont = this._ctx.font;
 		this._ctx.font = "100px " + this._options.fontFamily;
-		let width = Math.ceil(this._ctx.measureText("W").width);
+		const width = Math.ceil(this._ctx.measureText("W").width);
 		this._ctx.font = oldFont;
-		let ratio = width / 100;
+		const ratio = width / 100;
 
 		hexSize = Math.floor(hexSize)+1; // closest larger hexSize
 
 		// FIXME char size computation does not respect transposed hexes
-		let fontSize = 2*hexSize / (this._options.spacing * (1 + ratio / Math.sqrt(3)));
+		const fontSize = 2*hexSize / (this._options.spacing * (1 + ratio / Math.sqrt(3)));
 
 		// closest smaller fontSize
 		return Math.ceil(fontSize)-1;
@@ -91,7 +91,7 @@ export default class Hex extends Canvas {
 		} else {
 			nodeSize = this._ctx.canvas.height;
 		}
-		let size = nodeSize / this._options.height;
+		const size = nodeSize / this._options.height;
 		y = Math.floor(y/size);
 
 		if (mod(y, 2)) { /* odd row */
@@ -108,8 +108,8 @@ export default class Hex extends Canvas {
 	 * Arguments are pixel values. If "transposed" mode is enabled, then these two are already swapped.
 	 */
 	_fill(cx: number, cy: number) {
-		let a = this._hexSize;
-		let b = this._options.border;
+		const a = this._hexSize;
+		const b = this._options.border;
 		const ctx = this._ctx;
 
 		ctx.beginPath();

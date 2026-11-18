@@ -28,7 +28,7 @@ export default class Dijkstra extends Path {
 	 * @see ROT.Path#compute
 	 */
 	compute(fromX: number, fromY: number, callback: ComputeCallback) {
-		let key = fromX+","+fromY;
+		const key = fromX+","+fromY;
 		if (!(key in this._computed)) { this._compute(fromX, fromY); }
 		if (!(key in this._computed)) { return; }
 		
@@ -44,16 +44,16 @@ export default class Dijkstra extends Path {
 	 */
 	_compute(fromX: number, fromY: number) {
 		while (this._todo.length) {
-			let item = this._todo.shift() as Item;
+			const item = this._todo.shift() as Item;
 			if (item.x == fromX && item.y == fromY) { return; }
 			
-			let neighbors = this._getNeighbors(item.x, item.y);
+			const neighbors = this._getNeighbors(item.x, item.y);
 			
 			for (let i=0;i<neighbors.length;i++) {
-				let neighbor = neighbors[i];
-				let x = neighbor[0];
-				let y = neighbor[1];
-				let id = x+","+y;
+				const neighbor = neighbors[i];
+				const x = neighbor[0];
+				const y = neighbor[1];
+				const id = x+","+y;
 				if (id in this._computed) { continue; } /* already done */	
 				this._add(x, y, item); 
 			}
@@ -61,7 +61,7 @@ export default class Dijkstra extends Path {
 	}
 
 	_add(x: number, y: number, prev: Item | null) {
-		let obj = {
+		const obj = {
 			x: x,
 			y: y,
 			prev: prev

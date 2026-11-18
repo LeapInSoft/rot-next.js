@@ -39,7 +39,7 @@ export default abstract class FOV {
 	 * @param {int} r range
 	 */
 	_getCircle(cx: number, cy: number, r: number) {
-		let result = [];
+		const result = [];
 		let dirs, countFactor, startOffset;
 
 		switch (this._options.topology) {

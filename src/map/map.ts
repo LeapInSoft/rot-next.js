@@ -19,7 +19,7 @@ export default abstract class Map {
 	abstract create(callback?: CreateCallback): void;
 
 	_fillMap(value: number) {
-		let map: number[][] = [];
+		const map: number[][] = [];
 		for (let i=0;i<this._width;i++) {
 			map.push([]);
 			for (let j=0;j<this._height;j++) { map[i].push(value); }

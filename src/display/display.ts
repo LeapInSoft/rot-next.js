@@ -72,7 +72,7 @@ export default class Display {
 	 * @param {int} what
 	 */
 	DEBUG(x: number, y: number, what: number) {
-		let colors = [this._options.bg, this._options.fg];
+		const colors = [this._options.bg, this._options.fg];
 		this.draw(x, y, null, null, colors[what % colors.length]);
 	}
 
@@ -92,7 +92,7 @@ export default class Display {
 
 		if (options.width || options.height || options.fontSize || options.fontFamily || options.spacing || options.layout) {
 			if (options.layout) {
-				let ctor = BACKENDS[options.layout];
+				const ctor = BACKENDS[options.layout];
 				this._backend = new ctor();
 			}
 
@@ -133,8 +133,8 @@ export default class Display {
 	}
 
 	computeTileSize(availWidth: number, availHeight: number) {
-		let width = Math.floor(availWidth / this._options.width);
-		let height = Math.floor(availHeight / this._options.height);
+		const width = Math.floor(availWidth / this._options.width);
+		const height = Math.floor(availHeight / this._options.height);
 		return [width, height];		
 	}
 
@@ -166,7 +166,7 @@ export default class Display {
 	draw(x: number, y: number, ch: string | string[] | null, fg: string | null, bg: string | null) {
 		if (!fg) { fg = this._options.fg; }
 		if (!bg) { bg = this._options.bg; }
-		let key = `${x},${y}`;
+		const key = `${x},${y}`;
 		this._data[key] = [x, y, ch, fg, bg];
 
 		if (this._dirty === true) { return; } // will already redraw everything 
@@ -215,19 +215,19 @@ export default class Display {
 		let lines = 1;
 		if (!maxWidth) { maxWidth = this._options.width-x; }
 
-		let tokens = Text.tokenize(text, maxWidth);
+		const tokens = Text.tokenize(text, maxWidth);
 
 		while (tokens.length) { // interpret tokenized opcode stream
-			let token = tokens.shift();
+			const token = tokens.shift();
 			switch (token.type) {
 				case Text.TYPE_TEXT:
 					let isSpace = false, isPrevSpace = false, isFullWidth = false, isPrevFullWidth = false;
 					for (let i=0;i<token.value.length;i++) {
-						let cc = token.value.charCodeAt(i);
-						let c = token.value.charAt(i);
+						const cc = token.value.charCodeAt(i);
+						const c = token.value.charAt(i);
 						if (this._options.layout === "term") {
-							let cch = cc >> 8;
-							let isCJK = cch === 0x11 || (cch >= 0x2e && cch <= 0x9f) || (cch >= 0xac && cch <= 0xd7) || (cc >= 0xA960 && cc <= 0xA97F);
+							const cch = cc >> 8;
+							const isCJK = cch === 0x11 || (cch >= 0x2e && cch <= 0x9f) || (cch >= 0xac && cch <= 0xd7) || (cc >= 0xA960 && cc <= 0xA97F);
 							if (isCJK) {
 								this.draw(cx + 0, cy, c, fg, bg);
 								this.draw(cx + 1, cy, "\t", fg, bg);
@@ -281,9 +281,9 @@ export default class Display {
 
 		if (this._dirty === true) { // draw all
 			this._backend.clear();
-			for (let id in this._data) { this._draw(id, false); } // redraw cached data 
+			for (const id in this._data) { this._draw(id, false); } // redraw cached data
 		} else { // draw only dirty 
-			for (let key in this._dirty) { this._draw(key, true); }
+			for (const key in this._dirty) { this._draw(key, true); }
 		}
 
 		this._dirty = false;
@@ -294,7 +294,7 @@ export default class Display {
 	 * @param {bool} clearBefore Is it necessary to clean before?
 	 */
 	_draw(key: string, clearBefore: boolean) {
-		let data = this._data[key];
+		const data = this._data[key];
 		if (data[4] != this._options.bg) { clearBefore = true; }
 
 		this._backend.draw(data, clearBefore);

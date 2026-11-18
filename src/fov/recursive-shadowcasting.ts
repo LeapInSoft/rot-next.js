@@ -45,9 +45,9 @@ export default class RecursiveShadowcasting extends FOV {
 	compute180(x: number, y: number, R: number, dir: number, callback: VisibilityCallback) {
 		//You can always see your own tile
 		callback(x, y, 0, 1);
-		let previousOctant = (dir - 1 + 8) % 8; //Need to retrieve the previous octant to render a full 180 degrees
-		let nextPreviousOctant = (dir - 2 + 8) % 8; //Need to retrieve the previous two octants to render a full 180 degrees
-		let nextOctant = (dir+ 1 + 8) % 8; //Need to grab to next octant to render a full 180 degrees
+		const previousOctant = (dir - 1 + 8) % 8; //Need to retrieve the previous octant to render a full 180 degrees
+		const nextPreviousOctant = (dir - 2 + 8) % 8; //Need to retrieve the previous two octants to render a full 180 degrees
+		const nextOctant = (dir+ 1 + 8) % 8; //Need to grab to next octant to render a full 180 degrees
 		this._renderOctant(x, y, OCTANTS[nextPreviousOctant], R, callback);
 		this._renderOctant(x, y, OCTANTS[previousOctant], R, callback);
 		this._renderOctant(x, y, OCTANTS[dir], R, callback);
@@ -65,7 +65,7 @@ export default class RecursiveShadowcasting extends FOV {
 	compute90(x: number, y: number, R: number, dir: number, callback: VisibilityCallback) {
 		//You can always see your own tile
 		callback(x, y, 0, 1);
-		let previousOctant = (dir - 1 + 8) % 8; //Need to retrieve the previous octant to render a full 90 degrees
+		const previousOctant = (dir - 1 + 8) % 8; //Need to retrieve the previous octant to render a full 90 degrees
 		this._renderOctant(x, y, OCTANTS[dir], R, callback);
 		this._renderOctant(x, y, OCTANTS[previousOctant], R, callback);
 	}
@@ -101,7 +101,7 @@ export default class RecursiveShadowcasting extends FOV {
 		if (visSlopeStart < visSlopeEnd) { return; }
 		for (let i = row; i <= radius; i++) {
 			let dx = -i - 1;
-			let dy = -i;
+			const dy = -i;
 			let blocked = false;
 			let newStart = 0;
 
@@ -110,12 +110,12 @@ export default class RecursiveShadowcasting extends FOV {
 				dx += 1;
 
 				//Translate from relative coordinates to map coordinates
-				let mapX = startX + dx * xx + dy * xy;
-				let mapY = startY + dx * yx + dy * yy;
+				const mapX = startX + dx * xx + dy * xy;
+				const mapY = startY + dx * yx + dy * yy;
 
 				//Range of the row
-				let slopeStart = (dx - 0.5) / (dy + 0.5);
-				let slopeEnd = (dx + 0.5) / (dy - 0.5);
+				const slopeStart = (dx - 0.5) / (dy + 0.5);
+				const slopeEnd = (dx + 0.5) / (dy - 0.5);
 			
 				//Ignore if not yet at left edge of Octant
 				if (slopeEnd > visSlopeStart) { continue; }

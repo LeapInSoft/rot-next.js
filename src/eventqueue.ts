@@ -40,7 +40,7 @@ export default class EventQueue<T = any> {
 	get() {
 		if (!this._events.len()) { return null; }
 
-		let { key: time, value: event } = this._events.pop();
+		const { key: time, value: event } = this._events.pop();
 		if (time > 0) { /* advance */
 			this._time += time;
 			this._events.shift(-time);

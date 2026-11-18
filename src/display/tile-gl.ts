@@ -37,7 +37,7 @@ export default class TileGL extends Backend {
 
 		this._updateSize();
 
-		let tileSet = this._options.tileSet;
+		const tileSet = this._options.tileSet;
 		if (tileSet && "complete" in tileSet && !tileSet.complete) {
 			tileSet.addEventListener("load", () => this._updateTexture(tileSet as HTMLImageElement));
 		} else {
@@ -49,9 +49,9 @@ export default class TileGL extends Backend {
 	draw(data: DisplayData, clearBefore: boolean) {
 		const gl = this._gl;
 		const opts = this._options;
-		let [x, y, ch, fg, bg] = data;
+		const [x, y, ch, fg, bg] = data;
 
-		let scissorY = gl.canvas.height - (y+1)*opts.tileHeight;
+		const scissorY = gl.canvas.height - (y+1)*opts.tileHeight;
 		gl.scissor(x*opts.tileWidth, scissorY, opts.tileWidth, opts.tileHeight);
 
 		if (clearBefore) {
@@ -65,14 +65,14 @@ export default class TileGL extends Backend {
 
 		if (!ch) { return; }
 
-		let chars = ([] as string[]).concat(ch);
-		let bgs = ([] as string[]).concat(bg);
-		let fgs = ([] as string[]).concat(fg);
+		const chars = ([] as string[]).concat(ch);
+		const bgs = ([] as string[]).concat(bg);
+		const fgs = ([] as string[]).concat(fg);
 
 		gl.uniform2fv(this._uniforms["targetPosRel"], [x, y]);
 
 		for (let i=0;i<chars.length;i++) {
-			let tile = this._options.tileMap[chars[i]];
+			const tile = this._options.tileMap[chars[i]];
 			if (!tile) { throw new Error(`Char "${chars[i]}" not found in tileMap`); }
 
 			gl.uniform1f(this._uniforms["colorize"], opts.tileColorize ? 1 : 0);
@@ -141,8 +141,8 @@ export default class TileGL extends Backend {
 	}
 
 	computeSize(availWidth: number, availHeight: number): [number, number] {
-		let width = Math.floor(availWidth / this._options.tileWidth);
-		let height = Math.floor(availHeight / this._options.tileHeight);
+		const width = Math.floor(availWidth / this._options.tileWidth);
+		const height = Math.floor(availHeight / this._options.tileHeight);
 		return [width, height];
 	}
 
@@ -151,8 +151,8 @@ export default class TileGL extends Backend {
 	}
 
 	eventToPosition(x: number, y: number): [number, number] {
-		let canvas = this._gl.canvas as HTMLCanvasElement;
-		let rect = canvas.getBoundingClientRect();
+		const canvas = this._gl.canvas as HTMLCanvasElement;
+		const rect = canvas.getBoundingClientRect();
 		x -= rect.left;
 		y -= rect.top;
 
@@ -165,9 +165,9 @@ export default class TileGL extends Backend {
 	}
 
 	_initWebGL() {
-		let gl = document.createElement("canvas").getContext("webgl2", {preserveDrawingBuffer:true}) as WebGLRenderingContext;
+		const gl = document.createElement("canvas").getContext("webgl2", {preserveDrawingBuffer:true}) as WebGLRenderingContext;
 		(window as any).gl = gl;
-		let program = createProgram(gl, VS, FS);
+		const program = createProgram(gl, VS, FS);
 		gl.useProgram(program);
 		createQuad(gl);
 
@@ -282,7 +282,7 @@ function createQuad(gl: WebGLRenderingContext) {
 }
 
 function createTexture(gl: WebGLRenderingContext, data: HTMLImageElement) {
-	let t = gl.createTexture();
+	const t = gl.createTexture();
 	gl.bindTexture(gl.TEXTURE_2D, t);
 	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
 	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
@@ -294,7 +294,7 @@ function createTexture(gl: WebGLRenderingContext, data: HTMLImageElement) {
 }
 
 type GLColor = [number, number, number, number];
-let colorCache: {[key:string]: GLColor} = {};
+const colorCache: {[key:string]: GLColor} = {};
 
 function parseColor(color: string) {
 	if (!(color in colorCache)) {

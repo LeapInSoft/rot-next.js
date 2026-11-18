@@ -162,8 +162,8 @@ export default class Rogue extends Map {
 	_connectUnconnectedRooms() {
 		//While there are unconnected rooms, try to connect them to a random connected neighbor
 		//(if a room has no connected neighbors yet, just keep cycling, you'll fill out to it eventually).
-		let cw = this._options.cellWidth;
-		let ch = this._options.cellHeight;
+		const cw = this._options.cellWidth;
+		const ch = this._options.cellHeight;
 
 		this.connectedCells = RNG.shuffle(this.connectedCells);
 		let room;
@@ -182,9 +182,9 @@ export default class Rogue extends Map {
 
 					do {
 
-						let dirIdx = directions.pop() as number;
-						let newI = i + DIRS[8][dirIdx][0];
-						let newJ = j + DIRS[8][dirIdx][1];
+						const dirIdx = directions.pop() as number;
+						const newI = i + DIRS[8][dirIdx][0];
+						const newJ = j + DIRS[8][dirIdx][1];
 
 						if (newI < 0 || newI >= cw || newJ < 0 || newJ >= ch) { continue; }
 
@@ -219,19 +219,19 @@ export default class Rogue extends Map {
 	}
 
 	_createRooms() {
-		let w = this._width;
-		let h = this._height;
+		const w = this._width;
+		const h = this._height;
 
-		let cw = this._options.cellWidth;
-		let ch = this._options.cellHeight;
+		const cw = this._options.cellWidth;
+		const ch = this._options.cellHeight;
 
-		let cwp = Math.floor(this._width / cw);
-		let chp = Math.floor(this._height / ch);
+		const cwp = Math.floor(this._width / cw);
+		const chp = Math.floor(this._height / ch);
 
 		let roomw;
 		let roomh;
-		let roomWidth = this._options["roomWidth"];
-		let roomHeight = this._options["roomHeight"];
+		const roomWidth = this._options["roomWidth"];
+		const roomHeight = this._options["roomHeight"];
 		let sx;
 		let sy;
 		let otherRoom;
@@ -331,28 +331,25 @@ export default class Rogue extends Map {
 	}
 
 	_drawCorridor(startPosition: Point, endPosition: Point) {
-		let xOffset = endPosition[0] - startPosition[0];
-		let yOffset = endPosition[1] - startPosition[1];
+		const xOffset = endPosition[0] - startPosition[0];
+		const yOffset = endPosition[1] - startPosition[1];
 
 		let xpos = startPosition[0];
 		let ypos = startPosition[1];
 
 		let tempDist;
-		let xDir;
-		let yDir;
-
 		let move; // 2 element array, element 0 is the direction, element 1 is the total value to move.
-		let moves = []; // a list of 2 element arrays
+		const moves = []; // a list of 2 element arrays
 
-		let xAbs = Math.abs(xOffset);
-		let yAbs = Math.abs(yOffset);
+		const xAbs = Math.abs(xOffset);
+		const yAbs = Math.abs(yOffset);
 
-		let percent = RNG.getUniform(); // used to split the move at different places along the long axis
-		let firstHalf = percent;
-		let secondHalf = 1 - percent;
+		const percent = RNG.getUniform(); // used to split the move at different places along the long axis
+		const firstHalf = percent;
+		const secondHalf = 1 - percent;
 
-		xDir = xOffset > 0 ? 2 : 6;
-		yDir = yOffset > 0 ? 4 : 0;
+		const xDir = xOffset > 0 ? 2 : 6;
+		const yDir = yOffset > 0 ? 4 : 0;
 
 		if (xAbs < yAbs) {
 			// move firstHalf of the y offset
@@ -390,8 +387,8 @@ export default class Rogue extends Map {
 	_createCorridors() {
 		// Draw Corridors between connected rooms
 
-		let cw = this._options.cellWidth;
-		let ch = this._options.cellHeight;
+		const cw = this._options.cellWidth;
+		const ch = this._options.cellHeight;
 		let room;
 		let connection;
 		let otherRoom;

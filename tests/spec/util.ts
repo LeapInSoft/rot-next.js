@@ -2,7 +2,7 @@ import * as ROT from "@/lib/index.js";
 import { describe, expect, it } from "vitest";
 
 describe("Util", function() {
-	var format = ROT.Util.format as typeof ROT.Util.format & {map: {[key:string]: string}};
+	const format = ROT.Util.format as typeof ROT.Util.format & {map: {[key:string]: string}};
 	describe("String", function() {
 		describe("capitalize", function() {
 			it("should capitalize first letter", function() {
@@ -46,12 +46,12 @@ describe("Util", function() {
 			});
 
 			it("should perform custom mapping", function() {
-				var oldMap = format.map;
+				const oldMap = format.map;
 				format.map = {
 					s: "test1",
 					xxx: "test2"
 				}
-				var obj = {
+				const obj = {
 					test1:function() { return "foo"; },
 					test2:function() { return "bar"; },
 				}
@@ -60,9 +60,9 @@ describe("Util", function() {
 			});
 
 			it("should pass params", function() {
-				var oldMap = format.map;
+				const oldMap = format.map;
 				format.map = { foo: "foo" };
-				var obj = {
+				const obj = {
 					foo:function($: string) { return $+$; }
 				}
 				expect(ROT.Util.format("%{foo,bar}", obj)).toBe("barbar");

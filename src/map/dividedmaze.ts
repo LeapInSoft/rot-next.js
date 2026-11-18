@@ -13,15 +13,15 @@ export default class DividedMaze extends Map {
 	_map: number[][] = [];
 
 	create(callback: CreateCallback ) {
-		let w = this._width;
-		let h = this._height;
+		const w = this._width;
+		const h = this._height;
 		
 		this._map = [];
 		
 		for (let i=0;i<w;i++) {
 			this._map.push([]);
 			for (let j=0;j<h;j++) {
-				let border = (i == 0 || j == 0 || i+1 == w || j+1 == h);
+				const border = (i == 0 || j == 0 || i+1 == w || j+1 == h);
 				this._map[i].push(border ? 1 : 0);
 			}
 		}
@@ -42,35 +42,35 @@ export default class DividedMaze extends Map {
 
 	_process() {
 		while (this._stack.length) {
-			let room = this._stack.shift() as Room; /* [left, top, right, bottom] */
+			const room = this._stack.shift() as Room; /* [left, top, right, bottom] */
 			this._partitionRoom(room);
 		}
 	}
 
 	_partitionRoom(room: Room) {
-		let availX: number[] = [];
-		let availY: number[] = [];
+		const availX: number[] = [];
+		const availY: number[] = [];
 		
 		for (let i=room[0]+1;i<room[2];i++) {
-			let top = this._map[i][room[1]-1];
-			let bottom = this._map[i][room[3]+1];
+			const top = this._map[i][room[1]-1];
+			const bottom = this._map[i][room[3]+1];
 			if (top && bottom && !(i % 2)) { availX.push(i); }
 		}
 		
 		for (let j=room[1]+1;j<room[3];j++) {
-			let left = this._map[room[0]-1][j];
-			let right = this._map[room[2]+1][j];
+			const left = this._map[room[0]-1][j];
+			const right = this._map[room[2]+1][j];
 			if (left && right && !(j % 2)) { availY.push(j); }
 		}
 
 		if (!availX.length || !availY.length) { return; }
 
-		let x = RNG.getItem(availX) as number;
-		let y = RNG.getItem(availY) as number;
+		const x = RNG.getItem(availX) as number;
+		const y = RNG.getItem(availY) as number;
 		
 		this._map[x][y] = 1;
 		
-		let walls: Point[][] = [];
+		const walls: Point[][] = [];
 		
 		let w: Point[] = []; walls.push(w); /* left part */
 		for (let i=room[0]; i<x; i++) { 
@@ -96,12 +96,12 @@ export default class DividedMaze extends Map {
 			if (j % 2) w.push([x, j]); 
 		}
 			
-		let solid = RNG.getItem(walls);
+		const solid = RNG.getItem(walls);
 		for (let i=0;i<walls.length;i++) {
-			let w = walls[i];
+			const w = walls[i];
 			if (w == solid) { continue; }
 			
-			let hole = RNG.getItem(w) as Point;
+			const hole = RNG.getItem(w) as Point;
 			this._map[hole[0]][hole[1]] = 0;
 		}
 

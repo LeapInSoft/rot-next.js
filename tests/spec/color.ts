@@ -15,8 +15,8 @@ describe("Color", function() {
 		});
 
 		it("should not modify first argument values", function() {
-			var c1: Color = [1,2,3];
-			var c2: Color = [3,4,5];
+			const c1: Color = [1,2,3];
+			const c2: Color = [3,4,5];
 			ROT.Color.add(c1, c2);
 			expect(c1).toEqual([1,2,3]);
 		});
@@ -34,15 +34,15 @@ describe("Color", function() {
 		});
 
 		it("should modify first argument values", function() {
-			var c1: Color = [1,2,3];
-			var c2: Color = [3,4,5];
+			const c1: Color = [1,2,3];
+			const c2: Color = [3,4,5];
 			ROT.Color.add_(c1, c2);
 			expect(c1).toEqual([4,6,8]);
 		});
 		it("should return first argument", function() {
-			var c1: Color = [1,2,3];
-			var c2: Color = [3,4,5];
-			var c3 = ROT.Color.add_(c1, c2);
+			const c1: Color = [1,2,3];
+			const c2: Color = [3,4,5];
+			const c3 = ROT.Color.add_(c1, c2);
 			expect(c1).toBe(c3);
 		});
 	});
@@ -58,8 +58,8 @@ describe("Color", function() {
 			expect(ROT.Color.multiply([1,2,3] as Color)).toEqual([1,2,3]);
 		});
 		it("should not modify first argument values", function() {
-			var c1: Color = [1,2,3];
-			var c2: Color = [3,4,5];
+			const c1: Color = [1,2,3];
+			const c2: Color = [3,4,5];
 			ROT.Color.multiply(c1, c2);
 			expect(c1).toEqual([1,2,3]);
 		});
@@ -79,8 +79,8 @@ describe("Color", function() {
 			expect(ROT.Color.multiply_([1,2,3] as Color)).toEqual([1,2,3]);
 		});
 		it("should modify first argument values", function() {
-			var c1: Color = [100,200,300];
-			var c2: Color = [51,51,51];
+			const c1: Color = [100,200,300];
+			const c2: Color = [51,51,51];
 			ROT.Color.multiply_(c1, c2);
 			expect(c1).toEqual([20,40,60]);
 		});
@@ -88,9 +88,9 @@ describe("Color", function() {
 			expect(ROT.Color.multiply_([100,200,300] as Color, [10, 10, 10] as Color)).toEqual([4,8,12]);
 		});
 		it("should return first argument", function() {
-			var c1: Color = [1,2,3];
-			var c2: Color = [3,4,5];
-			var c3 = ROT.Color.multiply_(c1, c2);
+			const c1: Color = [1,2,3];
+			const c2: Color = [3,4,5];
+			const c3 = ROT.Color.multiply_(c1, c2);
 			expect(c1).toBe(c3);
 		});
 	});
@@ -151,7 +151,7 @@ describe("Color", function() {
 
 	describe("randomize", function() {
 		it("should maintain constant diff when a number is used", function() {
-			var c = ROT.Color.randomize([100, 100, 100] as Color, 100);
+			const c = ROT.Color.randomize([100, 100, 100] as Color, 100);
 			expect(c[0]).toBe(c[1]);
 			expect(c[1]).toBe(c[2]);
 		});
@@ -159,7 +159,7 @@ describe("Color", function() {
 
 	describe("rgb2hsl and hsl2rgb", function() {
 		it("should correctly convert to HSL and back", function() {
-			var rgb: Color[] = [
+			const rgb: Color[] = [
 				[255, 255, 255],
 				[0, 0, 0],
 				[255, 0, 0],
@@ -168,17 +168,17 @@ describe("Color", function() {
 			]
 
 			while (rgb.length) {
-				var color = rgb.pop();
-				var hsl = ROT.Color.rgb2hsl(color);
-				var rgb2 = ROT.Color.hsl2rgb(hsl);
+				const color = rgb.pop();
+				const hsl = ROT.Color.rgb2hsl(color);
+				const rgb2 = ROT.Color.hsl2rgb(hsl);
 				expect(rgb2).toEqual(color);
 			}
 		});
 
 		it("should round converted values", function() {
-			var hsl: Color = [0.5, 0, 0.3];
-			var rgb = ROT.Color.hsl2rgb(hsl);
-			for (var i=0;i<rgb.length;i++) {
+			const hsl: Color = [0.5, 0, 0.3];
+			const rgb = ROT.Color.hsl2rgb(hsl);
+			for (let i=0;i<rgb.length;i++) {
 				expect(Math.round(rgb[i])).toEqual(rgb[i]);
 			}
 		});

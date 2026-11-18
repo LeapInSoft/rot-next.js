@@ -1,7 +1,9 @@
 /** Default with for display and map generators */
+// eslint-disable-next-line prefer-const -- Consumers can customize these defaults.
 export let DEFAULT_WIDTH = 80;
 
 /** Default height for display and map generators */
+// eslint-disable-next-line prefer-const -- Consumers can customize these defaults.
 export let DEFAULT_HEIGHT = 25;
 
 export const DIRS = {

@@ -64,26 +64,26 @@ export default class Digger extends Dungeon {
 		this._map = this._fillMap(1);
 		this._walls = {};
 		this._dug = 0;
-		let area = (this._width-2) * (this._height-2);
+		const area = (this._width-2) * (this._height-2);
 
 		this._firstRoom();
 		
-		let t1 = Date.now();
+		const t1 = Date.now();
 
 		let priorityWalls;
 		do {
 			priorityWalls = 0;
-			let t2 = Date.now();
+			const t2 = Date.now();
 			if (t2 - t1 > this._options.timeLimit) { break; }
 
 			/* find a good wall */
-			let wall = this._findWall();
+			const wall = this._findWall();
 			if (!wall) { break; } /* no more walls */
 			
-			let parts = wall.split(",");
-			let x = parseInt(parts[0]);
-			let y = parseInt(parts[1]);
-			let dir = this._getDiggingDirection(x, y);
+			const parts = wall.split(",");
+			const x = parseInt(parts[0]);
+			const y = parseInt(parts[1]);
+			const dir = this._getDiggingDirection(x, y);
 			if (!dir) { continue; } /* this wall is not suitable */
 			
 	//		console.log("wall", x, y);
@@ -100,7 +100,7 @@ export default class Digger extends Dungeon {
 				}
 			} while (featureAttempts < this._featureAttempts);
 			
-			for (let id in this._walls) { 
+			for (const id in this._walls) {
 				if (this._walls[id] > 1) { priorityWalls++; }
 			}
 
@@ -144,9 +144,9 @@ export default class Digger extends Dungeon {
 	_priorityWallCallback(x: number, y: number) { this._walls[x+","+y] = 2; };
 
 	_firstRoom() {
-		let cx = Math.floor(this._width/2);
-		let cy = Math.floor(this._height/2);
-		let room = Room.createRandomCenter(cx, cy, this._options);
+		const cx = Math.floor(this._width/2);
+		const cy = Math.floor(this._height/2);
+		const room = Room.createRandomCenter(cx, cy, this._options);
 		this._rooms.push(room);
 		room.create(this._digCallback);
 	}
@@ -155,10 +155,10 @@ export default class Digger extends Dungeon {
 	 * Get a suitable wall
 	 */
 	_findWall() {
-		let prio1 = [];
-		let prio2 = [];
-		for (let id in this._walls) {
-			let prio = this._walls[id];
+		const prio1 = [];
+		const prio2 = [];
+		for (const id in this._walls) {
+			const prio = this._walls[id];
 			if (prio == 2) { 
 				prio2.push(id); 
 			} else {
@@ -166,10 +166,10 @@ export default class Digger extends Dungeon {
 			}
 		}
 		
-		let arr = (prio2.length ? prio2 : prio1);
+		const arr = (prio2.length ? prio2 : prio1);
 		if (!arr.length) { return null; } /* no walls :/ */
 		
-		let id = RNG.getItem(arr.sort()) as string; // sort to make the order deterministic
+		const id = RNG.getItem(arr.sort()) as string; // sort to make the order deterministic
 		delete this._walls[id];
 
 		return id;
@@ -180,9 +180,9 @@ export default class Digger extends Dungeon {
 	 * @returns {bool} was this a successful try?
 	 */
 	_tryFeature(x: number, y: number, dx: number, dy: number) {
-		let featureName = RNG.getWeightedValue(this._features) as FeatureType;
-		let ctor = FEATURES[featureName] as FeatureConstructor;
-		let feature = ctor.createRandomAt(x, y, dx, dy, this._options);
+		const featureName = RNG.getWeightedValue(this._features) as FeatureType;
+		const ctor = FEATURES[featureName] as FeatureConstructor;
+		const feature = ctor.createRandomAt(x, y, dx, dy, this._options);
 		
 		if (!feature.isValid(this._isWallCallback, this._canBeDugCallback)) {
 	//		console.log("not valid");
@@ -203,10 +203,10 @@ export default class Digger extends Dungeon {
 	}
 
 	_removeSurroundingWalls(cx: number, cy: number) {
-		let deltas = DIRS[4];
+		const deltas = DIRS[4];
 
 		for (let i=0;i<deltas.length;i++) {
-			let delta = deltas[i];
+			const delta = deltas[i];
 			let x = cx + delta[0];
 			let y = cy + delta[1];
 			delete this._walls[x+","+y];
@@ -223,12 +223,12 @@ export default class Digger extends Dungeon {
 		if (cx <= 0 || cy <= 0 || cx >= this._width - 1 || cy >= this._height - 1) { return null; }
 
 		let result = null;
-		let deltas = DIRS[4];
+		const deltas = DIRS[4];
 		
 		for (let i=0;i<deltas.length;i++) {
-			let delta = deltas[i];
-			let x = cx + delta[0];
-			let y = cy + delta[1];
+			const delta = deltas[i];
+			const x = cx + delta[0];
+			const y = cy + delta[1];
 			
 			if (!this._map[x][y]) { /* there already is another empty neighbor! */
 				if (result) { return null; }
@@ -246,12 +246,12 @@ export default class Digger extends Dungeon {
 	 * Find empty spaces surrounding rooms, and apply doors.
 	 */
 	_addDoors() {
-		let data = this._map;
+		const data = this._map;
 		function isWallCallback(x: number, y: number) {
 			return (data[x][y] == 1);
 		};
 		for (let i = 0; i < this._rooms.length; i++ ) {
-			let room = this._rooms[i];
+			const room = this._rooms[i];
 			room.clearDoors();
 			room.addDoors(isWallCallback);
 		}

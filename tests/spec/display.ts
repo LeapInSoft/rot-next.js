@@ -2,19 +2,19 @@ import * as ROT from "@/lib/index.js";
 import { describe, expect, it } from "vitest";
 
 describe("Display", function() {
-	var canvasFor = function(display: InstanceType<typeof ROT.Display>) {
-		var canvas = display.getContainer();
+	const canvasFor = function(display: InstanceType<typeof ROT.Display>) {
+		const canvas = display.getContainer();
 		if (!(canvas instanceof HTMLCanvasElement)) { throw new Error("Display did not create a canvas"); }
 		return canvas;
 	}
 
-	var eventToPosition = function(display: InstanceType<typeof ROT.Display>, event: {clientX:number; clientY:number} | {touches:{clientX:number; clientY:number}[]}) {
+	const eventToPosition = function(display: InstanceType<typeof ROT.Display>, event: {clientX:number; clientY:number} | {touches:{clientX:number; clientY:number}[]}) {
 		return display.eventToPosition(event as MouseEvent | TouchEvent);
 	}
 
 	describe("eventToPosition", function() {
-		var appendToBody = function(display: InstanceType<typeof ROT.Display>) {
-			var c = canvasFor(display);
+		const appendToBody = function(display: InstanceType<typeof ROT.Display>) {
+			const c = canvasFor(display);
 			c.style.position = "absolute";
 			c.style.left = "100px";
 			c.style.top = "100px";
@@ -24,9 +24,9 @@ describe("Display", function() {
 				offsetHeight: { configurable: true, get: function() { return parseFloat(c.style.height) || c.height; } }
 			});
 			c.getBoundingClientRect = function() {
-				var scale = Number((c.style.transform.match(/^scale\(([^)]+)\)$/) || [])[1]) || 1;
-				var width = c.offsetWidth * scale;
-				var height = c.offsetHeight * scale;
+				const scale = Number((c.style.transform.match(/^scale\(([^)]+)\)$/) || [])[1]) || 1;
+				const width = c.offsetWidth * scale;
+				const height = c.offsetHeight * scale;
 				return new DOMRect(parseFloat(c.style.left) || 0, parseFloat(c.style.top) || 0, width, height);
 			};
 			document.body.appendChild(c);
@@ -36,87 +36,87 @@ describe("Display", function() {
 			document.documentElement.scrollTop = 0;
 		}
 
-		var unlink = function(display: InstanceType<typeof ROT.Display>) {
-			var c = canvasFor(display);
+		const unlink = function(display: InstanceType<typeof ROT.Display>) {
+			const c = canvasFor(display);
 			c.parentNode.removeChild(c);
 		}
 
 		describe("rectangular layout", function() {
 			it("should compute inside canvas", function() {
-				var d = new ROT.Display({width:10, height:10});
+				const d = new ROT.Display({width:10, height:10});
 				appendToBody(d);
-				var node = canvasFor(d);
-				var cellW = node.offsetWidth/10;
-				var cellH = node.offsetHeight/10;
-				var e = {clientX: 100 + 1.5*cellW, clientY: 100 + 2.5*cellH};
-				var pos = eventToPosition(d, e);
+				const node = canvasFor(d);
+				const cellW = node.offsetWidth/10;
+				const cellH = node.offsetHeight/10;
+				const e = {clientX: 100 + 1.5*cellW, clientY: 100 + 2.5*cellH};
+				const pos = eventToPosition(d, e);
 				expect(pos[0]).toBe(1);
 				expect(pos[1]).toBe(2);
 				unlink(d);
 			});
 			it("should work with touch events as well", function() {
-				var d = new ROT.Display({width:10, height:10});
+				const d = new ROT.Display({width:10, height:10});
 				appendToBody(d);
-				var node = canvasFor(d);
-				var cellW = node.offsetWidth/10;
-				var cellH = node.offsetHeight/10;
-				var touch1 = {clientX: 100 + 1.5*cellW, clientY: 100 + 2.5*cellH};
-				var touch2 = {clientX: 0, clientY: 0};
-				var e = {touches:[touch1, touch2]};
-				var pos = eventToPosition(d, e);
+				const node = canvasFor(d);
+				const cellW = node.offsetWidth/10;
+				const cellH = node.offsetHeight/10;
+				const touch1 = {clientX: 100 + 1.5*cellW, clientY: 100 + 2.5*cellH};
+				const touch2 = {clientX: 0, clientY: 0};
+				const e = {touches:[touch1, touch2]};
+				const pos = eventToPosition(d, e);
 				expect(pos[0]).toBe(1);
 				expect(pos[1]).toBe(2);
 				unlink(d);
 			});
 			it("should fail outside of canvas (left top)", function() {
-				var d = new ROT.Display({width:10, height:10});
+				const d = new ROT.Display({width:10, height:10});
 				appendToBody(d);
-				var e = {clientX: 10, clientY: 10};
-				var pos = eventToPosition(d, e);
+				const e = {clientX: 10, clientY: 10};
+				const pos = eventToPosition(d, e);
 				expect(pos[0]).toBe(-1);
 				expect(pos[1]).toBe(-1);
 				unlink(d);
 			});
 			it("should fail outside of canvas (right bottom)", function() {
-				var d = new ROT.Display({width:10, height:10});
+				const d = new ROT.Display({width:10, height:10});
 				appendToBody(d);
-				var e = {clientX: 1000, clientY: 1000};
-				var pos = eventToPosition(d, e);
+				const e = {clientX: 1000, clientY: 1000};
+				const pos = eventToPosition(d, e);
 				expect(pos[0]).toBe(-1);
 				expect(pos[1]).toBe(-1);
 				unlink(d);
 			});
 			it("should work with css width/height scaling", function() {
-				var d = new ROT.Display({width:10, height:10});
+				const d = new ROT.Display({width:10, height:10});
 				appendToBody(d);
-				var node = canvasFor(d);
-				var scale = 2;
+				const node = canvasFor(d);
+				const scale = 2;
 				node.style.width = (node.width*scale)+"px";
 				node.style.height = (node.height*scale)+"px";
 
-				var cellW = node.offsetWidth/10;
-				var cellH = node.offsetHeight/10;
+				const cellW = node.offsetWidth/10;
+				const cellH = node.offsetHeight/10;
 
-				var e = {clientX: 100 + node.width*scale - 1, clientY: 100 + node.height*scale - 1};
-				var pos = eventToPosition(d, e);
+				const e = {clientX: 100 + node.width*scale - 1, clientY: 100 + node.height*scale - 1};
+				const pos = eventToPosition(d, e);
 				expect(pos[0]).toBe(9);
 				expect(pos[1]).toBe(9);
 				unlink(d);
 			});
 
 			it("should work with css transform scaling", function() {
-				var d = new ROT.Display({width:10, height:10});
+				const d = new ROT.Display({width:10, height:10});
 				appendToBody(d);
-				var node = canvasFor(d);
-				var scale = 2;
+				const node = canvasFor(d);
+				const scale = 2;
 				node.style.transform = "scale(" + scale + ")";
 				node.style.transformOrigin = "0 0";
 
-				var cellW = node.offsetWidth/10;
-				var cellH = node.offsetHeight/10;
+				const cellW = node.offsetWidth/10;
+				const cellH = node.offsetHeight/10;
 
-				var e = {clientX: 100 + node.width*scale - 1, clientY: 100 + node.height*scale - 1};
-				var pos = eventToPosition(d, e);
+				const e = {clientX: 100 + node.width*scale - 1, clientY: 100 + node.height*scale - 1};
+				const pos = eventToPosition(d, e);
 				expect(pos[0]).toBe(9);
 				expect(pos[1]).toBe(9);
 				unlink(d);
@@ -125,25 +125,25 @@ describe("Display", function() {
 
 		describe("hex layout", function() {
 			it("should compute inside canvas - odd row", function() {
-				var d = new ROT.Display({width:10, height:10, layout:"hex"});
+				const d = new ROT.Display({width:10, height:10, layout:"hex"});
 				appendToBody(d);
-				var node = canvasFor(d);
-				var cellH = node.offsetHeight/10;
-				var cellW = node.offsetWidth/5.5;
-				var e = {clientX: 100 + 1.5*cellW, clientY: 100 + 2.5*cellH};
-				var pos = eventToPosition(d, e);
+				const node = canvasFor(d);
+				const cellH = node.offsetHeight/10;
+				const cellW = node.offsetWidth/5.5;
+				const e = {clientX: 100 + 1.5*cellW, clientY: 100 + 2.5*cellH};
+				const pos = eventToPosition(d, e);
 				expect(pos[0]).toBe(2);
 				expect(pos[1]).toBe(2);
 				unlink(d);
 			});
 			it("should compute inside canvas - even row", function() {
-				var d = new ROT.Display({width:10, height:10, layout:"hex"});
+				const d = new ROT.Display({width:10, height:10, layout:"hex"});
 				appendToBody(d);
-				var node = canvasFor(d);
-				var cellH = node.offsetHeight/10;
-				var cellW = node.offsetWidth/5.5;
-				var e = {clientX: 100 + 2*cellW, clientY: 100 + 1.5*cellH};
-				var pos = eventToPosition(d, e);
+				const node = canvasFor(d);
+				const cellH = node.offsetHeight/10;
+				const cellW = node.offsetWidth/5.5;
+				const e = {clientX: 100 + 2*cellW, clientY: 100 + 1.5*cellH};
+				const pos = eventToPosition(d, e);
 				expect(pos[0]).toBe(3);
 				expect(pos[1]).toBe(1);
 				unlink(d);
@@ -152,37 +152,37 @@ describe("Display", function() {
 
 		describe("hex layout (transposed)", function() {
 			it("should compute inside canvas - odd column", function() {
-				var d = new ROT.Display({width:10, height:10, layout:"hex", transpose:true});
+				const d = new ROT.Display({width:10, height:10, layout:"hex", transpose:true});
 				appendToBody(d);
-				var node = canvasFor(d);
-				var cellH = node.offsetHeight/5.5;
-				var cellW = node.offsetWidth/10;
-				var e = {clientX: 100 + 2.5*cellW, clientY: 100 + 1.5*cellH};
-				var pos = eventToPosition(d, e);
+				const node = canvasFor(d);
+				const cellH = node.offsetHeight/5.5;
+				const cellW = node.offsetWidth/10;
+				const e = {clientX: 100 + 2.5*cellW, clientY: 100 + 1.5*cellH};
+				const pos = eventToPosition(d, e);
 				expect(pos[0]).toBe(2);
 				expect(pos[1]).toBe(2);
 				unlink(d);
 			});
 			it("should compute inside canvas - even column", function() {
-				var d = new ROT.Display({width:10, height:10, layout:"hex", transpose:true});
+				const d = new ROT.Display({width:10, height:10, layout:"hex", transpose:true});
 				appendToBody(d);
-				var node = canvasFor(d);
-				var cellH = node.offsetHeight/5.5;
-				var cellW = node.offsetWidth/10;
-				var e = {clientX: 100 + 1.5*cellW, clientY: 100 + 2*cellH};
-				var pos = eventToPosition(d, e);
+				const node = canvasFor(d);
+				const cellH = node.offsetHeight/5.5;
+				const cellW = node.offsetWidth/10;
+				const e = {clientX: 100 + 1.5*cellW, clientY: 100 + 2*cellH};
+				const pos = eventToPosition(d, e);
 				expect(pos[0]).toBe(3);
 				expect(pos[1]).toBe(1);
 				unlink(d);
 			});
 			it("should compute inside canvas - issue #94", function() {
-				var d = new ROT.Display({width:10, height:4, layout:"hex", spacing: 2.5, border: 1, transpose:true});
+				const d = new ROT.Display({width:10, height:4, layout:"hex", spacing: 2.5, border: 1, transpose:true});
 				appendToBody(d);
-				var node = canvasFor(d);
-				var cellW = node.offsetWidth/4;
-				var cellH = node.offsetHeight/5.5; // 63 89
-				var e = {clientX: 100 + 3.5*cellW, clientY: 100 + 2*cellH};
-				var pos = eventToPosition(d, e);
+				const node = canvasFor(d);
+				const cellW = node.offsetWidth/4;
+				const cellH = node.offsetHeight/5.5; // 63 89
+				const e = {clientX: 100 + 3.5*cellW, clientY: 100 + 2*cellH};
+				const pos = eventToPosition(d, e);
 				expect(pos[0]).toBe(3);
 				expect(pos[1]).toBe(3);
 				unlink(d);
@@ -190,20 +190,20 @@ describe("Display", function() {
 		});
 		describe("tile layout", function() {
 			it("should compute inside canvas", function() {
-				var d = new ROT.Display({width:64, height:64, layout:"tile", tileWidth:32, tileHeight:32});
+				const d = new ROT.Display({width:64, height:64, layout:"tile", tileWidth:32, tileHeight:32});
 				appendToBody(d);
-				var node = canvasFor(d);
-				var e = {clientX: 100+10, clientY: 100+40};
-				var pos = eventToPosition(d, e);
+				const node = canvasFor(d);
+				const e = {clientX: 100+10, clientY: 100+40};
+				const pos = eventToPosition(d, e);
 				expect(pos[0]).toBe(0);
 				expect(pos[1]).toBe(1);
 				unlink(d);
 			});
 			it("should fail outside of canvas (left top)", function() {
-				var d = new ROT.Display({width:64, height:64, layout:"tile", tileWidth:32, tileHeight:32});
+				const d = new ROT.Display({width:64, height:64, layout:"tile", tileWidth:32, tileHeight:32});
 				appendToBody(d);
-				var e = {clientX: 10, clientY: 10};
-				var pos = eventToPosition(d, e);
+				const e = {clientX: 10, clientY: 10};
+				const pos = eventToPosition(d, e);
 				expect(pos[0]).toBe(-1);
 				expect(pos[1]).toBe(-1);
 				unlink(d);
@@ -214,58 +214,58 @@ describe("Display", function() {
 
 	describe("drawText", function() {
 		it("should provide default maxWidth", function() {
-			var d = new ROT.Display({width:10, height:10});
-			var lines = d.drawText(7, 0, "aaaaaa");
+			const d = new ROT.Display({width:10, height:10});
+			const lines = d.drawText(7, 0, "aaaaaa");
 			expect(lines).toBe(2);
 		});
 	});
 
 	describe("computeSize", function() {
 		describe("rectangular layout", function() {
-			var d1 = new ROT.Display({fontSize:18, spacing:1});
-			var d2 = new ROT.Display({fontSize:18, spacing:1.2});
+			const d1 = new ROT.Display({fontSize:18, spacing:1});
+			const d2 = new ROT.Display({fontSize:18, spacing:1.2});
 
 			it("should compute integer size for spacing 1", function() {
-				var size = d1.computeSize(1/0, 180);
+				const size = d1.computeSize(1/0, 180);
 				expect(size[1]).toBe(10);
 			});
 
 			it("should compute fractional size for spacing 1", function() {
-				var size = d1.computeSize(1/0, 170);
+				const size = d1.computeSize(1/0, 170);
 				expect(size[1]).toBe(9);
 			});
 
 			it("should compute integer size for spacing >1", function() {
-				var size = d2.computeSize(1/0, 220);
+				const size = d2.computeSize(1/0, 220);
 				expect(size[1]).toBe(10);
 			});
 
 			it("should compute fractional size for spacing >1", function() {
-				var size = d2.computeSize(1/0, 210);
+				const size = d2.computeSize(1/0, 210);
 				expect(size[1]).toBe(9);
 			});
 		});
 
 		describe("hex layout", function() {
-			var d1 = new ROT.Display({fontSize:18, spacing:1, layout:"hex"});
-			var d2 = new ROT.Display({fontSize:18, spacing:1.2, layout:"hex"});
+			const d1 = new ROT.Display({fontSize:18, spacing:1, layout:"hex"});
+			const d2 = new ROT.Display({fontSize:18, spacing:1.2, layout:"hex"});
 
 			it("should compute size for spacing 1", function() {
-				var size = d1.computeSize(1/0, 96);
+				const size = d1.computeSize(1/0, 96);
 				expect(size[1]).toBe(5);
 			});
 
 			it("should compute size for spacing >1", function() {
-				var size = d2.computeSize(1/0, 96);
+				const size = d2.computeSize(1/0, 96);
 				expect(size[1]).toBe(4);
 			});
 		});
 
 		describe("tile layout", function() {
-			var d = new ROT.Display({layout:"tile", tileWidth:32, tileHeight:16});
+			const d = new ROT.Display({layout:"tile", tileWidth:32, tileHeight:16});
 
 			it("should compute proper size", function() {
-				var size = d.computeSize(200, 300);
+				const size = d.computeSize(200, 300);
 				expect(size[0]).toBe(6);
 				expect(size[1]).toBe(18);
 			});
@@ -274,41 +274,41 @@ describe("Display", function() {
 
 	describe("computeFontSize", function() {
 		describe("rectangular layout", function() {
-			var d1 = new ROT.Display({width:100, height:20, spacing:1});
-			var d2 = new ROT.Display({width:100, height:20, spacing:1.2});
+			const d1 = new ROT.Display({width:100, height:20, spacing:1});
+			const d2 = new ROT.Display({width:100, height:20, spacing:1.2});
 
 			it("should compute integer size for spacing 1", function() {
-				var size = d1.computeFontSize(1/0, 180);
+				const size = d1.computeFontSize(1/0, 180);
 				expect(size).toBe(9);
 			});
 
 			it("should compute fractional size for spacing 1", function() {
-				var size = d1.computeFontSize(1/0, 170);
+				const size = d1.computeFontSize(1/0, 170);
 				expect(size).toBe(8);
 			});
 
 			it("should compute integer size for spacing >1", function() {
-				var size = d2.computeFontSize(1/0, 180);
+				const size = d2.computeFontSize(1/0, 180);
 				expect(size).toBe(7);
 			});
 
 			it("should compute fractional size for spacing >1", function() {
-				var size = d2.computeFontSize(1/0, 170);
+				const size = d2.computeFontSize(1/0, 170);
 				expect(size).toBe(6);
 			});
 		});
 
 		describe("hex layout", function() {
-			var d1 = new ROT.Display({width:100, height:5, spacing:1, layout:"hex"});
-			var d2 = new ROT.Display({width:100, height:5, spacing:1.3, layout:"hex"});
+			const d1 = new ROT.Display({width:100, height:5, spacing:1, layout:"hex"});
+			const d2 = new ROT.Display({width:100, height:5, spacing:1.3, layout:"hex"});
 
 			it("should compute size for spacing 1", function() {
-				var size = d1.computeFontSize(1/0, 96);
+				const size = d1.computeFontSize(1/0, 96);
 				expect(size).toBe(19);
 			});
 
 			it("should compute size for spacing >1", function() {
-				var size = d2.computeFontSize(1/0, 96);
+				const size = d2.computeFontSize(1/0, 96);
 				expect(size).toBe(14);
 			});
 		});
@@ -316,10 +316,10 @@ describe("Display", function() {
 
 	describe("computeTileSize", function() {
 		describe("tile layout", function() {
-			var d = new ROT.Display({layout:"tile", width:6, height:18});
+			const d = new ROT.Display({layout:"tile", width:6, height:18});
 
 			it("should compute proper tile size", function() {
-				var size = d.computeTileSize(200, 300);
+				const size = d.computeTileSize(200, 300);
 				expect(size[0]).toBe(33);
 				expect(size[1]).toBe(16);
 			});

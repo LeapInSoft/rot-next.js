@@ -37,7 +37,7 @@ class RNG {
 	 * @returns Pseudorandom value [0,1), uniformly distributed
 	 */
 	getUniform() {
-		let t = 2091639 * this._s0 + this._c * FRAC;
+		const t = 2091639 * this._s0 + this._c * FRAC;
 		this._s0 = this._s1;
 		this._s1 = this._s2;
 		this._c = t | 0;
@@ -51,8 +51,8 @@ class RNG {
 	 * @returns Pseudorandom value [lowerBound, upperBound], using ROT.RNG.getUniform() to distribute the value
 	 */
 	getUniformInt(lowerBound: number, upperBound: number) {
-		let max = Math.max(lowerBound, upperBound);
-		let min = Math.min(lowerBound, upperBound);
+		const max = Math.max(lowerBound, upperBound);
+		const min = Math.min(lowerBound, upperBound);
 		return Math.floor(this.getUniform() * (max - min + 1)) + min;
 	}
 
@@ -69,7 +69,7 @@ class RNG {
 			r = u*u + v*v;
 		} while (r > 1 || r == 0);
 
-		let gauss = u * Math.sqrt(-2*Math.log(r)/r);
+		const gauss = u * Math.sqrt(-2*Math.log(r)/r);
 		return mean + gauss*stddev;
 	}
 
@@ -92,10 +92,10 @@ class RNG {
 	 * @returns New array with randomized items
 	 */
 	shuffle<T>(array: Array<T>) {
-		let result = [];
-		let clone = array.slice();
+		const result = [];
+		const clone = array.slice();
 		while (clone.length) {
-			let index = clone.indexOf(this.getItem(clone) as T);
+			const index = clone.indexOf(this.getItem(clone) as T);
 			result.push(clone.splice(index, 1)[0]);
 		}
 		return result;
@@ -108,10 +108,10 @@ class RNG {
 	getWeightedValue(data: { [key: string]: number, [key: number]: number }) {
 		let total = 0;
 		
-		for (let id in data) {
+		for (const id in data) {
 			total += data[id];
 		}
-		let random = this.getUniform()*total;
+		const random = this.getUniform()*total;
 		
 		let id, part = 0;
 		for (id in data) {
@@ -145,7 +145,7 @@ class RNG {
 	 * Returns a cloned RNG
 	 */
 	clone() {
-		let clone = new RNG();
+		const clone = new RNG();
 		return clone.setState(this.getState());
 	}
 }
