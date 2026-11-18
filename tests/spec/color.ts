@@ -1,5 +1,6 @@
+import * as ROT from "@/lib/index.js";
 import { describe, expect, it } from "vitest";
-import type { Color } from "../../lib/color.js";
+import type { Color } from "@/lib/color.js";
 
 describe("Color", function() {
 	describe("add", function() {

@@ -1,3 +1,4 @@
+import * as ROT from "@/lib/index.js";
 import { describe, expect, it } from "vitest";
 
 describe("FOV", function() {
@@ -107,7 +108,7 @@ describe("FOV", function() {
 		"....."
 	];
 
-	var buildLightCallback = function(map) {
+	var buildLightCallback = function(map: string[]): LightCallback {
 		var center: [number, number] = [0, 0];
 		/* locate center */
 		for (var j=0;j<map.length;j++) {
@@ -118,16 +119,16 @@ describe("FOV", function() {
 			}
 		}
 
-		var result = function(x, y) {
+		var result = function(x: number, y: number) {
 			var ch = map[y].charAt(x);
 			return (ch != "#");
 		};
 		return Object.assign(result, {center});
 	}
 
-	var checkResult = function(fov, center, result) {
-		var used = {};
-		var callback = function(x, y, dist) {
+	var checkResult = function(fov: Pick<InstanceType<typeof ROT.FOV.DiscreteShadowcasting>, "compute">, center: [number, number], result: string[]) {
+		var used: Record<string, number> = {};
+		var callback = function(x: number, y: number, dist: number) {
 			expect(result[y].charAt(x)).toEqual(".");
 			used[x+","+y] = 1;
 		}
@@ -141,9 +142,9 @@ describe("FOV", function() {
 		}
 	}
 
-	var checkResult90Degrees = function(fov, dir, center, result) {
-		var used = {};
-		var callback = function(x, y, dist) {
+	var checkResult90Degrees = function(fov: InstanceType<typeof ROT.FOV.RecursiveShadowcasting>, dir: number, center: [number, number], result: string[]) {
+		var used: Record<string, number> = {};
+		var callback = function(x: number, y: number, dist: number) {
 			expect(result[y].charAt(x)).toEqual(".");
 			used[x+","+y] = 1;
 		}
@@ -157,9 +158,9 @@ describe("FOV", function() {
 		}
 	}
 
-	var checkResult180Degrees = function(fov, dir, center, result) {
-		var used = {};
-		var callback = function(x, y, dist) {
+	var checkResult180Degrees = function(fov: InstanceType<typeof ROT.FOV.RecursiveShadowcasting>, dir: number, center: [number, number], result: string[]) {
+		var used: Record<string, number> = {};
+		var callback = function(x: number, y: number, dist: number) {
 			expect(result[y].charAt(x)).toEqual(".");
 			used[x+","+y] = 1;
 		}

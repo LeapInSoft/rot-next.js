@@ -1,3 +1,4 @@
+import * as ROT from "@/lib/index.js";
 import { describe, expect, it } from "vitest";
 
 describe("Text", function() {

@@ -1,3 +1,4 @@
+import * as ROT from "@/lib/index.js";
 import { beforeEach, describe, expect, it } from "vitest";
 
 describe("Path", function() {
@@ -19,7 +20,7 @@ describe("Path", function() {
 		[0, 1, 1, 1, 0]
 	];
 	
-	var PASSABLE_CALLBACK_48 = function(x, y) {
+	var PASSABLE_CALLBACK_48 = function(x: number, y: number) {
 		if (x<0 || y<0 || x>=MAP48.length || y>=MAP48[0].length) { return false; }
 		return (MAP48[x][y] == 0);
 	}
@@ -28,8 +29,8 @@ describe("Path", function() {
 	var B = [2, 2];
 	var Z = [4, 4];
 	var X = [6, 2];
-	var PATH = [];
-	var PATH_CALLBACK = function(x, y) { PATH.push(x, y); }
+	var PATH: number[] = [];
+	var PATH_CALLBACK = function(x: number, y: number) { PATH.push(x, y); }
 
 	/*
 	 * . . A # . B
@@ -57,13 +58,13 @@ describe("Path", function() {
 	var Z6 = [8, 4];
 	var X6 = [0, 4];
 	
-	var PASSABLE_CALLBACK_6 = function(x, y) {
+	var PASSABLE_CALLBACK_6 = function(x: number, y: number) {
 		if (x<0 || y<0 || x>=MAP6.length || y>=MAP6[0].length) { return false; }
 		return (MAP6[x][y] == 0);
 	}
 
 	var VISITS = 0;
-	var PASSABLE_CALLBACK_VISIT = function(x, y) { VISITS++; return true; }
+	var PASSABLE_CALLBACK_VISIT = function(x: number, y: number) { VISITS++; return true; }
 	
 	beforeEach(function() {
 		PATH = [];

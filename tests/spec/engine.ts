@@ -1,11 +1,12 @@
+import * as ROT from "@/lib/index.js";
 import { beforeEach, describe, expect, it } from "vitest";
 
 describe("Engine", function() {
 	var RESULT = 0;
-	var E = null;
-	var S = null;
+	var E: InstanceType<typeof ROT.Engine>;
+	var S: InstanceType<typeof ROT.Scheduler.Speed>;
 	var A50 = {getSpeed: function() { return 50; }, act: function() { RESULT++; } };
-	var A70 = {getSpeed: function() { return 70; }, act: function() { RESULT++; S.add(A100); } };
+	var A70 = {getSpeed: function() { return 70; }, act: function() { RESULT++; S.add(A100, false); } };
 	var A100 = {getSpeed: function() { return 100; }, act: function() { E.lock(); } };
 
 	beforeEach(function() {

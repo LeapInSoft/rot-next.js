@@ -1,5 +1,4 @@
 import { createCanvas, type Canvas as NativeCanvas, type SKRSContext2D } from "@napi-rs/canvas";
-import * as ROT from "../lib/index.js";
 
 const canvases = new WeakMap<HTMLCanvasElement, { nativeCanvas: NativeCanvas; context: SKRSContext2D }>();
 
@@ -38,5 +37,3 @@ Object.defineProperty(HTMLCanvasElement.prototype, "getContext", {
 	return context;
 	}
 });
-
-Object.assign(globalThis, { ROT });

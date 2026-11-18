@@ -1,13 +1,17 @@
 {
 	"compilerOptions": {
 		"strict": true,
+		"noImplicitAny": true,
 		"noImplicitReturns": true,
 		"noImplicitThis": true,
+		"paths": {
+			"@/*": ["./*"]
+		},
 		"target": "es2017",
 		"declaration": true,
 		"noUnusedLocals": true,
 		"noUnusedParameters": true,
-		"types": ["node", "vitest/globals"],
+		"types": ["node"],
 		"rootDir": "src",
 		"outDir": "lib"
 	},

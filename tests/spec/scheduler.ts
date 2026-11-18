@@ -1,3 +1,4 @@
+import * as ROT from "@/lib/index.js";
 import { beforeEach, describe, expect, it } from "vitest";
 
 describe("Scheduler", function() {
@@ -103,7 +104,7 @@ describe("Scheduler", function() {
 	});
 
 	describe("Action", function() {
-		var S = null;
+		var S: InstanceType<typeof ROT.Scheduler.Action>;
 		var A1 = "A1";
 		var A2 = "A2";
 		var A3 = "A3";
@@ -153,7 +154,7 @@ describe("Scheduler", function() {
 	});
 
 	describe("Zero-ID actor", function() {
-		let schedulers = [ROT.Scheduler.Simple, ROT.Scheduler.Action];
+		let schedulers = [ROT.Scheduler.Simple, ROT.Scheduler.Action] as const;
 		schedulers.forEach((schedulerCtor, i) => describe(`scheduler ${i}`, function() {
 			let s = new schedulerCtor();
 			var A1 = 0;

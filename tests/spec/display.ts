@@ -1,3 +1,4 @@
+import * as ROT from "@/lib/index.js";
 import { describe, expect, it } from "vitest";
 
 describe("Display", function() {
@@ -12,7 +13,7 @@ describe("Display", function() {
 	}
 
 	describe("eventToPosition", function() {
-		var appendToBody = function(display) {
+		var appendToBody = function(display: InstanceType<typeof ROT.Display>) {
 			var c = canvasFor(display);
 			c.style.position = "absolute";
 			c.style.left = "100px";
@@ -35,7 +36,7 @@ describe("Display", function() {
 			document.documentElement.scrollTop = 0;
 		}
 
-		var unlink = function(display) {
+		var unlink = function(display: InstanceType<typeof ROT.Display>) {
 			var c = canvasFor(display);
 			c.parentNode.removeChild(c);
 		}

@@ -1,3 +1,4 @@
+import * as ROT from "@/lib/index.js";
 import { describe, expect, it } from "vitest";
 
 describe("Util", function() {
@@ -62,7 +63,7 @@ describe("Util", function() {
 				var oldMap = format.map;
 				format.map = { foo: "foo" };
 				var obj = {
-					foo:function($) { return $+$; }
+					foo:function($: string) { return $+$; }
 				}
 				expect(ROT.Util.format("%{foo,bar}", obj)).toBe("barbar");
 				format.map = oldMap;

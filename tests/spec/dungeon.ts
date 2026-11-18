@@ -1,12 +1,13 @@
+import * as ROT from "@/lib/index.js";
 import { describe, expect, it } from "vitest";
 
 describe("Map.Dungeon", function() {
-	var names = ["Digger", "Uniform"];
+	var names: ("Digger" | "Uniform")[] = ["Digger", "Uniform"];
 
-	var buildDungeonTests = function(name) {
+	var buildDungeonTests = function(name: "Digger" | "Uniform") {
 		var ctor = ROT.Map[name];
 		ROT.RNG.setSeed(1234);
-		var map = new ctor();
+		var map = new ctor(ROT.DEFAULT_WIDTH, ROT.DEFAULT_HEIGHT, {});
 		map.create();
 		var rooms = map.getRooms();
 		var corridors = map.getCorridors();
@@ -20,7 +21,7 @@ describe("Map.Dungeon", function() {
 				for (var i=0;i<rooms.length;i++) {
 					var room = rooms[i];
 					var doorCount = 0;
-					room.create(function(x, y, value) {
+					room.create(function(x: number, y: number, value: number) {
 						if (value == 2) { doorCount++ }
 					})
 					expect(doorCount).toBeGreaterThan(0);
@@ -31,7 +32,7 @@ describe("Map.Dungeon", function() {
 				for (var i=0;i<rooms.length;i++) {
 					var room = rooms[i];
 					var wallCount = 0;
-					room.create(function(x, y, value) {
+					room.create(function(x: number, y: number, value: number) {
 						if (value == 1) { wallCount++ }
 					})
 					expect(wallCount).toBeGreaterThan(0);
@@ -42,7 +43,7 @@ describe("Map.Dungeon", function() {
 				for (var i=0;i<rooms.length;i++) {
 					var room = rooms[i];
 					var emptyCount = 0;
-					room.create(function(x, y, value) {
+					room.create(function(x: number, y: number, value: number) {
 						if (value == 0) { emptyCount++ }
 					})
 					expect(emptyCount).toBeGreaterThan(0);
@@ -57,7 +58,7 @@ describe("Map.Dungeon", function() {
 				for (var i=0;i<corridors.length;i++) {
 					var corridor = corridors[i];
 					var emptyCount = 0;
-					corridor.create(function(x, y, value) {
+					corridor.create(function(x: number, y: number, value: number) {
 						if (value == 0) { emptyCount++ }
 					})
 					expect(emptyCount).toBeGreaterThan(0);
