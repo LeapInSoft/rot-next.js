@@ -1,4 +1,4 @@
-import * as ROT from "@/lib/index.js";
+import * as ROT from "@/src";
 import { beforeEach, describe, expect, it } from "vitest";
 
 describe("Path", function() {
