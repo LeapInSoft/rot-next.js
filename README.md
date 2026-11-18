@@ -1,60 +1,49 @@
-# rot.js
+# rot-next.js
 
-ROguelike Toolkit in JavaScript. For more info, see https://ondras.github.io/rot.js.
+**A roguelike toolkit for JavaScript and TypeScript.**
+
+rot-next.js is a modernized fork of [rot.js](https://github.com/ondras/rot.js), the Roguelike Toolkit in JavaScript. Maintained by LeapInSoft, it aims to modernize the codebase, fix bugs, and add thoughtful features while keeping the toolkit approachable for JavaScript and TypeScript developers.
+
+Programming concepts, design, and the craft of building software matter. AI and LLMs are tools to help turn ideas into code more quickly, not substitutes for understanding or programming judgment. The hope is that rot-next.js will be useful to build with and offer something to learn from.
 
 ## Library
 
-There are multiple ways of including rot.js in your project.
+rot-next.js is written in TypeScript and provides several ways to use the library:
+
+- The build's `lib/` directory contains ES modules for modern JavaScript projects and bundlers.
+- The `dist/rot.js` bundle can be included in a browser with a traditional `<script>` tag. It exposes the library through the global `ROT` namespace.
+- The `dist/rot.min.js` bundle provides the same browser API in a minified file.
+
+For browser examples, see [native modules](./examples/native-modules/), [bundled modules](./examples/bundled-modules/), and [the prebuilt bundle](./examples/dist/).
 
 ### Downloading
 
-You can get rot.js using either of these methods:
-
-  - clone this repository to gain full source code access;
-  - `npm install rot-js`;
-  - download the [prebuilt rot.js file](dist/rot.js) (or the [minified rot.min.js file](dist/rot.min.js)) to include it in your project.
-
-### Usage
-
-Rot.js is written in TypeScript, but its code is available in multiple formats. You can pick the one that best suits your development needs.
-
-  1. The `lib/` directory contains the code in [ES2015 modules](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/import). These can be used in modern browsers directly, without any transpilation/bundling step. An [example](examples/native-modules/) shows how to do that.
-
-  1. For practical reasons, individual modules should be bundled to make your application more compact. You are free to use any bundler that understands ES2015 modules. If you want to support older browsers, you should also transpile your code -- there is [an example using babel and rollup](examples/bundled-modules/) that shows how to do that. This is the recommended way of using rot.js.
-
-  1. If you do not fancy modern modules and/or transpilation, you can grab a [pre-built bundle](dist/rot.js) and include it in your page using traditional `<script>` tag. This bundle puts rot.js into a global `ROT` namespace and uses ES5 (supported even by older browsers). See an [example](examples/dist/) of this approach.
-
-  1. Finally, the pre-built budle also comes with [a minified version](dist/rot.min.js) that works the same, but its size has been reduced. The usage is the same as in the previous example.
+- Clone this repository to access the source and included distribution files.
+- For a published npm release, install the package with `npm install rot-next.js`.
+- Or use `dist/rot.js` or `dist/rot.min.js` directly in a browser.
 
 ## Node.js
 
-Most parts of rot.js are usable from within node.js (server-side JavaScript). The `Display` class needs to use the `"term"` layout backend:
+Most of rot-next.js can be used in Node.js. To use `Display` in a terminal, set its `layout` option to `"term"`:
 
 ```js
-let display = new ROT.Display({width:40, height:9, layout:"term"});
-display.draw(5,  4, "@");
-display.draw(15, 4, "%", "#0f0");          // foreground color
-display.draw(25, 4, "#", "#f00", "#009");  // and background color
+const ROT = require("rot-next.js");
+
+const display = new ROT.Display({ width: 40, height: 9, layout: "term" });
+display.draw(5, 4, "@");
+display.draw(15, 4, "%", "#0f0");         // foreground color
+display.draw(25, 4, "#", "#f00", "#009"); // foreground and background colors
 ```
 
-### Usage
+See the [Node.js example](./examples/node/) for a runnable example.
 
-The pre-bundled rot.js package can be loaded as a CommonJS module. There is an [example](examples/node/) that shows basic usage.
+## Acknowledgements
 
-## Contributing
+rot-next.js builds on the work of **[Ondřej Žára](https://ondras.zarovi.cz/)**, the original author of [rot.js](https://ondras.github.io/rot.js). His toolkit and contributions to the roguelike development community made this project possible and deserve lasting credit.
 
-ROguelike Toolkit is largely considered "feature-complete", but bugfixes, documentation, and some new features are welcomed. Development should happen in the `/src` folder, and then the build process creates the `/lib`, `/dist`, and `/doc` folders before serving the project. TypeScript tests are type-checked and run in Node with Vitest.
+The project retains the original **BSD-3-Clause** license. See [license.txt](./license.txt) for its terms.
 
-![Visual layout of the build process](./build.png)
+## Further reading
 
-The command to rebuild everything:
-
-```sh
-npm ci
-npm test
-npm run build
-```
-
-## Misc
-
-RogueBasin page (with links to some rot.js-based games): http://roguebasin.com/index.php/Rot.js
+- [Original rot.js project](https://github.com/ondras/rot.js)
+- [RogueBasin page for rot.js](http://roguebasin.com/index.php/Rot.js)

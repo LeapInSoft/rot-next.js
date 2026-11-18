@@ -1,7 +1,7 @@
 {
-  "name": "rot-js",
+  "name": "rot-next.js",
   "version": "2.2.1",
-  "description": "A roguelike toolkit in JavaScript",
+  "description": "A modernized roguelike toolkit in JavaScript and TypeScript, based on rot.js",
   "keywords": [
     "ascii",
     "dungeon",
@@ -21,12 +21,16 @@
     "doc",
     "examples",
     "addons",
-    "manual"
+    "manual",
+    "license.txt"
   ],
-  "homepage": "https://ondras.github.io/rot.js",
-  "bugs": "https://github.com/ondras/rot.js/issues",
+  "homepage": "https://github.com/LeapInSoft/rot-next.js",
+  "bugs": "https://github.com/LeapInSoft/rot-next.js/issues",
   "license": "BSD-3-Clause",
-  "author": "Ondřej Žára <ondrej.zara@gmail.com> (https://ondras.zarovi.cz/)",
+  "author": "LeapInSoft",
+  "contributors": [
+    "Ondřej Žára <ondrej.zara@gmail.com> (original author of rot.js; https://ondras.zarovi.cz/)"
+  ],
   "main": "dist/rot.js",
   "module": "lib/index.js",
   "scripts": {
@@ -41,7 +45,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/ondras/rot.js.git"
+    "url": "https://github.com/LeapInSoft/rot-next.js.git"
   },
   "devDependencies": {
     "@babel/core": "^7.29.13",
@@ -57,6 +61,5 @@
     "typedoc": "^0.28.20",
     "typescript": "^6.0.3",
     "vitest": "^4.1.12"
-  },
-  "types": "./lib/index.d.ts"
+  }
 }
