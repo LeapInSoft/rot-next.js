@@ -202,27 +202,6 @@ describe("FOV", function() {
 				const fov = new ROT.FOV.PreciseShadowcasting(lightPasses, {topology:topology});
 				checkResult(fov, lightPasses.center, RESULT_MAP8_RING1);
 			});
-			it.skip("should compute single visible target", function() {
-				const lightPasses = buildLightCallback(MAP8_RING1);
-				const fov = new ROT.FOV.PreciseShadowcasting(lightPasses, {topology:topology});
-				// @ts-expect-error This removed API remains documented only by its skipped legacy tests.
-				const result = fov.computeSingle(lightPasses.center[0], lightPasses.center[1], 2, 0, 1);
-				expect(result).toBe(1);
-			});
-			it.skip("should compute single invisible target", function() {
-				const lightPasses = buildLightCallback(MAP8_RING0);
-				const fov = new ROT.FOV.PreciseShadowcasting(lightPasses, {topology:topology});
-				// @ts-expect-error This removed API remains documented only by its skipped legacy tests.
-				const result = fov.computeSingle(lightPasses.center[0], lightPasses.center[1], 2, 0, 1);
-				expect(result).toBe(0);
-			});
-			it.skip("should compute single partially visible target", function() {
-				const lightPasses = buildLightCallback(MAP8_PARTIAL);
-				const fov = new ROT.FOV.PreciseShadowcasting(lightPasses, {topology:topology});
-				// @ts-expect-error This removed API remains documented only by its skipped legacy tests.
-				const result = fov.computeSingle(lightPasses.center[0], lightPasses.center[1], 2, 0, 1);
-				expect(result).toBe(0.5);
-			});
 		});
 	});
 

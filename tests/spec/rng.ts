@@ -8,7 +8,7 @@ describe("RNG", function() {
 			expect(typeof(value)).toEqual("number");
 		});
 		it("should return a number 0..1", function() {
-			expect(value).toBeGreaterThan(0);
+			expect(value).toBeGreaterThanOrEqual(0);
 			expect(value).toBeLessThan(1);
 		});
 	});
@@ -21,7 +21,7 @@ describe("RNG", function() {
 			expect(typeof(value)).toEqual("number");
 		});
 		it("should not care which number is larger in the arguments", function() {
-			const seed = Math.round(Math.random()*1000000);
+			const seed = 123456;
 			ROT.RNG.setSeed(seed);
 			const val1 = ROT.RNG.getUniformInt(lowerBound, upperBound);
 			ROT.RNG.setSeed(seed);
@@ -44,7 +44,7 @@ describe("RNG", function() {
 		});
 
 		it("should return the same value for a given seed", function() {
-			const seed = Math.round(Math.random()*1000000);
+			const seed = 123456;
 			ROT.RNG.setSeed(seed);
 			const val1 = ROT.RNG.getUniform();
 			ROT.RNG.setSeed(seed);

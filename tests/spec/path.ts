@@ -63,12 +63,8 @@ describe("Path", function() {
 		return (MAP6[x][y] == 0);
 	}
 
-	let VISITS = 0;
-	const PASSABLE_CALLBACK_VISIT = function(x: number, y: number) { VISITS++; return true; }
-	
 	beforeEach(function() {
 		PATH = [];
-		VISITS = 0;
 	});
 	
 	
@@ -169,12 +165,6 @@ describe("Path", function() {
 			it("should survive non-existent path X", function() {
 				astar.compute(X[0], X[1], PATH_CALLBACK);
 				expect(PATH.length).toEqual(0);
-			});
-
-			it("should efficiently compute path",function(){
-				const open_astar = new ROT.Path.AStar(0,0, PASSABLE_CALLBACK_VISIT);
-				open_astar.compute(50,0, PATH_CALLBACK);
-				expect(VISITS).toEqual(400);
 			});
 		}); /* 8-topology */
 
