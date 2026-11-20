@@ -1,6 +1,6 @@
-import Simple from "./simple.js";
-import Speed from "./speed.js";
-import Action from "./action.js";
+import Simple from "@/src/scheduler/simple.js";
+import Speed from "@/src/scheduler/speed.js";
+import Action from "@/src/scheduler/action.js";
 
 export default { Simple, Speed, Action };
-export { SpeedActor } from "./speed.js"
+export { SpeedActor } from "@/src/scheduler/speed.js"

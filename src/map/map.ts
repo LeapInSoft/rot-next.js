@@ -1,4 +1,4 @@
-import { DEFAULT_WIDTH, DEFAULT_HEIGHT } from '../constants.js';
+import { DEFAULT_WIDTH, DEFAULT_HEIGHT } from '@/src/constants.js';
 
 export interface CreateCallback { (x: number, y: number, contents: number): void; }
 

@@ -35,7 +35,7 @@
   "module": "lib/index.js",
   "scripts": {
     "clean": "node scripts/clean.js",
-    "typecheck": "tsc --project tsconfig.json",
+    "typecheck": "tsc --project tsconfig.json && node scripts/resolve-paths.cjs",
     "typecheck:tests": "tsc --project tsconfig.tests.json",
     "lint": "eslint src tests",
     "bundle": "rollup --config rollup.config.mjs",

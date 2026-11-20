@@ -1,5 +1,5 @@
-import { Map } from './map.js';
-import type { Room, Corridor } from './features.js';
+import { Map } from '@/src/map/map.js';
+import type { Room, Corridor } from '@/src/map/features.js';
 
 /**
  * @class Dungeon map: has rooms and corridors

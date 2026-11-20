@@ -1,6 +1,6 @@
-import Noise from "./noise.js";
-import { RNG } from '../rng.js';
-import { mod } from "../util.js";
+import Noise from "@/src/noise/noise.js";
+import { RNG } from '@/src/rng.js';
+import { mod } from "@/src/util.js";
 
 const F2 = 0.5 * (Math.sqrt(3) - 1);
 const G2 = (3 - Math.sqrt(3)) / 6;

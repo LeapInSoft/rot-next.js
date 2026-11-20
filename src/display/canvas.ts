@@ -1,5 +1,5 @@
-import Backend from "./backend.js";
-import { DisplayOptions } from "./types.js";
+import Backend from "@/src/display/backend.js";
+import { DisplayOptions } from "@/src/display/types.js";
 
 export default abstract class Canvas extends Backend {
 	_ctx: CanvasRenderingContext2D;

@@ -1,4 +1,4 @@
-import { RNG } from './rng.js';
+import { RNG } from '@/src/rng.js';
 
 interface Options {
 	/** Use word mode? */

@@ -1,6 +1,6 @@
-import Backend from "./backend.js";
-import { DisplayOptions, DisplayData } from "./types.js";
-import * as Color from "../color.js";
+import Backend from "@/src/display/backend.js";
+import { DisplayOptions, DisplayData } from "@/src/display/types.js";
+import * as Color from "@/src/color.js";
 
 /**
  * @class Tile backend

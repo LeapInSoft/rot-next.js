@@ -1,4 +1,4 @@
-import FOV, { VisibilityCallback } from "./fov.js";
+import FOV, { VisibilityCallback } from "@/src/fov/fov.js";
 
 type Arc = [number, number];
 

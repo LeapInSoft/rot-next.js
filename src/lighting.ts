@@ -1,5 +1,5 @@
-import FOV from "./fov/fov.js";
-import * as Color from "./color.js";
+import FOV from "@/src/fov/fov.js";
+import * as Color from "@/src/color.js";
 
 type LightColor = [number, number, number];
 

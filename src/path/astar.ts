@@ -1,4 +1,4 @@
-import Path, { ComputeCallback, PassableCallback, Options } from "./path.js";
+import Path, { ComputeCallback, PassableCallback, Options } from "@/src/path/path.js";
 
 interface Item {
 	x: number;

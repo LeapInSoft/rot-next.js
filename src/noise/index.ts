@@ -1,3 +1,3 @@
-import Simplex from "./simplex.js";
+import Simplex from "@/src/noise/simplex.js";
 
 export default { Simplex };

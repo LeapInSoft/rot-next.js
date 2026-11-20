@@ -1,6 +1,6 @@
-import Canvas from "./canvas.js";
-import { DisplayData } from "./types.js";
-import { mod } from "../util.js";
+import Canvas from "@/src/display/canvas.js";
+import { DisplayData } from "@/src/display/types.js";
+import { mod } from "@/src/util.js";
 
 /**
  * @class Hexagonal backend

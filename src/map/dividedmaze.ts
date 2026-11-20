@@ -1,6 +1,6 @@
-import { Map } from './map.js';
-import type { CreateCallback } from './map.js';
-import { RNG } from '../rng.js';
+import { Map } from '@/src/map/map.js';
+import type { CreateCallback } from '@/src/map/map.js';
+import { RNG } from '@/src/rng.js';
 
 type Room = [number, number, number, number];
 type Point = [number, number];

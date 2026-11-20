@@ -1,13 +1,13 @@
-import Backend from "./backend.js";
-import Hex from "./hex.js";
-import Rect from "./rect.js";
-import Tile from "./tile.js";
-import TileGL from "./tile-gl.js";
-import Term from "./term.js";
+import Backend from "@/src/display/backend.js";
+import Hex from "@/src/display/hex.js";
+import Rect from "@/src/display/rect.js";
+import Tile from "@/src/display/tile.js";
+import TileGL from "@/src/display/tile-gl.js";
+import Term from "@/src/display/term.js";
 
-import * as Text from "../text.js";
-import { DisplayOptions, DisplayData } from "./types.js";
-import { DEFAULT_WIDTH, DEFAULT_HEIGHT } from "../constants.js";
+import * as Text from "@/src/text.js";
+import { DisplayOptions, DisplayData } from "@/src/display/types.js";
+import { DEFAULT_WIDTH, DEFAULT_HEIGHT } from "@/src/constants.js";
 
 const BACKENDS = {
 	"hex": Hex,

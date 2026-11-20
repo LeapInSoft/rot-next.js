@@ -1,7 +1,7 @@
-import { Map } from './map.js';
-import type { CreateCallback } from './map.js';
-import { DIRS } from '../constants.js';
-import { RNG } from '../rng.js';
+import { Map } from '@/src/map/map.js';
+import type { CreateCallback } from '@/src/map/map.js';
+import { DIRS } from '@/src/constants.js';
+import { RNG } from '@/src/rng.js';
 
 interface Options {
 	born: number[];

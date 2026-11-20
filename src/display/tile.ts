@@ -1,5 +1,5 @@
-import Canvas from "./canvas.js";
-import { DisplayData } from "./types.js";
+import Canvas from "@/src/display/canvas.js";
+import { DisplayData } from "@/src/display/types.js";
 
 /**
  * @class Tile backend
