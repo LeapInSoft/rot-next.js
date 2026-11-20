@@ -55,4 +55,35 @@ describe("MinHeap", function() {
 		while (heap.len()) { values.push(heap.pop().value); }
 		expect(values).toEqual(["root", "other branch", "replacement", "other child", "parent", "parent child"]);
 	});
+
+	it("should preserve heap order when removing a node whose replacement belongs lower", function() {
+		const heap = new MinHeap<string>();
+		heap.push("root", 0);
+		heap.push("removed", 1);
+		heap.push("other branch", 2);
+		heap.push("first child", 3);
+		heap.push("second child", 4);
+		heap.push("other child", 5);
+		heap.push("replacement", 6);
+
+		expect(heap.remove("removed")).toBe(true);
+
+		const values = [];
+		while (heap.len()) { values.push(heap.pop().value); }
+		expect(values).toEqual(["root", "other branch", "first child", "second child", "other child", "replacement"]);
+	});
+
+	it("should remove the earliest-inserted matching duplicate value", function() {
+		const heap = new MinHeap<string>();
+		heap.push("duplicate", 10);
+		heap.push("other", 4);
+		heap.push("duplicate", 6);
+		heap.push("first", 2);
+
+		expect(heap.find("duplicate")?.key).toBe(10);
+		expect(heap.remove("duplicate")).toBe(true);
+		expect(heap.pop().value).toBe("first");
+		expect(heap.pop().value).toBe("other");
+		expect(heap.pop()).toMatchObject({ value: "duplicate", key: 6 });
+	});
 });

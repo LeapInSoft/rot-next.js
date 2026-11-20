@@ -157,6 +157,35 @@ describe("Scheduler", function() {
 			expect(S.getTimeOf(A1)).toEqual(0);
 		});
 
+		it("should schedule a zero-delay action before a positive-delay action", function() {
+			S.add(A1, true, 0);
+			S.add(A2, true, 1);
+
+			expect(S.next()).toBe(A1);
+			expect(S.getTime()).toBe(0);
+			expect(S.next()).toBe(A2);
+			expect(S.getTime()).toBe(1);
+		});
+
+		it("should advance time only for positive action delays", function() {
+			S.add(A1, false, -2);
+			S.add(A2, false, 0);
+			S.add(A3, false, 3);
+
+			expect(S.next()).toBe(A1);
+			expect(S.getTime()).toBe(0);
+			expect(S.next()).toBe(A2);
+			expect(S.getTime()).toBe(0);
+			expect(S.next()).toBe(A3);
+			expect(S.getTime()).toBe(3);
+		});
+
+		it("should use the default delay when the delay is omitted", function() {
+			S.add(A1, true);
+
+			expect(S.getTimeOf(A1)).toBe(1);
+		});
+
 		it("should schedule with respect to action duration", function() {
 			S.add(A1, true);
 			S.add(A2, true);

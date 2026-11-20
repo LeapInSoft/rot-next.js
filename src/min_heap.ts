@@ -45,21 +45,11 @@ export class MinHeap<T> {
 		return { ...top, key: top.key + this.offset };
 	}
 	find(v: T): HeapWrapper<T> | null {
-		for (let i = 0; i < this.len(); i++) {
-			if (v === this.heap[i].value) {
-				return { ...this.heap[i], key: this.heap[i].key + this.offset };
-			}
-		}
-		return null;
+		const index = this.findIndex(v);
+		return index === -1 ? null : { ...this.heap[index], key: this.heap[index].key + this.offset };
 	}
 	remove(v: T) {
-		let index = -1;
-		for (let i = 0; i < this.len(); i++) {
-			if (v === this.heap[i].value) {
-				index = i;
-				break;
-			}
-		}
+		const index = this.findIndex(v);
 		if (index === -1) { return false; }
 
 		const lastIndex = this.len() - 1;
@@ -77,6 +67,15 @@ export class MinHeap<T> {
 			this.updateDown(index);
 		}
 		return true;
+	}
+	private findIndex(v: T): number {
+		let index = -1;
+		for (let i = 0; i < this.len(); i++) {
+			if (v === this.heap[i].value && (index === -1 || this.heap[i].timestamp < this.heap[index].timestamp)) {
+				index = i;
+			}
+		}
+		return index;
 	}
 	private parentNode(x: number): number {
 		return Math.floor((x - 1) / 2);

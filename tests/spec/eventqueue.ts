@@ -48,6 +48,21 @@ describe("EventQueue", function() {
 		expect(q.get()).toEqual(456);
 	});
 
+	it("should remove the earliest-inserted matching duplicate event", function() {
+		const q = new ROT.EventQueue<string>();
+		q.add("duplicate", 10);
+		q.add("other", 4);
+		q.add("duplicate", 6);
+		q.add("first", 2);
+
+		expect(q.getEventTime("duplicate")).toBe(10);
+		expect(q.remove("duplicate")).toBe(true);
+		expect(q.getEventTime("duplicate")).toBe(6);
+		expect(q.get()).toBe("first");
+		expect(q.get()).toBe("other");
+		expect(q.get()).toBe("duplicate");
+	});
+
 	it("should survive removal of non-existent events", function() {
 		const q = new ROT.EventQueue();
 		q.add(0, 0);
@@ -104,5 +119,19 @@ describe("EventQueue", function() {
 		expect(q.get()).toEqual(123);
 		expect(q.get()).toEqual(789);
 		expect(q.getTime()).toEqual(10);
+	});
+
+	it("should advance time only for positive event delays", function() {
+		const q = new ROT.EventQueue<string>();
+		q.add("negative", -5);
+		q.add("zero", 0);
+		q.add("positive", 3);
+
+		expect(q.get()).toBe("negative");
+		expect(q.getTime()).toBe(0);
+		expect(q.get()).toBe("zero");
+		expect(q.getTime()).toBe(0);
+		expect(q.get()).toBe("positive");
+		expect(q.getTime()).toBe(3);
 	});
 });
