@@ -3,9 +3,23 @@ import { createCanvas } from "@napi-rs/canvas";
 import { describe, expect, it, vi } from "vitest";
 import Tile from "@/src/display/tile.js";
 import TileGL from "@/src/display/tile-gl.js";
+import { Display as NamedDisplay } from "@/src/display/display.js";
 import type { DisplayOptions } from "@/src/display/types.js";
 
 describe("Display", function() {
+	describe("public API", function() {
+		it("should export the Display class by name", function() {
+			expect(NamedDisplay).toBe(ROT.Display);
+		});
+
+		it("should update layout options", function() {
+			const display = new ROT.Display({layout:"rect"});
+			display.setOptions({layout:"hex"});
+
+			expect(display.getOptions().layout).toBe("hex");
+		});
+	});
+
 	const canvasFor = function(display: InstanceType<typeof ROT.Display>) {
 		const canvas = display.getContainer();
 		if (!(canvas instanceof HTMLCanvasElement)) { throw new Error("Display did not create a canvas"); }
@@ -243,7 +257,8 @@ describe("Display", function() {
 					tileSet:tileSet as unknown as HTMLCanvasElement,
 					tileColorize:true
 				});
-				const backend = display._backend as Tile;
+				const backend = new Tile();
+				backend.setOptions(display.getOptions());
 				vi.spyOn(backend._ctx, "drawImage").mockImplementation(() => {});
 				backend.draw([0, 0, chars, "#ff0000", "#0000ff"], true);
 				const context = backend._colorCanvas.getContext("2d") as CanvasRenderingContext2D;

@@ -1,5 +1,5 @@
 export {RNG} from '@/src/rng.js';
-export {default as Display} from "@/src/display/display.js";
+export {Display} from "@/src/display/display.js";
 export {default as StringGenerator} from "@/src/stringgenerator.js";
 export {default as EventQueue} from "@/src/eventqueue.js";
 export {default as Scheduler, SpeedActor} from "@/src/scheduler/index.js";

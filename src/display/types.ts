@@ -1,4 +1,4 @@
-type LayoutType = "hex" | "rect" | "tile" | "tile-gl" | "term";
+export type LayoutType = "hex" | "rect" | "tile" | "tile-gl" | "term";
 
 export interface DisplayOptions {
 	width: number;
@@ -17,7 +17,7 @@ export interface DisplayOptions {
 	tileHeight: number;
 	tileMap: { [key: string]: [number, number] };
 	tileSet: null | HTMLCanvasElement | HTMLImageElement | HTMLVideoElement | ImageBitmap;
-	tileColorize: Boolean;
+	tileColorize: boolean;
 }
 
 export type DisplayData = [number, number, string | string[] | null, string, string];

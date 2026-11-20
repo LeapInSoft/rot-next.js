@@ -1,21 +1,37 @@
-import Backend from "@/src/display/backend.js";
+import type Backend from "@/src/display/backend.js";
 import Hex from "@/src/display/hex.js";
 import Rect from "@/src/display/rect.js";
 import Tile from "@/src/display/tile.js";
 import TileGL from "@/src/display/tile-gl.js";
 import Term from "@/src/display/term.js";
-
 import * as Text from "@/src/text.js";
-import { DisplayOptions, DisplayData } from "@/src/display/types.js";
+import type { DisplayOptions, DisplayData, LayoutType } from "@/src/display/types.js";
 import { DEFAULT_WIDTH, DEFAULT_HEIGHT } from "@/src/constants.js";
 
-const BACKENDS = {
-	"hex": Hex,
-	"rect": Rect,
-	"tile": Tile,
-	"tile-gl": TileGL,
-	"term": Term
+type BackendConstructor = new () => Backend;
+
+interface TextRenderState {
+	cx: number;
+	cy: number;
+	fg: string|null;
+	bg: string|null;
+	lines: number;
+	isPrevSpace: boolean;
+	isPrevFullWidth: boolean;
 }
+
+interface TextToken {
+	type: number;
+	value?: string;
+}
+
+const BACKENDS: Record<LayoutType, BackendConstructor> = {
+	hex: Hex,
+	rect: Rect,
+	tile: Tile,
+	"tile-gl": TileGL,
+	term: Term,
+};
 
 const DEFAULT_OPTIONS: DisplayOptions = {
 	width: DEFAULT_WIDTH,
@@ -34,35 +50,33 @@ const DEFAULT_OPTIONS: DisplayOptions = {
 	tileHeight: 32,
 	tileMap: {},
 	tileSet: null,
-	tileColorize: false
-}
+	tileColorize: false,
+};
 
 /**
  * @class Visual map display
  */
-export default class Display {
-	_data: { [pos:string] : DisplayData };
-	_dirty: boolean | { [pos: string]: boolean };
-	_options!: DisplayOptions;
-	_backend!: Backend;
+export class Display {
+	private data: Record<string, DisplayData> = {};
+	private dirty: boolean|Record<string, boolean> = false;
+	private options: DisplayOptions = {...DEFAULT_OPTIONS};
+	private backend: Backend;
 
-	static Rect = Rect;
-	static Hex = Hex;
-	static Tile = Tile;
-	static TileGL = TileGL;
-	static Term = Term;
+	static readonly Rect = Rect;
+	static readonly Hex = Hex;
+	static readonly Tile = Tile;
+	static readonly TileGL = TileGL;
+	static readonly Term = Term;
 
 	constructor(options: Partial<DisplayOptions> = {}) {
-		this._data = {};
-		this._dirty = false; // false = nothing, true = all, object = dirty cells
-		this._options = {} as DisplayOptions;
-
-		options = Object.assign({}, DEFAULT_OPTIONS, options);
-		this.setOptions(options);
+		this.options = {...DEFAULT_OPTIONS, ...options};
+		const BackendCtor = BACKENDS[this.options.layout];
+		this.backend = new BackendCtor();
+		this.backend.setOptions(this.options);
+		this.dirty = true;
 		this.DEBUG = this.DEBUG.bind(this);
-
-		this._tick = this._tick.bind(this);
-		this._backend.schedule(this._tick);
+		this.tick = this.tick.bind(this);
+		this.backend.schedule(this.tick);
 	}
 
 	/**
@@ -72,7 +86,7 @@ export default class Display {
 	 * @param {int} what
 	 */
 	DEBUG(x: number, y: number, what: number) {
-		const colors = [this._options.bg, this._options.fg];
+		const colors = [this.options.bg, this.options.fg];
 		this.draw(x, y, null, null, colors[what % colors.length]);
 	}
 
@@ -80,24 +94,22 @@ export default class Display {
 	 * Clear the whole display (cover it with background color)
 	 */
 	clear() {
-		this._data = {};
-		this._dirty = true;
+		this.data = {};
+		this.dirty = true;
 	}
 
 	/**
 	 * @see ROT.Display
 	 */
 	setOptions(options: Partial<DisplayOptions>) {
-		Object.assign(this._options, options);
-
+		Object.assign(this.options, options);
 		if (options.width || options.height || options.fontSize || options.fontFamily || options.spacing || options.layout) {
 			if (options.layout) {
 				const ctor = BACKENDS[options.layout];
-				this._backend = new ctor();
+				this.backend = new ctor();
 			}
-
-			this._backend.setOptions(this._options);
-			this._dirty = true;
+			this.backend.setOptions(this.options);
+			this.dirty = true;
 		}
 		return this;
 	}
@@ -105,12 +117,16 @@ export default class Display {
 	/**
 	 * Returns currently set options
 	 */
-	getOptions() { return this._options; }
+	getOptions() {
+		return this.options;
+	}
 
 	/**
 	 * Returns the DOM node of this display
 	 */
-	getContainer() { return this._backend.getContainer(); }
+	getContainer() {
+		return this.backend.getContainer();
+	}
 
 	/**
 	 * Compute the maximum width/height to fit into a set of given constraints
@@ -119,7 +135,7 @@ export default class Display {
 	 * @returns {int[2]} cellWidth,cellHeight
 	 */
 	computeSize(availWidth: number, availHeight: number) {
-		return this._backend.computeSize(availWidth, availHeight);
+		return this.backend.computeSize(availWidth, availHeight);
 	}
 
 	/**
@@ -129,12 +145,12 @@ export default class Display {
 	 * @returns {int} fontSize
 	 */
 	computeFontSize(availWidth: number, availHeight: number) {
-		return this._backend.computeFontSize(availWidth, availHeight);
+		return this.backend.computeFontSize(availWidth, availHeight);
 	}
 
 	computeTileSize(availWidth: number, availHeight: number) {
-		const width = Math.floor(availWidth / this._options.width);
-		const height = Math.floor(availHeight / this._options.height);
+		const width = Math.floor(availWidth / this.options.width);
+		const height = Math.floor(availHeight / this.options.height);
 		return [width, height];		
 	}
 
@@ -144,16 +160,9 @@ export default class Display {
 	 * @returns {int[2]} -1 for values outside of the canvas
 	 */
 	eventToPosition(e: TouchEvent | MouseEvent) {
-		let x, y;
-		if ("touches" in e) {
-			x = e.touches[0].clientX;
-			y = e.touches[0].clientY;
-		} else {
-			x = e.clientX;
-			y = e.clientY;
-		}
-
-		return this._backend.eventToPosition(x, y);
+		const position = "touches" in e ? e.touches[0] : e;
+		const {clientX:x, clientY:y} = position;
+		return this.backend.eventToPosition(x, y);
 	}
 
 	/**
@@ -164,14 +173,13 @@ export default class Display {
 	 * @param {string} [bg] background color
 	 */
 	draw(x: number, y: number, ch: string | string[] | null, fg: string | null, bg: string | null) {
-		if (!fg) { fg = this._options.fg; }
-		if (!bg) { bg = this._options.bg; }
+		if (!fg) { fg = this.options.fg; }
+		if (!bg) { bg = this.options.bg; }
 		const key = `${x},${y}`;
-		this._data[key] = [x, y, ch, fg, bg];
-
-		if (this._dirty === true) { return; } // will already redraw everything 
-		if (!this._dirty) { this._dirty = {}; } // first!
-		this._dirty[key] = true;
+		this.data[key] = [x, y, ch, fg, bg];
+		if (this.dirty === true) { return; }
+		if (!this.dirty) { this.dirty = {}; }
+		this.dirty[key] = true;
 	}
 
 	/**
@@ -189,7 +197,7 @@ export default class Display {
 		bg: string | null
 	) {
 		const key = `${x},${y}`;
-		const existing = this._data[key];
+		const existing = this.data[key];
 		if (existing) {
 			existing[2] = ch || existing[2];
 			existing[3] = fg || existing[3];
@@ -208,95 +216,85 @@ export default class Display {
 	 * @returns {int} lines drawn
 	 */
 	drawText(x:number, y:number, text:string, maxWidth?:number) {
-		let fg = null;
-		let bg = null;
-		let cx = x;
-		let cy = y;
-		let lines = 1;
-		if (!maxWidth) { maxWidth = this._options.width-x; }
+		if (!maxWidth) { maxWidth = this.options.width-x; }
 
-		const tokens = Text.tokenize(text, maxWidth);
-
-		while (tokens.length) { // interpret tokenized opcode stream
-			const token = tokens.shift();
+		const tokens = Text.tokenize(text, maxWidth) as TextToken[];
+		const initialState: TextRenderState = {
+			cx:x,
+			cy:y,
+			fg:null,
+			bg:null,
+			lines:1,
+			isPrevSpace:false,
+			isPrevFullWidth:false,
+		};
+		const finalState = tokens.reduce((state: TextRenderState, token) => {
 			switch (token.type) {
-				case Text.TYPE_TEXT:
-					let isSpace = false, isPrevSpace = false, isFullWidth = false, isPrevFullWidth = false;
-					for (let i=0;i<token.value.length;i++) {
-						const cc = token.value.charCodeAt(i);
-						const c = token.value.charAt(i);
-						if (this._options.layout === "term") {
+				case Text.TYPE_TEXT: {
+					return Array.from(token.value ?? '').reduce((characterState: TextRenderState, c) => {
+						const cc = c.charCodeAt(0);
+						if (this.options.layout === "term") {
 							const cch = cc >> 8;
 							const isCJK = cch === 0x11 || (cch >= 0x2e && cch <= 0x9f) || (cch >= 0xac && cch <= 0xd7) || (cc >= 0xA960 && cc <= 0xA97F);
 							if (isCJK) {
-								this.draw(cx + 0, cy, c, fg, bg);
-								this.draw(cx + 1, cy, "\t", fg, bg);
-								cx += 2;
-								continue;
+								// side-effect
+								this.draw(characterState.cx, characterState.cy, c, characterState.fg, characterState.bg);
+								this.draw(characterState.cx + 1, characterState.cy, "\t", characterState.fg, characterState.bg);
+								return {...characterState, cx:characterState.cx + 2};
 							}
 						}
-
-						// Assign to `true` when the current char is full-width.
-						isFullWidth = (cc > 0xff00 && cc < 0xff61) || (cc > 0xffdc && cc < 0xffe8) || cc > 0xffee;
-						// Current char is space, whatever full-width or half-width both are OK.
-						isSpace = (c.charCodeAt(0) == 0x20 || c.charCodeAt(0) == 0x3000);
-						// The previous char is full-width and
-						// current char is nether half-width nor a space.
-						if (isPrevFullWidth && !isFullWidth && !isSpace) { cx++; } // add an extra position
-						// The current char is full-width and
-						// the previous char is not a space.
-						if(isFullWidth && !isPrevSpace) { cx++; } // add an extra position
-						this.draw(cx++, cy, c, fg, bg);
-						isPrevSpace = isSpace;
-						isPrevFullWidth = isFullWidth;
-					}
-				break;
-
+						const isFullWidth = (cc > 0xff00 && cc < 0xff61) || (cc > 0xffdc && cc < 0xffe8) || cc > 0xffee;
+						const isSpace = c.charCodeAt(0) === 0x20 || c.charCodeAt(0) === 0x3000;
+						let cx = characterState.cx;
+						if (characterState.isPrevFullWidth && !isFullWidth && !isSpace) { cx++; }
+						if (isFullWidth && !characterState.isPrevSpace) { cx++; }
+						// side-effect
+						this.draw(cx, characterState.cy, c, characterState.fg, characterState.bg);
+						return {
+							...characterState,
+							cx:cx + 1,
+							isPrevSpace:isSpace,
+							isPrevFullWidth:isFullWidth,
+						};
+					}, state);
+				}
 				case Text.TYPE_FG:
-					fg = token.value || null;
-				break;
-
+					return {...state, fg:token.value || null};
 				case Text.TYPE_BG:
-					bg = token.value || null;
-				break;
-
+					return {...state, bg:token.value || null};
 				case Text.TYPE_NEWLINE:
-					cx = x;
-					cy++;
-					lines++;
-				break;
+					return {...state, cx:x, cy:state.cy + 1, lines:state.lines + 1};
+				default:
+					return state;
 			}
-		}
-
-		return lines;
+		}, initialState);
+		return finalState.lines;
 	}
 
 	/**
 	 * Timer tick: update dirty parts
 	 */
-	_tick() {
-		this._backend.schedule(this._tick);
-
-		if (!this._dirty) { return; }
-
-		if (this._dirty === true) { // draw all
-			this._backend.clear();
-			for (const id in this._data) { this._draw(id, false); } // redraw cached data
-		} else { // draw only dirty 
-			for (const key in this._dirty) { this._draw(key, true); }
+	private tick() {
+		this.backend.schedule(this.tick);
+		if (!this.dirty) { return; }
+		if (this.dirty === true) {
+			this.backend.clear();
+			// side-effect
+			Object.keys(this.data).forEach(id => { this.drawCell(id, false); });
+		} else {
+			// side-effect
+			Object.keys(this.dirty).forEach(key => { this.drawCell(key, true); });
 		}
-
-		this._dirty = false;
+		this.dirty = false;
 	}
 
 	/**
 	 * @param {string} key What to draw
-	 * @param {bool} clearBefore Is it necessary to clean before?
+	 * @param {boolean} clearBefore Is it necessary to clean before?
 	 */
-	_draw(key: string, clearBefore: boolean) {
-		const data = this._data[key];
-		if (data[4] != this._options.bg) { clearBefore = true; }
-
-		this._backend.draw(data, clearBefore);
+	private drawCell(key: string, clearBefore: boolean) {
+		const data = this.data[key];
+		if (data[4] !== this.options.bg) { clearBefore = true; }
+		this.backend.draw(data, clearBefore);
 	}
 }
