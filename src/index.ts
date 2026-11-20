@@ -8,7 +8,7 @@ export {Map} from '@/src/map/index.js';
 export {default as Noise} from "@/src/noise/index.js";
 export {default as Path} from "@/src/path/index.js";
 export {default as Engine} from "@/src/engine.js";
-export {default as Lighting} from "@/src/lighting.js";
+export {Lighting} from "@/src/lighting.js";
 
 export { DEFAULT_WIDTH, DEFAULT_HEIGHT, DIRS, KEYS } from "@/src/constants.js";
 
