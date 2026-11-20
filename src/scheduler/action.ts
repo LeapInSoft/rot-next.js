@@ -1,4 +1,4 @@
-import Scheduler from './scheduler.js';
+import { Scheduler } from './scheduler.js';
 
 /** Action-based scheduler. */
 export class Action<T = unknown> extends Scheduler<T> {

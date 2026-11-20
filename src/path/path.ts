@@ -15,7 +15,7 @@ export interface Options {
  * @param {object} [options]
  * @param {int} [options.topology=8]
  */
-export default abstract class Path {
+export abstract class Path {
 	_toX: number;
 	_toY: number;
 	_passableCallback: PassableCallback;

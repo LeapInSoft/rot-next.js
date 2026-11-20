@@ -16,7 +16,7 @@ type Events = { [key:string]: number };
  * Copied from a <a href="http://roguebasin.com/index.php/Names_from_a_high_order_Markov_Process_and_a_simplified_Katz_back-off_scheme">RogueBasin article</a>. 
  * Offers configurable order and prior.
  */
-export default class StringGenerator {
+export class StringGenerator {
 	_options: Options;
 	_boundary: string;
 	_suffix: string;

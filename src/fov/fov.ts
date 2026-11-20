@@ -8,7 +8,7 @@ export interface Options {
 	topology: 4 | 6 | 8
 }
 
-export default abstract class FOV {
+export abstract class FOV {
 	_lightPasses: LightPassesCallback;
 	_options: Options;
 

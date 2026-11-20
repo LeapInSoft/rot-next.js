@@ -1,4 +1,4 @@
-import Backend from "@/src/display/backend.js";
+import { Backend } from "@/src/display/backend.js";
 import { DisplayData, DisplayOptions } from "@/src/display/types.js";
 import * as Color from "@/src/color.js";
 
@@ -26,7 +26,7 @@ function termcolor(color: string) {
 }
 
 
-export default class Term extends Backend {
+export class Term extends Backend {
 	_offset: [number, number];
 	_cursor: [number, number];
 	_lastColor: string;

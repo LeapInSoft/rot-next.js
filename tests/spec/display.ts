@@ -1,8 +1,8 @@
 import * as ROT from "@/src";
 import { createCanvas } from "@napi-rs/canvas";
 import { describe, expect, it, vi } from "vitest";
-import Tile from "@/src/display/tile.js";
-import TileGL from "@/src/display/tile-gl.js";
+import { Tile } from "@/src/display/tile.js";
+import { TileGL } from "@/src/display/tile-gl.js";
 import { Display as NamedDisplay } from "@/src/display/display.js";
 import type { DisplayOptions } from "@/src/display/types.js";
 

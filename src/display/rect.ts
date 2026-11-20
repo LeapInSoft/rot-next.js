@@ -1,11 +1,11 @@
-import Canvas from "@/src/display/canvas.js";
+import { Canvas } from "@/src/display/canvas.js";
 import { DisplayOptions, DisplayData } from "@/src/display/types.js";
 
 /**
  * @class Rectangular backend
  * @private
  */
-export default class Rect extends Canvas {
+export class Rect extends Canvas {
 	_spacingX: number;
 	_spacingY: number;
 	_canvasCache: {[key:string]: HTMLCanvasElement};

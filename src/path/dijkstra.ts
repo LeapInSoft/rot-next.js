@@ -1,4 +1,4 @@
-import Path from '@/src/path/path.js';
+import { Path } from '@/src/path/path.js';
 import type {ComputeCallback, Options, PassableCallback} from '@/src/path/path.js';
 
 interface Item {
@@ -12,7 +12,7 @@ interface Item {
  * @augments ROT.Path
  * @see ROT.Path
  */
-export default class Dijkstra extends Path {
+export class Dijkstra extends Path {
 	private readonly computed: {[key: string]: Item} = {};
 	private readonly todo: Item[] = [];
 

@@ -1,11 +1,11 @@
-import Canvas from "@/src/display/canvas.js";
+import { Canvas } from "@/src/display/canvas.js";
 import { DisplayData } from "@/src/display/types.js";
 
 /**
  * @class Tile backend
  * @private
  */
-export default class Tile extends Canvas {
+export class Tile extends Canvas {
 	_colorCanvas: HTMLCanvasElement;
 
 	constructor() {

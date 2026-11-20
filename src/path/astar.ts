@@ -1,4 +1,4 @@
-import Path, { ComputeCallback, PassableCallback, Options } from "@/src/path/path.js";
+import { Path, type ComputeCallback, type PassableCallback, type Options } from "@/src/path/path.js";
 
 interface Item {
 	x: number;
@@ -13,7 +13,7 @@ interface Item {
  * @augments ROT.Path
  * @see ROT.Path
  */
-export default class AStar extends Path {
+export class AStar extends Path {
 	_todo: Item[];
 	_done: {[key:string]: Item};
 	_fromX!: number;

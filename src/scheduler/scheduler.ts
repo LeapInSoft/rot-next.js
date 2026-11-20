@@ -1,6 +1,6 @@
-import EventQueue from "@/src/eventqueue.js";
+import { EventQueue } from "@/src/eventqueue.js";
 
-export default class Scheduler<T = any> {
+export class Scheduler<T = any> {
 	_queue: EventQueue<T>;
 	_repeat: T[];
 	_current: any;

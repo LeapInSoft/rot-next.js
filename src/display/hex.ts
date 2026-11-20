@@ -1,4 +1,4 @@
-import Canvas from "@/src/display/canvas.js";
+import { Canvas } from "@/src/display/canvas.js";
 import { DisplayData } from "@/src/display/types.js";
 import { mod } from "@/src/util.js";
 
@@ -6,7 +6,7 @@ import { mod } from "@/src/util.js";
  * @class Hexagonal backend
  * @private
  */
-export default class Hex extends Canvas {
+export class Hex extends Canvas {
 	_spacingX: number;
 	_spacingY: number;
 	_hexSize: number;

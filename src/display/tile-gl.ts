@@ -1,4 +1,4 @@
-import Backend from "@/src/display/backend.js";
+import { Backend } from "@/src/display/backend.js";
 import { DisplayOptions, DisplayData } from "@/src/display/types.js";
 import * as Color from "@/src/color.js";
 
@@ -6,7 +6,7 @@ import * as Color from "@/src/color.js";
  * @class Tile backend
  * @private
  */
-export default class TileGL extends Backend {
+export class TileGL extends Backend {
 	_gl!: WebGLRenderingContext;
 	_program!: WebGLProgram;
 	_uniforms: {[key:string]: WebGLUniformLocation | null};
