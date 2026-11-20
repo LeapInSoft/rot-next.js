@@ -105,14 +105,23 @@ export class Display {
 	 * @see ROT.Display
 	 */
 	setOptions(options: Partial<DisplayOptions>) {
-		Object.assign(this.options, options);
-		if (options.layout) {
-			const ctor = BACKENDS[options.layout];
+		const definedOptions = Object.fromEntries(
+			Object.entries(options).filter(([, value]) => value !== undefined)
+		) as Partial<DisplayOptions>;
+		if (Object.keys(definedOptions).length === 0) { return this; }
+
+		const previousLayout = this.options.layout;
+		Object.assign(this.options, definedOptions);
+		const layoutChanged = this.options.layout !== previousLayout;
+		if (layoutChanged) {
+			this.backend.cancelSchedule();
+			const ctor = BACKENDS[this.options.layout];
 			this.backend = new ctor();
 		}
-		if (Object.keys(options).length === 0) { return this; }
+
 		this.backend.setOptions(this.options);
 		this.dirty = true;
+		if (layoutChanged) { this.scheduleTick(); }
 		return this;
 	}
 

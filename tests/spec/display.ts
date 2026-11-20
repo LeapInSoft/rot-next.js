@@ -123,6 +123,85 @@ describe("Display", function() {
 			expect((canvas as HTMLCanvasElement).height).toBe(80);
 		});
 
+		it("should update canvas dimensions independently after construction", function() {
+			const display = new ROT.Display({
+				width:2,
+				height:3,
+				layout:"rect",
+				fontSize:10,
+				spacing:1,
+			});
+
+			display.setOptions({width:4, height:5});
+			const canvas = display.getContainer();
+
+			expect(canvas).toBeInstanceOf(HTMLCanvasElement);
+			expect((canvas as HTMLCanvasElement).width).toBeGreaterThan(0);
+			expect((canvas as HTMLCanvasElement).height).toBeGreaterThan(0);
+			expect(display.getOptions().width).toBe(4);
+			expect(display.getOptions().height).toBe(5);
+		});
+
+		it("should update transpose and border options on the active backend", function() {
+			const hexDisplay = new ROT.Display({width:2, height:3, layout:"hex", transpose:false, border:0});
+			hexDisplay.setOptions({transpose:true, border:2});
+			const hexBackend = Reflect.get(hexDisplay, "backend");
+
+			expect(hexDisplay.getOptions().transpose).toBe(true);
+			expect(hexDisplay.getOptions().border).toBe(2);
+			expect(hexBackend.options.transpose).toBe(true);
+			expect(hexBackend.options.border).toBe(2);
+
+			const rectDisplay = new ROT.Display({width:2, height:3, layout:"rect", border:0});
+			rectDisplay.setOptions({border:3});
+			const rectBackend = Reflect.get(rectDisplay, "backend");
+			expect(rectBackend.options.border).toBe(3);
+		});
+
+		it("should update font, spacing, and color options on the active backend", function() {
+			const display = new ROT.Display({layout:"rect", fontSize:10, spacing:1, fg:"#fff", bg:"#000"});
+			display.setOptions({fontSize:20, spacing:2, fg:"#123456", bg:"#abcdef", fontFamily:"serif"});
+			const backend = Reflect.get(display, "backend");
+
+			expect(backend.options).toMatchObject({
+				fontSize:20,
+				spacing:2,
+				fg:"#123456",
+				bg:"#abcdef",
+				fontFamily:"serif",
+			});
+		});
+
+		it("should update tile map and colorization options after construction", function() {
+			const tileSet = createCanvas(2, 2);
+			const display = new ROT.Display({
+				width:1,
+				height:1,
+				layout:"tile",
+				tileWidth:1,
+				tileHeight:1,
+				tileMap:{a:[0, 0]},
+				tileSet:tileSet as unknown as HTMLCanvasElement,
+				tileColorize:false,
+			});
+
+			display.setOptions({tileMap:{b:[1, 1]}, tileColorize:true});
+			const backend = (display as unknown as {backend:Tile}).backend;
+
+			expect(backend.options.tileMap).toEqual({b:[1, 1]});
+			expect(backend.options.tileColorize).toBe(true);
+			expect(Reflect.get(display, "dirty")).toBe(true);
+		});
+
+		it("should ignore undefined values and preserve the active layout", function() {
+			const display = new ROT.Display({width:2, height:3, layout:"rect", fg:"#fff"});
+			const options = display.getOptions();
+
+			display.setOptions({layout:undefined, width:undefined, fg:undefined});
+
+			expect(display.getOptions()).toEqual(options);
+		});
+
 		it("should update the tile set after construction", function() {
 			const initialTileSet = createCanvas(1, 1);
 			const nextTileSet = createCanvas(1, 1);
