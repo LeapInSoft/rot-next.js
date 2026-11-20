@@ -14,6 +14,13 @@ describe("RNG", function() {
 	});
 
 	describe("getUniformInt", function() {
+		it("should return the bound for an empty range", function() {
+			ROT.RNG.setSeed(123);
+			expect(ROT.RNG.getUniformInt(7, 7)).toBe(7);
+		});
+	});
+
+	describe("getUniformInt", function() {
 	const lowerBound = 5;
 	const upperBound = 10;
 		it("should return a number", function() {
@@ -41,6 +48,41 @@ describe("RNG", function() {
 	describe("getWeightedValue", function() {
 		it("should return undefined when no weighted values are available", function() {
 			expect(ROT.RNG.getWeightedValue({})).toBeUndefined();
+		});
+
+		it("should return a weighted key", function() {
+			ROT.RNG.setSeed(12345);
+			expect(["common", "rare"]).toContain(
+				ROT.RNG.getWeightedValue({ common: 10, rare: 1 })
+			);
+		});
+	});
+
+	describe("distribution helpers", function() {
+		it("should keep getNormal finite and getPercentage in range", function() {
+			ROT.RNG.setSeed(123456);
+
+			const normal = ROT.RNG.getNormal();
+			const percentage = ROT.RNG.getPercentage();
+
+			expect(Number.isFinite(normal)).toBe(true);
+			expect(percentage).toBeGreaterThanOrEqual(1);
+			expect(percentage).toBeLessThanOrEqual(100);
+		});
+
+		it("should return null for getItem on an empty array", function() {
+			expect(ROT.RNG.getItem([])).toBeNull();
+		});
+
+		it("should preserve all items when shuffling", function() {
+			ROT.RNG.setSeed(123456);
+			const original = [1, 2, 3, 4, 5];
+
+			const shuffled = ROT.RNG.shuffle(original);
+
+			expect(original).toEqual([1, 2, 3, 4, 5]);
+			expect(shuffled).toHaveLength(original.length);
+			expect([...shuffled].sort((a, b) => a - b)).toEqual(original);
 		});
 	});
 

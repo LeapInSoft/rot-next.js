@@ -33,6 +33,7 @@
   ],
   "main": "dist/rot.js",
   "module": "lib/index.js",
+  "types": "lib/index.d.ts",
   "scripts": {
     "clean": "node scripts/clean.js",
     "typecheck": "tsc --project tsconfig.json && node scripts/resolve-paths.cjs",

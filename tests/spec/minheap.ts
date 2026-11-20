@@ -2,6 +2,24 @@ import { MinHeap } from "@/src/MinHeap";
 import { describe, expect, it } from "vitest";
 
 describe("MinHeap", function() {
+	it("should throw when popping an empty heap", function() {
+		const heap = new MinHeap<number>();
+
+		expect(() => heap.pop()).toThrow("no element to pop");
+	});
+
+	it("should maintain logical keys across offsets", function() {
+		const heap = new MinHeap<string>();
+		heap.push("later", 10);
+		heap.push("first", 5);
+
+		heap.shift(-2);
+
+		expect(heap.find("first")?.key).toBe(3);
+		expect(heap.pop()).toMatchObject({ value: "first", key: 3 });
+		expect(heap.pop()).toMatchObject({ value: "later", key: 8 });
+	});
+
 	it("should use strict equality when finding and removing values", function() {
 		const heap = new MinHeap<number | string>();
 		heap.push(1, 0);

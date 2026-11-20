@@ -116,6 +116,15 @@ describe("Scheduler", function() {
 			expect(S.getTimeOf(A100a)).toEqual(1/100);
 		});
 
+		it("should repeatedly schedule an actor after next", function() {
+			const speedScheduler = new ROT.Scheduler.Speed<{ getSpeed(): number }>();
+			const actor = { getSpeed: () => 100 };
+
+			speedScheduler.add(actor, true);
+			expect(speedScheduler.next()).toBe(actor);
+			expect(speedScheduler.next()).toBe(actor);
+		});
+
 	});
 
 	describe("Action", function() {
