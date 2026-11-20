@@ -15,7 +15,7 @@ export default class Speed<T extends SpeedActor = SpeedActor> extends Scheduler<
 	 * @see ROT.Scheduler#add
 	 */
 	add(item:T, repeat:boolean, time?:number) {
-		this._queue.add(item, time !== undefined ? time : 1/item.getSpeed());
+		this._queue.add(item, time !== undefined ? time : this._getTime(item));
 		return super.add(item, repeat);
 	}
 
@@ -24,8 +24,14 @@ export default class Speed<T extends SpeedActor = SpeedActor> extends Scheduler<
 	 */
 	next() {
 		if (this._current && this._repeat.indexOf(this._current) != -1) {
-			this._queue.add(this._current, 1/this._current.getSpeed());
+			this._queue.add(this._current, this._getTime(this._current));
 		}
 		return super.next();
+	}
+
+	private _getTime(item: T) {
+		const speed = item.getSpeed();
+		if (speed === 0) { throw new RangeError("Actor speed must be greater than zero"); }
+		return 1 / speed;
 	}
 }

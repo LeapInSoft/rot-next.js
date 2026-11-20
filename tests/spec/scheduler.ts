@@ -67,6 +67,21 @@ describe("Scheduler", function() {
 
 		beforeEach(function() { S.clear(); });
 
+		it("should reject actors with zero speed", function() {
+			const actor = {getSpeed: () => 0};
+
+			expect(() => S.add(actor, true)).toThrow(RangeError);
+		});
+
+		it("should reject zero speed when rescheduling a repeated actor", function() {
+			const actor = {speed: 1, getSpeed() { return this.speed; }};
+			S.add(actor, true);
+			expect(S.next()).toBe(actor);
+
+			actor.speed = 0;
+			expect(() => S.next()).toThrow(RangeError);
+		});
+
 		it("should schedule same speed evenly", function() {
 			S.add(A100a, true);
 			S.add(A100b, true);
