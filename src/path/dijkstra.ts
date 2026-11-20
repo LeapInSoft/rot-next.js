@@ -49,7 +49,8 @@ export class Dijkstra extends Path {
 	private computeUntil(fromX: number, fromY: number) {
 		// side-effect
 		while (this.todo.length) {
-			const item = this.todo.shift() as Item;
+			const item = this.todo.shift();
+			if (!item) { break; }
 			const isOrigin = item.x === fromX && item.y === fromY;
 
 			this.getNeighbors(item.x, item.y)

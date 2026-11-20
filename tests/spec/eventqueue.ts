@@ -3,7 +3,7 @@ import { describe, expect, it, vi } from "vitest";
 
 describe("EventQueue", function() {
 	it("should return added event", function() {
-		const q = new ROT.EventQueue();
+		const q = new ROT.EventQueue<string>();
 		q.add("a", 100);
 		expect(q.get()).toEqual("a");
 	});
@@ -57,7 +57,7 @@ describe("EventQueue", function() {
 	});
 
 	it("should return events sorted", function() {
-		const q = new ROT.EventQueue();
+		const q = new ROT.EventQueue<number>();
 		q.add(456, 10);
 		q.add(123, 5);
 		q.add(789, 15);
@@ -78,7 +78,7 @@ describe("EventQueue", function() {
 	});
 
 	it("should not shift the whole heap when advancing time", function() {
-		const q = new ROT.EventQueue();
+		const q = new ROT.EventQueue<number>();
 		q.add(456, 10);
 		q.add(123, 5);
 

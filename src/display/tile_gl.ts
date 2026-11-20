@@ -31,7 +31,10 @@ export class TileGL extends Backend {
 		cancelAnimationFrame(this.animationFrame);
 		this.animationFrame = null;
 	}
-	getContainer() { return this.gl.canvas as HTMLCanvasElement; }
+	getContainer() {
+		if (!(this.gl.canvas instanceof HTMLCanvasElement)) { throw new Error("WebGL canvas is unavailable"); }
+		return this.gl.canvas;
+	}
 
 	setOptions(opts: DisplayOptions) {
 		super.setOptions(opts);
@@ -103,7 +106,8 @@ export class TileGL extends Backend {
 	}
 
 	eventToPosition(x: number, y: number): [number, number] {
-		const canvas = this.gl.canvas as HTMLCanvasElement;
+		const canvas = this.gl.canvas;
+		if (!(canvas instanceof HTMLCanvasElement)) { throw new Error("WebGL canvas is unavailable"); }
 		const rect = canvas.getBoundingClientRect();
 		x -= rect.left;
 		y -= rect.top;
@@ -117,7 +121,7 @@ export class TileGL extends Backend {
 	}
 
 	initWebGL() {
-		const gl = document.createElement("canvas").getContext("webgl2", {preserveDrawingBuffer:true}) as WebGLRenderingContext | null;
+		const gl = document.createElement("canvas").getContext("webgl2", {preserveDrawingBuffer:true});
 		if (!gl) { throw new Error("WebGL2 is not supported"); }
 		const program = createProgram(gl, VS, FS);
 		gl.useProgram(program);
@@ -164,7 +168,10 @@ export class TileGL extends Backend {
 		}
 
 		if ("complete" in tileSet && !tileSet.complete) {
-			const image = tileSet as HTMLImageElement;
+			const image = tileSet;
+			if (!("addEventListener" in image) || typeof image.addEventListener !== "function") {
+				throw new Error("Pending tile set cannot receive load events");
+			}
 			const listener = () => {
 				if (this.tileSet !== image) { return; }
 				this.tileSetLoadListener = null;
@@ -246,17 +253,20 @@ void main() {
 }`.trim()
 
 function createProgram(gl: WebGLRenderingContext, vss: string, fss: string) {
-	const vs = gl.createShader(gl.VERTEX_SHADER) as WebGLShader;
+	const vs = gl.createShader(gl.VERTEX_SHADER);
+	if (!vs) { throw new Error("Unable to create WebGL vertex shader"); }
 	gl.shaderSource(vs, vss);
 	gl.compileShader(vs);
 	if (!gl.getShaderParameter(vs, gl.COMPILE_STATUS)) { throw new Error(gl.getShaderInfoLog(vs) || ""); }
 
-	const fs = gl.createShader(gl.FRAGMENT_SHADER) as WebGLShader;
+	const fs = gl.createShader(gl.FRAGMENT_SHADER);
+	if (!fs) { throw new Error("Unable to create WebGL fragment shader"); }
 	gl.shaderSource(fs, fss);
 	gl.compileShader(fs);
 	if (!gl.getShaderParameter(fs, gl.COMPILE_STATUS)) { throw new Error(gl.getShaderInfoLog(fs) || ""); }
 
-	const p = gl.createProgram() as WebGLProgram;
+	const p = gl.createProgram();
+	if (!p) { throw new Error("Unable to create WebGL program"); }
 	gl.attachShader(p, vs);
 	gl.attachShader(p, fs);
 	gl.linkProgram(p);
@@ -293,14 +303,17 @@ const colorCache: {[key:string]: GLColor} = {};
 function parseColor(color: string) {
 	if (!(color in colorCache)) {
 		let parsed: GLColor;
-		if (color == "transparent") {
+		if (color === "transparent") {
 			parsed = [0, 0, 0, 0];
 		} else if (color.indexOf("rgba") > -1) {
-			parsed = (color.match(/[\d.]+/g) || []).map(Number) as GLColor;
+			const matches = color.match(/[\d.]+/g);
+			if (!matches || matches.length < 3) { throw new Error(`Invalid RGBA color: ${color}`); }
+			const channels = matches.slice(0, 4).map(Number);
+			parsed = [channels[0] / 255, channels[1] / 255, channels[2] / 255, (channels[3] ?? 255) / 255];
 			for (let i=0;i<3;i++) { parsed[i] = parsed[i]/255; }
 		} else {
-			parsed = Color.fromString(color).map($ => $/255) as GLColor;
-			parsed.push(1);
+			const [red, green, blue] = Color.fromString(color);
+			parsed = [red / 255, green / 255, blue / 255, 1];
 		}
 		colorCache[color] = parsed;
 	}

@@ -7,7 +7,9 @@ export abstract class Canvas extends Backend {
 
 	constructor() {
 		super();
-		this.ctx = document.createElement("canvas").getContext("2d") as CanvasRenderingContext2D;
+		const context = document.createElement("canvas").getContext("2d");
+		if (!context) { throw new Error("2D canvas context is unavailable"); }
+		this.ctx = context;
 	}
 
 	schedule(cb: () => void) { this.animationFrame = requestAnimationFrame(cb); }

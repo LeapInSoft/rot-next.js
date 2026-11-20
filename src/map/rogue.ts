@@ -24,7 +24,7 @@ export interface Room {
 	y: number;
 	width: number;
 	height: number;
-	connections: any[];
+	connections: Point[];
 	cellx: number;
 	celly: number;
 }
@@ -42,23 +42,24 @@ export class Rogue extends Map {
 	constructor(width: number, height: number, options: Partial<Options> = {}) {
 		super(width, height);
 
-		options = Object.assign({
+		const normalizedOptions = {
 			cellWidth: 3,  // NOTE to self, these could probably work the same as the roomWidth/room Height values
-			cellHeight: 3  //     ie. as an array with min-max values for each direction....
-		}, options);
+			cellHeight: 3,
+			...options
+		};
 
 		/*
 		Set the room sizes according to the over-all width of the map,
 		and the cell sizes.
 		*/
-		if (!options.hasOwnProperty("roomWidth")) {
-			options["roomWidth"] = this.calculateRoomSize(this.width, options["cellWidth"] as number);
-		}
-		if (!options.hasOwnProperty("roomHeight")) {
-			options["roomHeight"] = this.calculateRoomSize(this.height, options["cellHeight"] as number);
-		}
-
-		this.options = options as Options;
+		const roomWidth = normalizedOptions.roomWidth ?? this.calculateRoomSize(this.width, normalizedOptions.cellWidth);
+		const roomHeight = normalizedOptions.roomHeight ?? this.calculateRoomSize(this.height, normalizedOptions.cellHeight);
+		this.options = {
+			cellWidth: normalizedOptions.cellWidth,
+			cellHeight: normalizedOptions.cellHeight,
+			roomWidth,
+			roomHeight
+		};
 	}
 
 	create(callback?: CreateCallback) {
@@ -124,7 +125,9 @@ export class Rogue extends Map {
 
 			do {
 				found = false;
-				idx = dirToCheck.pop() as number;
+				const direction = dirToCheck.pop();
+				if (direction === undefined) { break; }
+				idx = direction;
 
 				ncgx = cgx + DIRS[8][idx][0];
 				ncgy = cgy + DIRS[8][idx][1];
@@ -136,14 +139,14 @@ export class Rogue extends Map {
 
 				if (room["connections"].length > 0) {
 					// as long as this room doesn't already coonect to me, we are ok with it.
-					if (room["connections"][0][0] == ncgx && room["connections"][0][1] == ncgy) {
+					if (room["connections"][0][0] === ncgx && room["connections"][0][1] === ncgy) {
 						break;
 					}
 				}
 
 				otherRoom = this.rooms[ncgx][ncgy];
 
-				if (otherRoom["connections"].length == 0) {
+				if (otherRoom["connections"].length === 0) {
 					otherRoom["connections"].push([cgx, cgy]);
 
 					cgx = ncgx;
@@ -151,7 +154,7 @@ export class Rogue extends Map {
 					found = true;
 				}
 
-			} while (dirToCheck.length > 0 && found == false);
+			} while (dirToCheck.length > 0 && found === false);
 
 		} while (dirToCheck.length > 0);
 
@@ -249,9 +252,9 @@ export class Rogue extends Map {
 		let ry;
 		let door;
 
-		if (aDirection == 1 || aDirection == 3) {
+		if (aDirection === 1 || aDirection === 3) {
 			rx = RNG.getUniformInt(aRoom["x"] + 1, aRoom["x"] + aRoom["width"] - 2);
-			if (aDirection == 1) {
+			if (aDirection === 1) {
 				ry = aRoom["y"] - 2;
 				door = ry + 1;
 			} else {
@@ -263,7 +266,7 @@ export class Rogue extends Map {
 
 		} else {
 			ry = RNG.getUniformInt(aRoom["y"] + 1, aRoom["y"] + aRoom["height"] - 2);
-			if(aDirection == 2) {
+			if(aDirection === 2) {
 				rx = aRoom["x"] + aRoom["width"] + 1;
 				door = rx - 1;
 			} else {
@@ -321,7 +324,9 @@ export class Rogue extends Map {
 		this.map[xpos][ypos] = 0;
 
 		while (moves.length > 0) {
-			move = moves.pop() as Point;
+			const nextMove = moves.pop();
+			if (!nextMove) { break; }
+			move = nextMove;
 			while (move[1] > 0) {
 				xpos += DIRS[8][move[0]][0];
 				ypos += DIRS[8][move[0]][1];

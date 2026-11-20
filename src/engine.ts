@@ -39,15 +39,20 @@ export class Engine {
 			if (!actor) { return this.lock(); } /* no actors */
 			let result;
 			try {
-				result = actor.act();
+				if (typeof actor !== "object" || actor === null) { return this.lock(); }
+				const act = Reflect.get(actor, "act");
+				if (typeof act !== "function") { return this.lock(); }
+				result = Reflect.apply(act, actor, []);
 			} catch (error) {
 				if (!this.lockCount) { this.lock(); }
 				throw error;
 			}
-			if (result && result.then) { /* actor returned a "thenable", looks like a Promise */
+			if (typeof result === "object" && result !== null) { /* actor returned a "thenable", looks like a Promise */
+				const then = Reflect.get(result, "then");
+				if (typeof then !== "function") { continue; }
 				this.lock();
 				const unlock = this.unlock.bind(this);
-				result.then(unlock, unlock);
+				Reflect.apply(then, result, [unlock, unlock]);
 			}
 		}
 

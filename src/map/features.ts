@@ -66,22 +66,22 @@ export class Room extends Feature {
 		max = options.roomHeight[1];
 		const height = RNG.getUniformInt(min, max);
 		
-		if (dx == 1) { /* to the right */
+		if (dx === 1) { /* to the right */
 			const y2 = y - Math.floor(RNG.getUniform() * height);
 			return new this(x+1, y2, x+width, y2+height-1, x, y);
 		}
 		
-		if (dx == -1) { /* to the left */
+		if (dx === -1) { /* to the left */
 			const y2 = y - Math.floor(RNG.getUniform() * height);
 			return new this(x-width, y2, x-1, y2+height-1, x, y);
 		}
 
-		if (dy == 1) { /* to the bottom */
+		if (dy === 1) { /* to the bottom */
 			const x2 = x - Math.floor(RNG.getUniform() * width);
 			return new this(x2, y+1, x2+width-1, y+height, x, y);
 		}
 
-		if (dy == -1) { /* to the top */
+		if (dy === -1) { /* to the top */
 			const x2 = x - Math.floor(RNG.getUniform() * width);
 			return new this(x2, y-height, x2+width-1, y-1, x, y);
 		}
@@ -161,7 +161,7 @@ export class Room extends Feature {
 
 		for (let x=left; x<=right; x++) {
 			for (let y=top; y<=bottom; y++) {
-				if (x != left && x != right && y != top && y != bottom) { continue; }
+				if (x !== left && x !== right && y !== top && y !== bottom) { continue; }
 				if (isWallCallback(x, y)) { continue; }
 
 				this.addDoor(x, y);
@@ -183,7 +183,7 @@ export class Room extends Feature {
 		
 		for (let x=left; x<=right; x++) {
 			for (let y=top; y<=bottom; y++) {
-				if (x == left || x == right || y == top || y == bottom) {
+				if (x === left || x === right || y === top || y === bottom) {
 					if (!isWallCallback(x, y)) { return false; }
 				} else {
 					if (!canBeDugCallback(x, y)) { return false; }
@@ -208,7 +208,7 @@ export class Room extends Feature {
 			for (let y=top; y<=bottom; y++) {
 				if (x+","+y in this.doors) {
 					value = 2;
-				} else if (x == left || x == right || y == top || y == bottom) {
+				} else if (x === left || x === right || y === top || y === bottom) {
 					value = 1;
 				} else {
 					value = 0;
@@ -298,10 +298,10 @@ export class Corridor extends Feature {
 		 */
 		 
 		/* not supported */
-		if (length == 0) { return false; } 
+		if (length === 0) { return false; } 
 		
 		 /* length 1 allowed only if the next space is empty */
-		if (length == 1 && isWallCallback(this.endX + dx, this.endY + dy)) { return false; }
+		if (length === 1 && isWallCallback(this.endX + dx, this.endY + dy)) { return false; }
 		
 		/**
 		 * We do not want the corridor to crash into a corner of a room;

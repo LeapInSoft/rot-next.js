@@ -23,7 +23,7 @@ export class Speed<T extends SpeedActor = SpeedActor> extends Scheduler<T> {
 	 * @see ROT.Scheduler#next
 	 */
 	next() {
-		if (this.current && this.repeat.indexOf(this.current) != -1) {
+		if (this.current && this.repeat.indexOf(this.current) !== -1) {
 			this.queue.add(this.current, this.getActorTime(this.current));
 		}
 		return super.next();

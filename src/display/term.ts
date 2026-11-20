@@ -50,7 +50,10 @@ export class Term extends Backend {
 		super.setOptions(options);
 		const size = [options.width, options.height];
 		const avail = this.computeSize();
-		this.offset = avail.map((val, index) => Math.floor((val as number - size[index])/2)) as [number, number];
+		this.offset = [
+			Math.floor((avail[0] - size[0]) / 2),
+			Math.floor((avail[1] - size[1]) / 2)
+		];
 	}
 
 	clear() {
@@ -90,7 +93,7 @@ export class Term extends Backend {
 			this.lastColor = newColor;
 		}
 
-		if (ch != '\t') {
+		if (ch !== '\t') {
 			// write the provided symbol to the display
 			const chars = ([] as string[]).concat(ch);
 			process.stdout.write(chars[0]);
@@ -105,6 +108,11 @@ export class Term extends Backend {
 	}
 
 	computeFontSize(): number { throw new Error("Terminal backend has no notion of font size"); }
-	eventToPosition(x:number, y:number) { return [x, y] as [number, number]; }
-	computeSize() { return [process.stdout.columns, process.stdout.rows] as [number, number]; }
+	eventToPosition(x:number, y:number): [number, number] { return [x, y]; }
+	computeSize(): [number, number] {
+		return [
+			process.stdout.columns ?? 80,
+			process.stdout.rows ?? 24
+		];
+	}
 }

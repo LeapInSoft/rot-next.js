@@ -11,26 +11,33 @@ export function	fromString(str: string): Color {
 		cached = CACHE[normalized];
 	} else {
 		if (/^#[0-9a-f]{3}$/i.test(str)) {
-			cached = str.slice(1).split("").map(x => parseInt(x, 16) * 17) as Color;
+			const [red, green, blue] = str.slice(1).split("").map(x => parseInt(x, 16) * 17);
+			cached = [red, green, blue];
 		} else if (/^#[0-9a-f]{6}$/i.test(str)) {
-			cached = [1, 3, 5].map(i => parseInt(str.slice(i, i + 2), 16)) as Color;
+			cached = [
+				parseInt(str.slice(1, 3), 16),
+				parseInt(str.slice(3, 5), 16),
+				parseInt(str.slice(5, 7), 16)
+			];
 		} else if ((match = str.match(/^rgb\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)$/i))) {
-			cached = match.slice(1, 4).map(Number) as Color;
+			const [red, green, blue] = match.slice(1, 4).map(Number);
+			cached = [red, green, blue];
 		} else if ((match = str.match(/^rgba\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*,\s*(?:\d+(?:\.\d*)?|\.\d+)\s*\)$/i))) {
-			cached = match.slice(1, 4).map(Number) as Color;
+			const [red, green, blue] = match.slice(1, 4).map(Number);
+			cached = [red, green, blue];
 		} else { // html name
 			cached = [0, 0, 0];
 		}
 	}
 
-	return cached.slice() as Color;
+	return [cached[0], cached[1], cached[2]];
 }
 
 /**
  * Add two or more colors
  */
 export function add(color1: Color, ...colors: Color[]): Color {
-	const result = color1.slice() as Color;
+	const result: Color = [color1[0], color1[1], color1[2]];
 	for (let i=0;i<3;i++) {
 		for (let j=0;j<colors.length;j++) {
 			result[i] += colors[j][i];
@@ -55,7 +62,7 @@ export function add_(color1: Color, ...colors: Color[]): Color {
  * Multiply (mix) two or more colors
  */
 export function multiply(color1: Color, ...colors: Color[]): Color {
-	const result = color1.slice() as Color;
+	const result: Color = [color1[0], color1[1], color1[2]];
 	for (let i=0;i<3;i++) {
 		for (let j=0;j<colors.length;j++) {
 			result[i] *= colors[j][i] / 255;
@@ -110,7 +117,7 @@ export const lerpHSL = interpolateHSL;
  */
 export function randomize(color: Color, diff: number | Color): Color {
 	if (!(diff instanceof Array)) { diff = Math.round(RNG.getNormal(0, diff)); }
-	const result = color.slice() as Color;
+	const result: Color = [color[0], color[1], color[2]];
 	for (let i=0;i<3;i++) {
 		result[i] += (diff instanceof Array ? Math.round(RNG.getNormal(0, diff[i])) : diff);
 	}
@@ -129,7 +136,7 @@ export function rgb2hsl(color: Color): Color {
 	let h = 0, s;
 	const l = (max + min) / 2;
 
-	if (max == min) {
+	if (max === min) {
 		s = 0; // achromatic
 	} else {
 		const d = max - min;
@@ -160,7 +167,7 @@ function hue2rgb(p: number, q: number, t: number) {
 export function hsl2rgb(color: Color): Color {
 	let l = color[2];
 
-	if (color[1] == 0) {
+	if (color[1] === 0) {
 		l = Math.round(l*255);
 		return [l, l, l];
 	} else {

@@ -1,9 +1,9 @@
 import { EventQueue } from "@/src/eventqueue.js";
 
-export class Scheduler<T = any> {
+export class Scheduler<T = unknown> {
 	queue: EventQueue<T>;
 	repeat: T[];
-	current: any;
+	current: T | null;
 
 	/**
 	 * @class Abstract scheduler
@@ -52,13 +52,13 @@ export class Scheduler<T = any> {
 	 * @param {?} item
 	 * @returns {bool} successful?
 	 */
-	remove(item: any) {
+	remove(item: T) {
 		const result = this.queue.remove(item);
 
 		const index = this.repeat.indexOf(item);
-		if (index != -1) { this.repeat.splice(index, 1); }
+		if (index !== -1) { this.repeat.splice(index, 1); }
 
-		if (this.current == item) { this.current = null; }
+		if (this.current === item) { this.current = null; }
 
 		return result;
 	}

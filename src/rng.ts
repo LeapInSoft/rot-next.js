@@ -97,8 +97,12 @@ class RandomNumberGenerator {
 		const result: T[] = [];
 		const clone = array.slice();
 		while (clone.length) {
-			const index = clone.indexOf(this.getItem(clone) as T);
-			result.push(clone.splice(index, 1)[0]);
+			const item = this.getItem(clone);
+			if (item === null) { break; }
+			const index = clone.indexOf(item);
+			if (index === -1) { break; }
+			const removed = clone.splice(index, 1)[0];
+			result.push(removed);
 		}
 		return result;
 	}

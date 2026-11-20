@@ -11,6 +11,11 @@ export const TYPE_NEWLINE = 1;
 export const TYPE_FG      = 2;
 export const TYPE_BG      = 3;
 
+export interface TextToken {
+	type: number;
+	value?: string;
+}
+
 /**
  * Measure size of a resulting text block
  */
@@ -23,7 +28,7 @@ export function measure(str: string, maxWidth: number) {
 		const token = tokens[i];
 		switch (token.type) {
 			case TYPE_TEXT:
-				lineWidth += token.value.length;
+				lineWidth += token.value?.length ?? 0;
 			break;
 
 			case TYPE_NEWLINE:
@@ -42,7 +47,7 @@ export function measure(str: string, maxWidth: number) {
  * Convert string to a series of a formatting commands
  */
 export function tokenize(str: string, maxWidth: number) {
-	const result: any[] = [];
+	const result: TextToken[] = [];
 
 	/* first tokenization pass - split texts and color formatting commands */
 	let offset = 0;
@@ -58,7 +63,7 @@ export function tokenize(str: string, maxWidth: number) {
 
 		/* color command */
 		result.push({
-			type: (type == "c" ? TYPE_FG : TYPE_BG),
+			type: (type === "c" ? TYPE_FG : TYPE_BG),
 			value: name.trim()
 		});
 
@@ -79,7 +84,7 @@ export function tokenize(str: string, maxWidth: number) {
 }
 
 /* insert line breaks into first-pass tokenized data */
-function breakLines(tokens: any[], maxWidth: number) {
+function breakLines(tokens: TextToken[], maxWidth: number) {
 	if (!maxWidth) { maxWidth = Infinity; }
 	if (maxWidth < 0) { maxWidth = 1; }
 
@@ -89,26 +94,27 @@ function breakLines(tokens: any[], maxWidth: number) {
 
 	while (i < tokens.length) { /* take all text tokens, remove space, apply linebreaks */
 		const token = tokens[i];
-		if (token.type == TYPE_NEWLINE) { /* reset */
+		if (token.type === TYPE_NEWLINE) { /* reset */
 			lineLength = 0; 
 			lastTokenWithSpace = -1;
 		}
-		if (token.type != TYPE_TEXT) { /* skip non-text tokens */
+		if (token.type !== TYPE_TEXT) { /* skip non-text tokens */
 			i++;
 			continue; 
 		}
+		if (token.value === undefined) { i++; continue; }
 
 		/* remove spaces at the beginning of line */
-		while (lineLength == 0 && token.value.charAt(0) == " ") { token.value = token.value.substring(1); }
+		while (lineLength === 0 && token.value.charAt(0) === " ") { token.value = token.value.substring(1); }
 
 		/* forced newline? insert two new tokens after this one */
 		const index = token.value.indexOf("\n");
-		if (index != -1) { 
+		if (index !== -1) { 
 			token.value = breakInsideToken(tokens, i, index, true); 
 
 			/* if there are spaces at the end, we must remove them (we do not want the line too long) */
 			const arr = token.value.split("");
-			while (arr.length && arr[arr.length-1] == " ") { arr.pop(); }
+			while (arr.length && arr[arr.length-1] === " ") { arr.pop(); }
 			token.value = arr.join("");
 		}
 
@@ -124,15 +130,16 @@ function breakLines(tokens: any[], maxWidth: number) {
 			let index = -1;
 			while (1) {
 				const nextIndex = token.value.indexOf(" ", index+1);
-				if (nextIndex == -1) { break; }
+				if (nextIndex === -1) { break; }
 				if (lineLength + nextIndex > maxWidth) { break; }
 				index = nextIndex;
 			}
 
-			if (index != -1) { /* break at space within this one */
+			if (index !== -1) { /* break at space within this one */
 				token.value = breakInsideToken(tokens, i, index, true);
-			} else if (lastTokenWithSpace != -1) { /* is there a previous token where a break can occur? */
+			} else if (lastTokenWithSpace !== -1) { /* is there a previous token where a break can occur? */
 				const token = tokens[lastTokenWithSpace];
+				if (token.value === undefined) { i++; continue; }
 				const breakIndex = token.value.lastIndexOf(" ");
 				token.value = breakInsideToken(tokens, lastTokenWithSpace, breakIndex, true);
 				i = lastTokenWithSpace;
@@ -141,8 +148,9 @@ function breakLines(tokens: any[], maxWidth: number) {
 			}
 
 		} else { /* line not long, continue */
-			lineLength += token.value.length;
-			if (token.value.indexOf(" ") != -1) { lastTokenWithSpace = i; }
+			const value = token.value;
+			lineLength += value.length;
+			if (value.indexOf(" ") !== -1) { lastTokenWithSpace = i; }
 		}
 		
 		i++; /* advance to next token */
@@ -158,8 +166,9 @@ function breakLines(tokens: any[], maxWidth: number) {
 			case TYPE_TEXT: lastTextToken = token; break;
 			case TYPE_NEWLINE: 
 				if (lastTextToken) { /* remove trailing space */
+					if (lastTextToken.value === undefined) { break; }
 					const arr = lastTextToken.value.split("");
-					while (arr.length && arr[arr.length-1] == " ") { arr.pop(); }
+					while (arr.length && arr[arr.length-1] === " ") { arr.pop(); }
 					lastTextToken.value = arr.join("");
 				}
 				lastTextToken = null;
@@ -180,14 +189,16 @@ function breakLines(tokens: any[], maxWidth: number) {
  * @param {bool} removeBreakChar Do we want to remove the breaking character?
  * @returns {string} remaining unbroken token value
  */
-function breakInsideToken(tokens: any[], tokenIndex: number, breakIndex: number, removeBreakChar: boolean) {
+function breakInsideToken(tokens: TextToken[], tokenIndex: number, breakIndex: number, removeBreakChar: boolean) {
+	const currentValue = tokens[tokenIndex].value;
+	if (currentValue === undefined) { return ""; }
 	const newBreakToken = {
 		type: TYPE_NEWLINE
 	};
 	const newTextToken = {
 		type: TYPE_TEXT,
-		value: tokens[tokenIndex].value.substring(breakIndex + (removeBreakChar ? 1 : 0))
+		value: currentValue.substring(breakIndex + (removeBreakChar ? 1 : 0))
 	};
 	tokens.splice(tokenIndex+1, 0, newBreakToken, newTextToken);
-	return tokens[tokenIndex].value.substring(0, breakIndex);
+	return currentValue.substring(0, breakIndex);
 }

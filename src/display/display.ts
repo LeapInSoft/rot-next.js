@@ -232,7 +232,7 @@ export class Display {
 		if (!maxWidth && x >= this.options.width) { return 0; }
 		if (!maxWidth) { maxWidth = this.options.width-x; }
 
-		const tokens = Text.tokenize(text, maxWidth) as TextToken[];
+		const tokens: TextToken[] = Text.tokenize(text, maxWidth);
 		const initialState: TextRenderState = {
 			cx:x,
 			cy:y,

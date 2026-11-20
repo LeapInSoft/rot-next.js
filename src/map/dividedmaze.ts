@@ -22,7 +22,7 @@ export class DividedMaze extends Map {
 		for (let i=0;i<w;i++) {
 			this.map.push([]);
 			for (let j=0;j<h;j++) {
-				const border = (i == 0 || j == 0 || i+1 == w || j+1 == h);
+				const border = (i === 0 || j === 0 || i+1 === w || j+1 === h);
 				this.map[i].push(border ? 1 : 0);
 			}
 		}
@@ -45,7 +45,8 @@ export class DividedMaze extends Map {
 
 	process() {
 		while (this.stack.length) {
-			const room = this.stack.shift() as Room; /* [left, top, right, bottom] */
+			const room = this.stack.shift();
+			if (!room) { break; }
 			this.partitionRoom(room);
 		}
 	}
@@ -68,8 +69,9 @@ export class DividedMaze extends Map {
 
 		if (!availX.length || !availY.length) { return; }
 
-		const x = RNG.getItem(availX) as number;
-		const y = RNG.getItem(availY) as number;
+		const x = RNG.getItem(availX);
+		const y = RNG.getItem(availY);
+		if (x === null || y === null) { return; }
 		
 		this.map[x][y] = 1;
 		
@@ -102,9 +104,10 @@ export class DividedMaze extends Map {
 		const solid = RNG.getItem(walls);
 		for (let i=0;i<walls.length;i++) {
 			const w = walls[i];
-			if (w == solid) { continue; }
+			if (w === solid) { continue; }
 			
-			const hole = RNG.getItem(w) as Point;
+			const hole = RNG.getItem(w);
+			if (!hole) { continue; }
 			this.map[hole[0]][hole[1]] = 0;
 		}
 

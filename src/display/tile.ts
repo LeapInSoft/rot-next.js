@@ -40,7 +40,8 @@ export class Tile extends Canvas {
 			
 			if (this.options.tileColorize) { // apply colorization
 				const canvas = this.colorCanvas;
-				const context = canvas.getContext("2d") as CanvasRenderingContext2D;
+				const context = canvas.getContext("2d");
+				if (!context) { throw new Error("2D canvas context is unavailable"); }
 				context.globalCompositeOperation = "source-over";
 				context.clearRect(0, 0, tileWidth, tileHeight);
 
@@ -53,13 +54,13 @@ export class Tile extends Canvas {
 					0, 0, tileWidth, tileHeight
 				);
 
-				if (fg != "transparent") {
+				if (fg !== "transparent") {
 					context.fillStyle = fg;
 					context.globalCompositeOperation = "source-atop";
 					context.fillRect(0, 0, tileWidth, tileHeight);
 				}
 
-				if (bg != "transparent") {
+				if (bg !== "transparent") {
 					context.fillStyle = bg;
 					context.globalCompositeOperation = "destination-over";
 					context.fillRect(0, 0, tileWidth, tileHeight);

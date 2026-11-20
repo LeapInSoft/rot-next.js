@@ -19,7 +19,6 @@ export function capitalize(string: string) {
 }
 
 interface HasMap {
-	() : string;
 	map: {[key:string]: string};
 }
 
@@ -28,13 +27,14 @@ interface HasMap {
  * @param {string} template
  * @param {any} [argv]
  */
-export function format(template: string, ...args: any[]): string {
-	const map = (format as HasMap).map;
+export function format(template: string, ...args: unknown[]): string {
+	// The function property is public formatting configuration.
+	const map = (format as unknown as HasMap).map;
 
-	const replacer = function(match: string, group1: string, group2: string, index: number) {
-		if (template.charAt(index-1) == "%") { return match.substring(1); }
+	const replacer = function(match: string, group1: string, group2: string, index: number): string {
+		if (template.charAt(index-1) === "%") { return match.substring(1); }
 		if (!args.length) { return match; }
-		let obj = args[0];
+		let obj: unknown = args[0];
 
 		const group = group1 || group2;
 		const parts = group.split(",");
@@ -43,16 +43,19 @@ export function format(template: string, ...args: any[]): string {
 		if (!method) { return match; }
 
 		obj = args.shift();
-		let replaced = obj[method].apply(obj, parts);
+		const target = Object(obj);
+		const methodValue = Reflect.get(target, method);
+		if (typeof methodValue !== "function") { return match; }
+		let replaced: unknown = Reflect.apply(methodValue, target, parts);
+		replaced = typeof replaced === "string" ? replaced : String(replaced);
 
 		const first = name.charAt(0);
-		if (first != first.toLowerCase()) { replaced = capitalize(replaced); }
-
-		return replaced;
+		const replacedText = typeof replaced === "string" ? replaced : String(replaced);
+		return first !== first.toLowerCase() ? capitalize(replacedText) : replacedText;
 	};
 	return template.replace(/%(?:([a-z]+)|(?:{([^}]+)}))/gi, replacer);
 }
 
-(format as HasMap).map = {
+(format as unknown as HasMap).map = {
 	"s": "toString"
 }

@@ -31,7 +31,7 @@ export class DiscreteShadowcasting extends FOV {
 				blocks = !this.lightPasses(cx, cy);
 				if (this.visibleCoords(Math.floor(A), Math.ceil(B), blocks, DATA)) { callback(cx, cy, r, 1); }
 				
-				if (DATA.length == 2 && DATA[0] == 0 && DATA[1] == 360) { return; } /* cutoff? */
+				if (DATA.length === 2 && DATA[0] === 0 && DATA[1] === 360) { return; } /* cutoff? */
 
 			} /* for all cells in this ring */
 		} /* for all rings */
@@ -53,7 +53,7 @@ export class DiscreteShadowcasting extends FOV {
 		let index = 0;
 		while (index < DATA.length && DATA[index] < A) { index++; }
 		
-		if (index == DATA.length) { /* completely new shadow */
+		if (index === DATA.length) { /* completely new shadow */
 			if (blocks) { DATA.push(A, B); } 
 			return true;
 		}
@@ -66,7 +66,7 @@ export class DiscreteShadowcasting extends FOV {
 				count++;
 			}
 			
-			if (count == 0) { return false; }
+			if (count === 0) { return false; }
 			
 			if (blocks) { 
 				if (count % 2) {
@@ -85,7 +85,7 @@ export class DiscreteShadowcasting extends FOV {
 			}
 			
 			/* visible when outside an existing shadow, or when overlapping */
-			if (A == DATA[index-count] && count == 1) { return false; }
+			if (A === DATA[index-count] && count === 1) { return false; }
 			
 			if (blocks) { 
 				if (count % 2) {

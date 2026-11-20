@@ -1,6 +1,6 @@
 import { DIRS } from "@/src/constants.js";
 
-export type ComputeCallback = (x: number, y: number) => any;
+export type ComputeCallback = (x: number, y: number) => unknown;
 export type PassableCallback = (x: number, y: number) => boolean;
 
 export interface Options {
@@ -31,7 +31,7 @@ export abstract class Path {
 		}, options);
 
 		this.dirs = DIRS[this.options.topology];
-		if (this.options.topology == 8) { /* reorder dirs for more aesthetic result (vertical/horizontal first) */
+		if (this.options.topology === 8) { /* reorder dirs for more aesthetic result (vertical/horizontal first) */
 			this.dirs = [
 				this.dirs[0],
 				this.dirs[2],

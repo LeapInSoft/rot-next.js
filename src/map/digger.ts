@@ -6,7 +6,6 @@ import type { FeatureConstructor } from '@/src/map/features.js';
 import { RNG } from '@/src/rng.js';
 import { DIRS } from '@/src/constants.js';
 
-type FeatureType = "room" | "corridor";
 const FEATURES = {
 	"room": Room,
 	"corridor": Corridor
@@ -94,7 +93,7 @@ export class Digger extends Dungeon {
 			do {
 				featureAttempts++;
 				if (this.tryFeature(x, y, dir[0], dir[1])) { /* feature added */
-					//if (this.rooms.length + this.corridors.length == 2) { this.rooms[0].addDoor(x, y); } /* first room officially has doors */
+					//if (this.rooms.length + this.corridors.length === 2) { this.rooms[0].addDoor(x, y); } /* first room officially has doors */
 					this.removeSurroundingWalls(x, y);
 					this.removeSurroundingWalls(x-dir[0], y-dir[1]);
 					break; 
@@ -124,7 +123,7 @@ export class Digger extends Dungeon {
 	}
 
 	digCallback(x: number, y: number, value: number) {
-		if (value == 0 || value == 2) { /* empty */
+		if (value === 0 || value === 2) { /* empty */
 			this.map[x][y] = 0;
 			this.dug++;
 		} else { /* wall */
@@ -134,12 +133,12 @@ export class Digger extends Dungeon {
 
 	isWallCallback(x: number, y: number) {
 		if (x < 0 || y < 0 || x >= this.width || y >= this.height) { return false; }
-		return (this.map[x][y] == 1);
+		return (this.map[x][y] === 1);
 	}
 
 	canBeDugCallback(x: number, y: number) {
 		if (x < 1 || y < 1 || x+1 >= this.width || y+1 >= this.height) { return false; }
-		return (this.map[x][y] == 1);
+		return (this.map[x][y] === 1);
 	}
 
 	priorityWallCallback(x: number, y: number) { this.walls[x+","+y] = 2; };
@@ -167,7 +166,7 @@ export class Digger extends Dungeon {
 		const prio2 = [];
 		for (const id in this.walls) {
 			const prio = this.walls[id];
-			if (prio == 2) { 
+			if (prio === 2) { 
 				prio2.push(id); 
 			} else {
 				prio1.push(id);
@@ -177,7 +176,8 @@ export class Digger extends Dungeon {
 		const arr = (prio2.length ? prio2 : prio1);
 		if (!arr.length) { return null; } /* no walls :/ */
 		
-		const id = RNG.getItem(arr.sort()) as string; // sort to make the order deterministic
+		const id = RNG.getItem(arr.sort()); // sort to make the order deterministic
+		if (id === null) { return null; }
 		delete this.walls[id];
 
 		return id;
@@ -188,8 +188,9 @@ export class Digger extends Dungeon {
 	 * @returns {bool} was this a successful try?
 	 */
 	tryFeature(x: number, y: number, dx: number, dy: number) {
-		const featureName = RNG.getWeightedValue(this.features) as FeatureType;
-		const ctor = FEATURES[featureName] as FeatureConstructor;
+		const featureName = RNG.getWeightedValue(this.features);
+		if (featureName !== "room" && featureName !== "corridor") { return false; }
+		const ctor: FeatureConstructor = FEATURES[featureName];
 		const feature = ctor.createRandomAt(x, y, dx, dy, this.options);
 		
 		if (!feature.isValid(this.isWallCallback, this.canBeDugCallback)) {
@@ -256,7 +257,7 @@ export class Digger extends Dungeon {
 	addDoors() {
 		const data = this.map;
 		function isWallCallback(x: number, y: number) {
-			return (data[x][y] == 1);
+			return (data[x][y] === 1);
 		};
 		for (let i = 0; i < this.rooms.length; i++ ) {
 			const room = this.rooms[i];

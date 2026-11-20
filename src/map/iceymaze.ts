@@ -46,7 +46,7 @@ export class IceyMaze extends Map {
 			if (!map[cx][cy]) {
 				this.randomize(dirs);
 				do {
-					if (Math.floor(RNG.getUniform()*(this.regularity+1)) == 0) { this.randomize(dirs); }
+					if (Math.floor(RNG.getUniform()*(this.regularity+1)) === 0) { this.randomize(dirs); }
 					blocked = true;
 					for (let i=0;i<4;i++) {
 						nx = cx + dirs[i][0]*2;

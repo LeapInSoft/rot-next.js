@@ -203,7 +203,7 @@ export class Cellular extends Map {
 	private getClosest(point: Point, space: PointMap) {
 		const closest = Object.values(space).reduce<{point: Point | null; distance: number}>((best, candidate) => {
 			const distance = (candidate[0] - point[0]) * (candidate[0] - point[0]) + (candidate[1] - point[1]) * (candidate[1] - point[1]);
-			return best.point == null || distance < best.distance ? {point: candidate, distance} : best;
+			return best.point === null || distance < best.distance ? {point: candidate, distance} : best;
 		}, {point: null, distance: Infinity});
 		if (closest.point === null) {
 			throw new Error('Cannot find the closest point in an empty space.');
@@ -237,7 +237,7 @@ export class Cellular extends Map {
 
 			tests.forEach(test => {
 				const key = this.pointKey(test);
-				if (connected[key] == null && this.freeSpace(test[0], test[1], value)) {
+				if (connected[key] === null && this.freeSpace(test[0], test[1], value)) {
 					connected[key] = test;
 					if (!keepNotConnected) { delete notConnected[key]; }
 					stack.push(test);

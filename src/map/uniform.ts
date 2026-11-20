@@ -135,7 +135,10 @@ export class Uniform extends Dungeon {
 
 			this.unconnected = RNG.shuffle(this.rooms.slice());
 			this.connected = [];
-			if (this.unconnected.length) { this.connected.push(this.unconnected.pop() as Room); } /* first one is always connected */
+			if (this.unconnected.length) {
+				const firstRoom = this.unconnected.pop();
+				if (firstRoom) { this.connected.push(firstRoom); }
+			} /* first one is always connected */
 			
 			while (1) {
 				/* 1. pick random connected room */
@@ -215,7 +218,7 @@ export class Uniform extends Dungeon {
 		if (!start) { return false; }
 
 		if (start[index] >= min && start[index] <= max) { /* possible to connect with straight line (I-like) */
-			end = start.slice() as Point;
+			end = [start[0], start[1]];
 			let value = 0;
 			switch (dirIndex2) {
 				case 0: value = room2.getTop()-1; break;
@@ -241,11 +244,11 @@ export class Uniform extends Dungeon {
 			end = this.placeInWall(room2, dirIndex2);
 			if (!end) { return false; }
 
-			const mid = [0, 0];
+			const mid: Point = [0, 0];
 			mid[index] = start[index];
 			const index2 = (index+1)%2;
 			mid[index2] = end[index2];
-			this.digLine([start as Point, mid as Point, end as Point]);
+			this.digLine([start, mid, end]);
 			
 		} else { /* use current wall pair, but adjust the line in the middle (S-like) */
 		
@@ -254,26 +257,26 @@ export class Uniform extends Dungeon {
 			if (!end) { return false; }
 			const mid = Math.round((end[index2] + start[index2])/2);
 
-			const mid1 = [0, 0];
-			const mid2 = [0, 0];
+			const mid1: Point = [0, 0];
+			const mid2: Point = [0, 0];
 			mid1[index] = start[index];
 			mid1[index2] = mid;
 			mid2[index] = end[index];
 			mid2[index2] = mid;
-			this.digLine([start as Point, mid1 as Point, mid2 as Point, end as Point]);
+			this.digLine([start, mid1, mid2, end]);
 		}
 
 		room1.addDoor(start[0], start[1]);
 		room2.addDoor(end[0], end[1]);
 		
 		index = this.unconnected.indexOf(room1);
-		if (index != -1) {
+		if (index !== -1) {
 			this.unconnected.splice(index, 1);
 			this.connected.push(room1);
 		}
 
 		index = this.unconnected.indexOf(room2);
-		if (index != -1) {
+		if (index !== -1) {
 			this.unconnected.splice(index, 1);
 			this.connected.push(room2);
 		}
@@ -317,9 +320,9 @@ export class Uniform extends Dungeon {
 			const y = start[1] + i*dir[1];
 			avail.push(null);
 			
-			const isWall = (this.map[x][y] == 1);
+			const isWall = (this.map[x][y] === 1);
 			if (isWall) {
-				if (lastBadIndex != i-1) { avail[i] = [x, y]; }
+				if (lastBadIndex !== i-1) { avail[i] = [x, y]; }
 			} else {
 				lastBadIndex = i;
 				if (i) { avail[i-1] = null; }
@@ -347,16 +350,16 @@ export class Uniform extends Dungeon {
 
 	digCallback(x:number, y:number, value: number) {
 		this.map[x][y] = value;
-		if (value == 0) { this.dug++; }
+		if (value === 0) { this.dug++; }
 	}
 
 	isWallCallback(x: number, y: number) {
 		if (x < 0 || y < 0 || x >= this.width || y >= this.height) { return false; }
-		return (this.map[x][y] == 1);
+		return (this.map[x][y] === 1);
 	}
 
 	canBeDugCallback(x: number, y: number) {
 		if (x < 1 || y < 1 || x+1 >= this.width || y+1 >= this.height) { return false; }
-		return (this.map[x][y] == 1);
+		return (this.map[x][y] === 1);
 	}
 }

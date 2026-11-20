@@ -43,7 +43,8 @@ export class Rect extends Canvas {
 		} else {
 			const b = this.options.border;
 			canvas = document.createElement("canvas");
-			const ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
+			const ctx = canvas.getContext("2d");
+			if (!ctx) { throw new Error("2D canvas context is unavailable"); }
 			canvas.width = this.spacingX;
 			canvas.height = this.spacingY;
 			ctx.fillStyle = bg;

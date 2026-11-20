@@ -54,13 +54,13 @@ export class EllerMaze extends Map {
 				map[x][y] = 0;
 				
 				/* right connection */
-				if (i != L[i+1] && RNG.getUniform() > rand) {
+				if (i !== L[i+1] && RNG.getUniform() > rand) {
 					addToList(i, L, R);
 					map[x+1][y] = 0;
 				}
 				
 				/* bottom connection */
-				if (i != L[i] && RNG.getUniform() > rand) {
+				if (i !== L[i] && RNG.getUniform() > rand) {
 					/* remove connection */
 					removeFromList(i, L, R);
 				} else {
@@ -78,7 +78,7 @@ export class EllerMaze extends Map {
 			map[x][y] = 0;
 			
 			/* right connection */
-			if (i != L[i+1] && (i == L[i] || RNG.getUniform() > rand)) {
+			if (i !== L[i+1] && (i === L[i] || RNG.getUniform() > rand)) {
 				/* dig right also if the cell is separated, so it gets connected to the rest of maze */
 				addToList(i, L, R);
 				map[x+1][y] = 0;

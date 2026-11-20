@@ -58,9 +58,16 @@ export class StringGenerator {
 	generate() {
 		if (Object.keys(this.data).length === 0) { return ""; }
 
-		const result = [this.sample(this.prefix)];
-		while (result[result.length-1] != this.boundary) {
-			result.push(this.sample(result));
+		const result: string[] = [];
+		const first = this.sample(this.prefix);
+		if (first === undefined) { return ""; }
+		result.push(first);
+		while (true) {
+			const last = result[result.length - 1];
+			if (last === undefined || last === this.boundary) { break; }
+			const next = this.sample(result);
+			if (next === undefined) { break; }
+			result.push(next);
 		}
 		return this.join(result.slice(0, -1));
 	}
@@ -152,7 +159,7 @@ export class StringGenerator {
 			available = data;
 		}
 
-		return RNG.getWeightedValue(available) as string;
+		return RNG.getWeightedValue(available);
 	}
 
 	/**

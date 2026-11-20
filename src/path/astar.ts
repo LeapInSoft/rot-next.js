@@ -38,11 +38,12 @@ export class AStar extends Path {
 		this.add(this.toX, this.toY, null);
 
 		while (this.todo.length) {
-			const item = this.todo.shift() as Item;
+			const item = this.todo.shift();
+			if (!item) { break; }
 			const id = item.x+","+item.y;
 			if (id in this.done) { continue; }
 			this.done[id] = item;
-			if (item.x == fromX && item.y == fromY) { break; }
+			if (item.x === fromX && item.y === fromY) { break; }
 
 			const neighbors = this.getNeighbors(item.x, item.y);
 
@@ -81,7 +82,7 @@ export class AStar extends Path {
 		for (let i=0;i<this.todo.length;i++) {
 			const item = this.todo[i];
 			const itemF = item.g + item.h;
-			if (f < itemF || (f == itemF && h < item.h)) {
+			if (f < itemF || (f === itemF && h < item.h)) {
 				this.todo.splice(i, 0, obj);
 				return;
 			}

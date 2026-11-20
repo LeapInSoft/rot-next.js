@@ -17,7 +17,9 @@ export class PreciseShadowcasting extends FOV {
 		/* list of all shadows */
 		const SHADOWS: Arc[] = [];
 		
-		let cx, cy, blocks, A1, A2, visibility;
+		let cx, cy, blocks, visibility;
+		let A1: Arc;
+		let A2: Arc;
 
 		/* analyze surrounding cells in concentric rings, starting from the center */
 		for (let r=1; r<=R; r++) {
@@ -32,10 +34,10 @@ export class PreciseShadowcasting extends FOV {
 				A2 = [2*i+1, 2*neighborCount]; 
 				
 				blocks = !this.lightPasses(cx, cy);
-				visibility = this.checkVisibility(A1 as Arc, A2 as Arc, blocks, SHADOWS);
+				visibility = this.checkVisibility(A1, A2, blocks, SHADOWS);
 				if (visibility) { callback(cx, cy, r, visibility); }
 
-				if (SHADOWS.length == 2 && SHADOWS[0][0] == 0 && SHADOWS[1][0] == SHADOWS[1][1]) { return; } /* cutoff? */
+				if (SHADOWS.length === 2 && SHADOWS[0][0] === 0 && SHADOWS[1][0] === SHADOWS[1][1]) { return; } /* cutoff? */
 
 			} /* for all cells in this ring */
 		} /* for all rings */
@@ -60,7 +62,7 @@ export class PreciseShadowcasting extends FOV {
 			const old = SHADOWS[index1];
 			const diff = old[0]*A1[1] - A1[0]*old[1];
 			if (diff >= 0) { /* old >= A1 */
-				if (diff == 0 && !(index1 % 2)) { edge1 = true; }
+				if (diff === 0 && !(index1 % 2)) { edge1 = true; }
 				break;
 			}
 			index1++;
@@ -72,15 +74,15 @@ export class PreciseShadowcasting extends FOV {
 			const old = SHADOWS[index2];
 			const diff = A2[0]*old[1] - old[0]*A2[1];
 			if (diff >= 0) { /* old <= A2 */
-				if (diff == 0 && (index2 % 2)) { edge2 = true; }
+				if (diff === 0 && (index2 % 2)) { edge2 = true; }
 				break;
 			}
 		}
 
 		let visible = true;
-		if (index1 == index2 && (edge1 || edge2)) {  /* subset of existing shadow, one of the edges match */
+		if (index1 === index2 && (edge1 || edge2)) {  /* subset of existing shadow, one of the edges match */
 			visible = false; 
-		} else if (edge1 && edge2 && index1+1==index2 && (index2 % 2)) { /* completely equivalent with existing shadow */
+		} else if (edge1 && edge2 && index1+1===index2 && (index2 % 2)) { /* completely equivalent with existing shadow */
 			visible = false;
 		} else if (index1 > index2 && (index1 % 2)) { /* subset of existing shadow, not touching */
 			visible = false;
