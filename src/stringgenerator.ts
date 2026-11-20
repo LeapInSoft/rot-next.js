@@ -49,12 +49,15 @@ export default class StringGenerator {
 	clear() {
 		this._data = {};
 		this._priorValues = {};
+		this._priorValues[this._boundary] = this._options.prior;
 	}
 
 	/**
 	 * @returns {string} Generated string
 	 */
 	generate() {
+		if (Object.keys(this._data).length === 0) { return ""; }
+
 		const result = [this._sample(this._prefix)];
 		while (result[result.length-1] != this._boundary) {
 			result.push(this._sample(result));
