@@ -1,5 +1,5 @@
 import Noise from "./noise.js";
-import RNG from "../rng.js";
+import { RNG } from '../rng.js';
 import { mod } from "../util.js";
 
 const F2 = 0.5 * (Math.sqrt(3) - 1);

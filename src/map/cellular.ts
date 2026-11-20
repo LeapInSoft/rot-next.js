@@ -1,6 +1,7 @@
-import Map, { CreateCallback } from "./map.js";
-import { DIRS } from "../constants.js";
-import RNG from "../rng.js";
+import { Map } from './map.js';
+import type { CreateCallback } from './map.js';
+import { DIRS } from '../constants.js';
+import { RNG } from '../rng.js';
 
 interface Options {
 	born: number[];
@@ -8,10 +9,10 @@ interface Options {
 	topology: 4 | 6 | 8;
 }
 
-interface ConnectionCallback { (from:Point, to:Point): void };
+interface ConnectionCallback { (from: Point, to: Point): void; }
 
 type Point = [number, number];
-type PointMap = {[key:string]: Point}; 
+interface PointMap { [pointKey: string]: Point; }
 
 /**
  * @class Cellular automaton map generator
@@ -23,22 +24,22 @@ type PointMap = {[key:string]: Point};
  * @param {int[]} [options.survive] List of neighbor counts for an existing  cell to survive
  * @param {int} [options.topology] Topology 4 or 6 or 8
  */
-export default class Cellular extends Map {
-	_options: Options;
-	_dirs: number[][];
-	_map: number[][];
+export class Cellular extends Map {
+	private options: Options;
+	private directions: number[][];
+	private cells: number[][];
 
 	constructor(width: number, height: number, options: Partial<Options> = {}) {
 		super(width, height);
-		this._options = {
+		this.options = {
 			born: [5, 6, 7, 8],
 			survive: [4, 5, 6, 7, 8],
 			topology: 8
 		};
 		this.setOptions(options);
 
-		this._dirs = DIRS[this._options.topology];
-		this._map = this._fillMap(0);
+		this.directions = DIRS[this.options.topology];
+		this.cells = this.fillMap(0);
 	}
 
 	/**
@@ -46,11 +47,7 @@ export default class Cellular extends Map {
 	 * @param {float} probability Probability for a cell to become alive; 0 = all empty, 1 = all full
 	 */
 	randomize(probability: number) {
-		for (let i=0;i<this._width;i++) {
-			for (let j=0;j<this._height;j++) {
-				this._map[i][j] = (RNG.getUniform() < probability ? 1 : 0);
-			}
-		}
+		this.cells = this.cells.map(column => column.map(() => RNG.getUniform() < probability ? 1 : 0));
 		return this;
 	}
 
@@ -58,69 +55,54 @@ export default class Cellular extends Map {
 	 * Change options.
 	 * @see ROT.Map.Cellular
 	 */
-	setOptions(options: Partial<Options>) { Object.assign(this._options, options); }
-
-	set(x: number, y: number, value: number) { this._map[x][y] = value; }
-
-	create(callback?: CreateCallback) {
-		const newMap = this._fillMap(0);
-		const born = this._options.born;
-		const survive = this._options.survive;
-
-
-		for (let j=0;j<this._height;j++) {
-			let widthStep = 1;
-			let widthStart = 0;
-			if (this._options.topology == 6) {
-				widthStep = 2;
-				widthStart = j%2;
-			}
-
-			for (let i=widthStart; i<this._width; i+=widthStep) {
-				const cur = this._map[i][j];
-				const ncount = this._getNeighbors(i, j);
-
-				if (cur && survive.indexOf(ncount) != -1) { /* survive */
-					newMap[i][j] = 1;
-				} else if (!cur && born.indexOf(ncount) != -1) { /* born */
-					newMap[i][j] = 1;
-				}
-			}
-		}
-
-		this._map = newMap;
-		callback && this._serviceCallback(callback);
+	setOptions(options: Partial<Options>) {
+		Object.assign(this.options, options);
+		this.directions = DIRS[this.options.topology];
 	}
 
-	_serviceCallback(callback: CreateCallback) {
+	set(x: number, y: number, value: number) { this.cells[x][y] = value; }
+
+	create(callback?: CreateCallback) {
+		const born = this.options.born;
+		const survive = this.options.survive;
+		const isHex = this.options.topology === 6;
+		const newMap = this.cells.map((column, x) => column.map((cur, y) => {
+			if (isHex && x % 2 !== y % 2) { return 0; }
+			const ncount = this.getNeighbors(x, y);
+
+			if (cur && survive.includes(ncount)) { return 1; }
+			if (!cur && born.includes(ncount)) { return 1; }
+			return 0;
+		}));
+
+		this.cells = newMap;
+		callback && this.serviceCallback(callback);
+	}
+
+	private serviceCallback(callback: CreateCallback) {
 		for (let j=0;j<this._height;j++) {
 			let widthStep = 1;
 			let widthStart = 0;
-			if (this._options.topology == 6) {
+			if (this.options.topology === 6) {
 				widthStep = 2;
 				widthStart = j%2;
 			}
 			for (let i=widthStart; i<this._width; i+=widthStep) {
-				callback(i, j, this._map[i][j]);
+				callback(i, j, this.cells[i][j]);
 			}
 		}
 	}
 
 	/**
-	 * Get neighbor count at [i,j] in this._map
+	 * Get neighbor count at [i,j] in the cell map
 	 */
-	_getNeighbors(cx: number, cy: number) {
-		let result = 0;
-		for (let i=0;i<this._dirs.length;i++) {
-			const dir = this._dirs[i];
-			const x = cx + dir[0];
-			const y = cy + dir[1];
-
-			if (x < 0 || x >= this._width || y < 0 || y >= this._height) { continue; }
-			result += (this._map[x][y] == 1 ? 1 : 0);
-		}
-
-		return result;
+	private getNeighbors(cx: number, cy: number) {
+		return this.directions.reduce((count, [dx, dy]) => {
+			const x = cx + dx;
+			const y = cy + dy;
+			if (x < 0 || x >= this._width || y < 0 || y >= this._height) { return count; }
+			return count + (this.cells[x][y] === 1 ? 1 : 0);
+		}, 0);
 	}
 
 	/**
@@ -138,102 +120,99 @@ export default class Cellular extends Map {
 		// find all free space
 		let widthStep = 1;
 		let widthStarts = [0, 0];
-		if (this._options.topology == 6) {
+		if (this.options.topology === 6) {
 			widthStep = 2;
 			widthStarts = [0, 1];
 		}
 		for (let y = 0; y < this._height; y++) {
 			for (let x = widthStarts[y % 2]; x < this._width; x += widthStep) {
-				if (this._freeSpace(x, y, value)) {
-					const p = [x, y] as Point;
-					notConnected[this._pointKey(p)] = p;
-					allFreeSpace.push([x, y]);
+				if (this.freeSpace(x, y, value)) {
+					const point: Point = [x, y];
+					notConnected[this.pointKey(point)] = point;
+					allFreeSpace.push(point);
 				}
 			}
 		}
 		const start = allFreeSpace[RNG.getUniformInt(0, allFreeSpace.length - 1)];
 
-		const key = this._pointKey(start);
+		const key = this.pointKey(start);
 		const connected: PointMap = {};
 		connected[key] = start;
 		delete notConnected[key];
 
 		// find what's connected to the starting point
-		this._findConnected(connected, notConnected, [start], false, value);
+		this.findConnected(connected, notConnected, [start], false, value);
 
 		while (Object.keys(notConnected).length > 0) {
 			// find two points from notConnected to connected
-			const p = this._getFromTo(connected, notConnected);
+			const p = this.getFromTo(connected, notConnected);
 			const from = p[0]; // notConnected
 			const to = p[1]; // connected
 
 			// find everything connected to the starting point
 			const local: PointMap = {};
-			local[this._pointKey(from)] = from;
-			this._findConnected(local, notConnected, [from], true, value);
+			local[this.pointKey(from)] = from;
+			this.findConnected(local, notConnected, [from], true, value);
 
 			// connect to a connected cell
-			const tunnelFn = (this._options.topology == 6 ? this._tunnelToConnected6 : this._tunnelToConnected);
+			const tunnelFn = (this.options.topology === 6 ? this.tunnelToConnected6 : this.tunnelToConnected);
 			tunnelFn.call(this, to, from, connected, notConnected, value, connectionCallback);
 
 			// now all of local is connected
-			for (const k in local) {
-				const pp = local[k];
-				this._map[pp[0]][pp[1]] = value;
-				connected[k] = pp;
-				delete notConnected[k];
+			for (const [key, point] of Object.entries(local)) {
+				this.cells[point[0]][point[1]] = value;
+				connected[key] = point;
+				delete notConnected[key];
 			}
 		}
 
-		callback && this._serviceCallback(callback);
+		callback && this.serviceCallback(callback);
 	}
 
 	/**
 	 * Find random points to connect. Search for the closest point in the larger space.
 	 * This is to minimize the length of the passage while maintaining good performance.
 	 */
-	_getFromTo(connected: PointMap, notConnected: PointMap): Point[] {
-		let from:Point = [0,0], to:Point = [0,0], d:number;
+	private getFromTo(connected: PointMap, notConnected: PointMap): Point[] {
+		let from: Point = [0, 0];
+		let to: Point = [0, 0];
+		let distance: number;
 		const connectedKeys = Object.keys(connected);
 		const notConnectedKeys = Object.keys(notConnected);
 		for (let i = 0; i < 5; i++) {
 			if (connectedKeys.length < notConnectedKeys.length) {
 				const keys = connectedKeys;
 				to = connected[keys[RNG.getUniformInt(0, keys.length - 1)]];
-				from = this._getClosest(to, notConnected);
+				from = this.getClosest(to, notConnected);
 			} else {
 				const keys = notConnectedKeys;
 				from = notConnected[keys[RNG.getUniformInt(0, keys.length - 1)]];
-				to = this._getClosest(from, connected);
+				to = this.getClosest(from, connected);
 			}
-			d = (from[0] - to[0]) * (from[0] - to[0]) + (from[1] - to[1]) * (from[1] - to[1]);
-			if (d < 64) { break; }
+			distance = (from[0] - to[0]) * (from[0] - to[0]) + (from[1] - to[1]) * (from[1] - to[1]);
+			if (distance < 64) { break; }
 		}
-		// console.log(">>> connected=" + to + " notConnected=" + from + " dist=" + d);
 		return [from, to];
 	}
 
-	_getClosest(point: Point, space: PointMap) {
-		let minPoint = null;
-		let minDist = null;
-		for (const k in space) {
-			const p = space[k];
-			const d = (p[0] - point[0]) * (p[0] - point[0]) + (p[1] - point[1]) * (p[1] - point[1]);
-			if (minDist == null || d < minDist) {
-				minDist = d;
-				minPoint = p;
-			}
+	private getClosest(point: Point, space: PointMap) {
+		const closest = Object.values(space).reduce<{point: Point | null; distance: number}>((best, candidate) => {
+			const distance = (candidate[0] - point[0]) * (candidate[0] - point[0]) + (candidate[1] - point[1]) * (candidate[1] - point[1]);
+			return best.point == null || distance < best.distance ? {point: candidate, distance} : best;
+		}, {point: null, distance: Infinity});
+		if (closest.point === null) {
+			throw new Error('Cannot find the closest point in an empty space.');
 		}
-		return minPoint as Point;
+		return closest.point;
 	}
 
-	_findConnected(connected: PointMap, notConnected: PointMap,
+	private findConnected(connected: PointMap, notConnected: PointMap,
 					stack: Point[], keepNotConnected: boolean, value: number) {
 		while (stack.length > 0) {
 			const p = stack.splice(0, 1)[0];
 			let tests: Point[];
 
-			if (this._options.topology == 6) {
+			if (this.options.topology === 6) {
 				tests = [
 					[p[0] + 2, p[1]],
 					[p[0] + 1, p[1] - 1],
@@ -251,21 +230,22 @@ export default class Cellular extends Map {
 				];
 			}
 
-			for (let i = 0; i < tests.length; i++) {
-				const key = this._pointKey(tests[i]);
-				if (connected[key] == null && this._freeSpace(tests[i][0], tests[i][1], value)) {
-					connected[key] = tests[i];
+			tests.forEach(test => {
+				const key = this.pointKey(test);
+				if (connected[key] == null && this.freeSpace(test[0], test[1], value)) {
+					connected[key] = test;
 					if (!keepNotConnected) { delete notConnected[key]; }
-					stack.push(tests[i]);
+					stack.push(test);
 				}
-			}
+			});
 		}
 	}
 
-	_tunnelToConnected(to: Point, from: Point, 
+	private tunnelToConnected(to: Point, from: Point,
 						connected: PointMap, notConnected: PointMap,
 						value: number, connectionCallback?: ConnectionCallback) {
-		let a, b;
+		let a: Point;
+		let b: Point;
 		if (from[0] < to[0]) {
 			a = from;
 			b = to;
@@ -274,11 +254,11 @@ export default class Cellular extends Map {
 			b = from;
 		}
 		for (let xx = a[0]; xx <= b[0]; xx++) {
-			this._map[xx][a[1]] = value;
-			const p = [xx, a[1]] as Point;
-			const pkey = this._pointKey(p);
-			connected[pkey] = p;
-			delete notConnected[pkey];
+			this.cells[xx][a[1]] = value;
+			const point: Point = [xx, a[1]];
+			const pointKey = this.pointKey(point);
+			connected[pointKey] = point;
+			delete notConnected[pointKey];
 		}
 		if (connectionCallback && a[0] < b[0]) {
 			connectionCallback(a, [b[0], a[1]]);
@@ -295,19 +275,20 @@ export default class Cellular extends Map {
 			b = from;
 		}
 		for (let yy = a[1]; yy < b[1]; yy++) {
-			this._map[x][yy] = value;
-			const p = [x, yy] as Point;
-			const pkey = this._pointKey(p);
-			connected[pkey] = p;
-			delete notConnected[pkey];
+			this.cells[x][yy] = value;
+			const point: Point = [x, yy];
+			const pointKey = this.pointKey(point);
+			connected[pointKey] = point;
+			delete notConnected[pointKey];
 		}
 		if (connectionCallback && a[1] < b[1]) { connectionCallback([b[0], a[1]], [b[0], b[1]]); }
 	}
 
-	_tunnelToConnected6(to: Point, from: Point,
+	private tunnelToConnected6(to: Point, from: Point,
 						connected: PointMap, notConnected: PointMap,
 						value: number, connectionCallback?: ConnectionCallback) {
-		let a, b;
+		let a: Point;
+		let b: Point;
 		if (from[0] < to[0]) {
 			a = from;
 			b = to;
@@ -319,7 +300,7 @@ export default class Cellular extends Map {
 		// tunnel diagonally until horizontally level
 		let xx = a[0];
 		let yy = a[1];
-		while (!(xx == b[0] && yy == b[1])) {
+		while (xx !== b[0] || yy !== b[1]) {
 			let stepWidth = 2;
 			if (yy < b[1]) {
 				yy++;
@@ -339,19 +320,19 @@ export default class Cellular extends Map {
 				// ditto for left edge
 				xx += stepWidth;
 			}
-			this._map[xx][yy] = value;
-			const p = [xx, yy] as Point;
-			const pkey = this._pointKey(p);
-			connected[pkey] = p;
-			delete notConnected[pkey];
+			this.cells[xx][yy] = value;
+			const point: Point = [xx, yy];
+			const pointKey = this.pointKey(point);
+			connected[pointKey] = point;
+			delete notConnected[pointKey];
 		}
 
 		if (connectionCallback) { connectionCallback(from, to); }
 	}
 
-	_freeSpace(x: number, y: number, value: number) {
-		return x >= 0 && x < this._width && y >= 0 && y < this._height && this._map[x][y] == value;
+	private freeSpace(x: number, y: number, value: number) {
+		return x >= 0 && x < this._width && y >= 0 && y < this._height && this.cells[x][y] === value;
 	}
 
-	_pointKey(p: Point) { return p[0] + "." + p[1]; }
+	private pointKey(point: Point) { return `${point[0]}.${point[1]}`; }
 }

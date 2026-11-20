@@ -1,5 +1,6 @@
-import Map, { CreateCallback } from "./map.js";
-import RNG from "../rng.js";
+import { Map } from './map.js';
+import type { CreateCallback } from './map.js';
+import { RNG } from '../rng.js';
 
 type List = number[];
 
@@ -27,9 +28,9 @@ function removeFromList(i: number, L: List, R: List) {
  * Maze generator - Eller's algorithm
  * See http://homepages.cwi.nl/~tromp/maze.html for explanation
  */
-export default class EllerMaze extends Map {
+export class EllerMaze extends Map {
 	create(callback: CreateCallback) {
-		const map = this._fillMap(1);
+		const map = this.fillMap(1);
 		const w = Math.ceil((this._width-2)/2);
 		
 		const rand = 9/24;

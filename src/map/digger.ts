@@ -1,9 +1,10 @@
-import { CreateCallback } from "./map.js";
-import Dungeon from "./dungeon.js";
-import { Room, Corridor, FeatureConstructor } from "./features.js";
+import type { CreateCallback } from './map.js';
+import { Dungeon } from './dungeon.js';
+import { Room, Corridor } from './features.js';
+import type { FeatureConstructor } from './features.js';
 
-import RNG from "../rng.js";
-import { DIRS } from "../constants.js";
+import { RNG } from '../rng.js';
+import { DIRS } from '../constants.js';
 
 type FeatureType = "room" | "corridor";
 const FEATURES = {
@@ -24,7 +25,7 @@ interface Options {
  * Heavily based on Mike Anderson's ideas from the "Tyrant" algo, mentioned at 
  * http://roguebasin.com/index.php/Dungeon-Building_Algorithm
  */
-export default class Digger extends Dungeon {
+export class Digger extends Dungeon {
 	_options: Options;
 	_featureAttempts: number;
 	_map: number[][];
@@ -61,7 +62,7 @@ export default class Digger extends Dungeon {
 	create(callback?: CreateCallback) {
 		this._rooms = [];
 		this._corridors = [];
-		this._map = this._fillMap(1);
+		this._map = this.fillMap(1);
 		this._walls = {};
 		this._dug = 0;
 		const area = (this._width-2) * (this._height-2);

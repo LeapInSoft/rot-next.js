@@ -1,5 +1,6 @@
-import Map, { CreateCallback } from "./map.js";
-import RNG from "../rng.js";
+import { Map } from './map.js';
+import type { CreateCallback } from './map.js';
+import { RNG } from '../rng.js';
 
 type Room = [number, number, number, number];
 type Point = [number, number];
@@ -8,7 +9,7 @@ type Point = [number, number];
  * @class Recursively divided maze, http://en.wikipedia.org/wiki/Maze_generation_algorithm#Recursive_division_method
  * @augments ROT.Map
  */
-export default class DividedMaze extends Map {
+export class DividedMaze extends Map {
 	_stack: Room[] = [];
 	_map: number[][] = [];
 

@@ -3,16 +3,16 @@
  * Alea is licensed according to the http://en.wikipedia.org/wiki/MIT_License.
  */
 
-const FRAC = 2.3283064365386963e-10; /* 2^-32 */
+const FRAC = 2.3283064365386963e-10; // 2^-32
 
-class RNG {
-	_seed = 0;
-	_s0 = 0;
-	_s1 = 0;
-	_s2 = 0;
-	_c = 0;
+class RandomNumberGenerator {
+	private seed = 0;
+	private state0 = 0;
+	private state1 = 0;
+	private state2 = 0;
+	private carry = 0;
 
-	getSeed() { return this._seed; }
+	getSeed() { return this.seed; }
 
 	/**
 	 * Seed the number generator
@@ -20,16 +20,16 @@ class RNG {
 	setSeed(seed: number) {
 		seed = (seed < 1 ? 1/seed : seed);
 
-		this._seed = seed;
-		this._s0 = (seed >>> 0) * FRAC;
+		this.seed = seed;
+		this.state0 = (seed >>> 0) * FRAC;
 
 		seed = (seed*69069 + 1) >>> 0;
-		this._s1 = seed * FRAC;
+		this.state1 = seed * FRAC;
 
 		seed = (seed*69069 + 1) >>> 0;
-		this._s2 = seed * FRAC;
+		this.state2 = seed * FRAC;
 
-		this._c = 1;
+		this.carry = 1;
 		return this;
 	}
 
@@ -37,12 +37,12 @@ class RNG {
 	 * @returns Pseudorandom value [0,1), uniformly distributed
 	 */
 	getUniform() {
-		const t = 2091639 * this._s0 + this._c * FRAC;
-		this._s0 = this._s1;
-		this._s1 = this._s2;
-		this._c = t | 0;
-		this._s2 = t - this._c;
-		return this._s2;
+		const t = 2091639 * this.state0 + this.carry * FRAC;
+		this.state0 = this.state1;
+		this.state1 = this.state2;
+		this.carry = t | 0;
+		this.state2 = t - this.carry;
+		return this.state2;
 	}
 
 	/**
@@ -62,12 +62,14 @@ class RNG {
 	 * @returns A normally distributed pseudorandom value
 	 */
 	getNormal(mean = 0, stddev = 1) {
-		let u, v, r;
+		let u: number;
+		let v: number;
+		let r: number;
 		do {
 			u = 2*this.getUniform()-1;
 			v = 2*this.getUniform()-1;
 			r = u*u + v*v;
-		} while (r > 1 || r == 0);
+		} while (r > 1 || r === 0);
 
 		const gauss = u * Math.sqrt(-2*Math.log(r)/r);
 		return mean + gauss*stddev;
@@ -83,7 +85,7 @@ class RNG {
 	/**
 	 * @returns Randomly picked item, null when length=0
 	 */
-	getItem<T>(array: Array<T>) {
+	getItem<T>(array: T[]) {
 		if (!array.length) { return null; }
 		return array[Math.floor(this.getUniform() * array.length)];
 	}
@@ -91,8 +93,8 @@ class RNG {
 	/**
 	 * @returns New array with randomized items
 	 */
-	shuffle<T>(array: Array<T>) {
-		const result = [];
+	shuffle<T>(array: T[]) {
+		const result: T[] = [];
 		const clone = array.slice();
 		while (clone.length) {
 			const index = clone.indexOf(this.getItem(clone) as T);
@@ -105,39 +107,40 @@ class RNG {
 	 * @param data key=whatever, value=weight (relative probability)
 	 * @returns whatever
 	 */
-	getWeightedValue(data: { [key: string]: number, [key: number]: number }) {
+	getWeightedValue(data: Record<string, number>) {
 		let total = 0;
-		
-		for (const id in data) {
+		const ids = Object.keys(data);
+
+		for (const id of ids) {
 			total += data[id];
 		}
 		const random = this.getUniform()*total;
-		
-		let id, part = 0;
-		for (id in data) {
+
+		let part = 0;
+		for (const id of ids) {
 			part += data[id];
 			if (random < part) { return id; }
 		}
 
 		// If by some floating-point annoyance we have
 		// random >= total, just return the last id.
-		return id;
+		return ids[ids.length - 1];
 	}
 
 	/**
 	 * Get RNG state. Useful for storing the state and re-setting it via setState.
 	 * @returns Internal state
 	 */
-	getState() { return [this._s0, this._s1, this._s2, this._c]; }
+	getState() { return [this.state0, this.state1, this.state2, this.carry]; }
 
 	/**
 	 * Set a previously retrieved state.
 	 */
 	setState(state: number[]) {
-		this._s0 = state[0];
-		this._s1 = state[1];
-		this._s2 = state[2];
-		this._c  = state[3];
+		this.state0 = state[0];
+		this.state1 = state[1];
+		this.state2 = state[2];
+		this.carry = state[3];
 		return this;
 	}
 
@@ -145,9 +148,9 @@ class RNG {
 	 * Returns a cloned RNG
 	 */
 	clone() {
-		const clone = new RNG();
+		const clone = new RandomNumberGenerator();
 		return clone.setState(this.getState());
 	}
 }
 
-export default new RNG().setSeed(Date.now());
+export const RNG = new RandomNumberGenerator().setSeed(Date.now());

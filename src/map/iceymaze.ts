@@ -1,11 +1,12 @@
-import Map, { CreateCallback } from "./map.js";
-import RNG from "../rng.js";
+import { Map } from './map.js';
+import type { CreateCallback } from './map.js';
+import { RNG } from '../rng.js';
 
 /**
  * Icey's Maze generator
  * See http://roguebasin.com/index.php/Simple_maze for explanation
  */
-export default class IceyMaze extends Map {
+export class IceyMaze extends Map {
 	_regularity: number;
 	_map: number[][];
 
@@ -18,7 +19,7 @@ export default class IceyMaze extends Map {
 	create(callback: CreateCallback) {
 		let width = this._width;
 		let height = this._height;
-		const map = this._fillMap(1);
+		const map = this.fillMap(1);
 		
 		width -= (width % 2 ? 1 : 2);
 		height -= (height % 2 ? 1 : 2);

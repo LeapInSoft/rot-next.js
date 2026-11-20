@@ -1,8 +1,8 @@
-import { DEFAULT_WIDTH, DEFAULT_HEIGHT } from "../constants.js";
+import { DEFAULT_WIDTH, DEFAULT_HEIGHT } from '../constants.js';
 
-export interface CreateCallback { (x: number, y: number, contents: number): any };
+export interface CreateCallback { (x: number, y: number, contents: number): void; }
 
-export default abstract class Map {
+export abstract class Map {
 	_width: number;
 	_height: number;
 
@@ -18,7 +18,7 @@ export default abstract class Map {
 
 	abstract create(callback?: CreateCallback): void;
 
-	_fillMap(value: number) {
+	protected fillMap(value: number) {
 		const map: number[][] = [];
 		for (let i=0;i<this._width;i++) {
 			map.push([]);

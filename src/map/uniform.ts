@@ -1,7 +1,7 @@
-import { CreateCallback } from "./map.js";
-import Dungeon from "./dungeon.js";
-import { Room, Corridor } from "./features.js";
-import RNG from "../rng.js";
+import type { CreateCallback } from './map.js';
+import { Dungeon } from './dungeon.js';
+import { Room, Corridor } from './features.js';
+import { RNG } from '../rng.js';
 
 interface Options {
 	roomWidth: [number, number], /* room minimum and maximum width */
@@ -16,7 +16,7 @@ type Point = [number, number];
  * @class Dungeon generator which tries to fill the space evenly. Generates independent rooms and tries to connect them.
  * @augments ROT.Map.Dungeon
  */
-export default class Uniform extends Dungeon {
+export class Uniform extends Dungeon {
 	_options: Options;
 	_roomAttempts: number;
 	_corridorAttempts: number;
@@ -59,7 +59,7 @@ export default class Uniform extends Dungeon {
 			const t2 = Date.now();
 			if (t2 - t1 > this._options.timeLimit) { return null; } /* time limit! */
 		
-			this._map = this._fillMap(1);
+			this._map = this.fillMap(1);
 			this._dug = 0;
 			this._rooms = [];
 			this._unconnected = [];
@@ -126,7 +126,7 @@ export default class Uniform extends Dungeon {
 			this._corridors = [];
 
 			/* dig rooms into a clear map */
-			this._map = this._fillMap(1);
+			this._map = this.fillMap(1);
 			for (let i=0;i<this._rooms.length;i++) { 
 				const room = this._rooms[i];
 				room.clearDoors();
