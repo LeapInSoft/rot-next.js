@@ -1,9 +1,10 @@
-import Path, { ComputeCallback, PassableCallback, Options } from "@/src/path/path.js";
+import Path from '@/src/path/path.js';
+import type {ComputeCallback, Options, PassableCallback} from '@/src/path/path.js';
 
 interface Item {
-	x: number,
-	y: number,
-	prev: Item | null
+	x: number;
+	y: number;
+	prev: Item | null;
 }
 
 /**
@@ -12,15 +13,13 @@ interface Item {
  * @see ROT.Path
  */
 export default class Dijkstra extends Path {
-	_computed: {[key:string]: Item}; 
-	_todo: Item[];
+	private readonly computed: {[key: string]: Item} = {};
+	private readonly todo: Item[] = [];
 
 	constructor(toX: number, toY: number, passableCallback: PassableCallback, options: Partial<Options>) {
 		super(toX, toY, passableCallback, options);
 
-		this._computed = {};
-		this._todo = [];
-		this._add(toX, toY, null);
+		this.add(toX, toY, null);
 	}
 
 	/**
@@ -28,12 +27,17 @@ export default class Dijkstra extends Path {
 	 * @see ROT.Path#compute
 	 */
 	compute(fromX: number, fromY: number, callback: ComputeCallback) {
-		const key = fromX+","+fromY;
-		if (!(key in this._computed)) { this._compute(fromX, fromY); }
-		if (!(key in this._computed)) { return; }
-		
-		let item: Item | null = this._computed[key];
+		const key = `${fromX},${fromY}`;
+		if (!(key in this.computed)) {
+			this.computeUntil(fromX, fromY);
+		}
+		if (!(key in this.computed)) {
+			return;
+		}
+
+		let item: Item | null = this.computed[key];
 		while (item) {
+			// side-effect
 			callback(item.x, item.y);
 			item = item.prev;
 		}
@@ -42,31 +46,32 @@ export default class Dijkstra extends Path {
 	/**
 	 * Compute a non-cached value
 	 */
-	_compute(fromX: number, fromY: number) {
-		while (this._todo.length) {
-			const item = this._todo.shift() as Item;
-			if (item.x == fromX && item.y == fromY) { return; }
-			
-			const neighbors = this._getNeighbors(item.x, item.y);
-			
-			for (let i=0;i<neighbors.length;i++) {
-				const neighbor = neighbors[i];
-				const x = neighbor[0];
-				const y = neighbor[1];
-				const id = x+","+y;
-				if (id in this._computed) { continue; } /* already done */	
-				this._add(x, y, item); 
+	private computeUntil(fromX: number, fromY: number) {
+		// side-effect
+		while (this.todo.length) {
+			const item = this.todo.shift() as Item;
+			const isOrigin = item.x === fromX && item.y === fromY;
+
+			this._getNeighbors(item.x, item.y)
+				.filter(([x, y]) => !(`${x},${y}` in this.computed))
+				.forEach(([x, y]) => {
+					// side-effect
+					this.add(x, y, item);
+				});
+
+			if (isOrigin) {
+				return;
 			}
 		}
 	}
 
-	_add(x: number, y: number, prev: Item | null) {
-		const obj = {
-			x: x,
-			y: y,
-			prev: prev
+	private add(x: number, y: number, prev: Item | null) {
+		const item: Item = {
+			x,
+			y,
+			prev
 		};
-		this._computed[x+","+y] = obj;
-		this._todo.push(obj);
+		this.computed[`${x},${y}`] = item;
+		this.todo.push(item);
 	}
 }

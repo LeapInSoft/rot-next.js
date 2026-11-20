@@ -113,6 +113,18 @@ describe("Path", function() {
 				dijkstra.compute(X[0], X[1], PATH_CALLBACK);
 				expect(PATH.length).toEqual(0);
 			});
+
+			it("should preserve the frontier for subsequent queries", function() {
+				const corridor = new ROT.Path.Dijkstra(0, 0, (x, y) => x == 0 && y >= 0 && y <= 6, {topology:4});
+				const firstPath: number[] = [];
+				const secondPath: number[] = [];
+
+				corridor.compute(0, 3, (x, y) => firstPath.push(x, y));
+				corridor.compute(0, 6, (x, y) => secondPath.push(x, y));
+
+				expect(firstPath).toEqual([0, 3, 0, 2, 0, 1, 0, 0]);
+				expect(secondPath).toEqual([0, 6, 0, 5, 0, 4, 0, 3, 0, 2, 0, 1, 0, 0]);
+			});
 		}); /* 4-topology */
 
 		describe("6-topology", function() {
