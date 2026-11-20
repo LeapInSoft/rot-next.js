@@ -77,14 +77,86 @@ describe('TileGL backend', () => {
 			uniform1f: vi.fn(),
 			uniform4fv: vi.fn(),
 			drawArrays: vi.fn(),
+			createTexture: vi.fn(),
+			bindTexture: vi.fn(),
+			texParameteri: vi.fn(),
+			pixelStorei: vi.fn(),
+			texImage2D: vi.fn(),
+			deleteTexture: vi.fn(),
 			COLOR_BUFFER_BIT: 0x4000,
-			TRIANGLE_STRIP: 5
+			TRIANGLE_STRIP: 5,
+			TEXTURE_2D: 0x0de1,
+			TEXTURE_MAG_FILTER: 0x2800,
+			TEXTURE_MIN_FILTER: 0x2801,
+			TEXTURE_WRAP_S: 0x2802,
+			TEXTURE_WRAP_T: 0x2803,
+			NEAREST: 0x2600,
+			REPEAT: 0x2901,
+			UNPACK_FLIP_Y_WEBGL: 0x9240,
+			RGBA: 0x1908,
+			UNSIGNED_BYTE: 0x1401
 		} as unknown as WebGLRenderingContext;
 		backend._gl = gl;
 		backend._options = createOptions('tile-gl');
 		backend._uniforms = {};
 		return { backend, gl };
 	}
+
+	it('fails explicitly when WebGL initialization fails', () => {
+		const initializationError = new Error('WebGL is unavailable');
+		const initialize = vi.spyOn(TileGL.prototype, '_initWebGL').mockImplementation(() => {
+			throw initializationError;
+		});
+
+		try {
+			expect(() => new TileGL()).toThrow(initializationError);
+		} finally {
+			initialize.mockRestore();
+		}
+	});
+
+	it('reuses a texture for an unchanged tile set and deletes it when replaced', () => {
+		const { backend, gl } = createBackend();
+		const firstTexture = {} as WebGLTexture;
+		const secondTexture = {} as WebGLTexture;
+		vi.mocked(gl.createTexture)
+			.mockReturnValueOnce(firstTexture)
+			.mockReturnValueOnce(secondTexture);
+		vi.spyOn(backend, '_updateSize').mockImplementation(() => {});
+		const firstTileSet = { complete: true } as HTMLImageElement;
+		const secondTileSet = { complete: true } as HTMLImageElement;
+
+		backend.setOptions({ ...backend._options, tileSet: firstTileSet });
+		backend.setOptions({ ...backend._options, tileSet: firstTileSet });
+		expect(gl.createTexture).toHaveBeenCalledOnce();
+
+		backend.setOptions({ ...backend._options, tileSet: secondTileSet });
+
+		expect(gl.createTexture).toHaveBeenCalledTimes(2);
+		expect(gl.deleteTexture).toHaveBeenCalledOnce();
+		expect(gl.deleteTexture).toHaveBeenCalledWith(firstTexture);
+	});
+
+	it('registers only one load listener for an unchanged pending tile set', () => {
+		const { backend } = createBackend();
+		vi.spyOn(backend, '_updateSize').mockImplementation(() => {});
+		vi.spyOn(backend, '_updateTexture').mockImplementation(() => {});
+		const tileSet = {
+			complete: false,
+			addEventListener: vi.fn(),
+			removeEventListener: vi.fn()
+		} as unknown as HTMLImageElement;
+		const options = { ...backend._options, tileSet };
+
+		backend.setOptions(options);
+		backend.setOptions({ ...options, width: 3 });
+
+		expect(tileSet.addEventListener).toHaveBeenCalledOnce();
+		const listener = vi.mocked(tileSet.addEventListener).mock.calls[0][1] as EventListener;
+		listener(new Event('load'));
+		expect(backend._updateTexture).toHaveBeenCalledOnce();
+		expect(backend._updateTexture).toHaveBeenCalledWith(tileSet);
+	});
 
 	it('clears only the requested tile area before an empty draw', () => {
 		const { backend, gl } = createBackend();

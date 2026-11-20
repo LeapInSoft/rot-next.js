@@ -10,6 +10,9 @@ export default class TileGL extends Backend {
 	_gl!: WebGLRenderingContext;
 	_program!: WebGLProgram;
 	_uniforms: {[key:string]: WebGLUniformLocation | null};
+	private _texture: WebGLTexture | null = null;
+	private _tileSet: DisplayOptions["tileSet"] | undefined;
+	private _tileSetLoadListener: { tileSet: HTMLImageElement; listener: () => void } | null = null;
 
 	static isSupported() {
 		return !!document.createElement("canvas").getContext("webgl2", {preserveDrawingBuffer:true});
@@ -18,15 +21,7 @@ export default class TileGL extends Backend {
 	constructor() {
 		super();
 		this._uniforms = {};
-		try {
-			this._gl = this._initWebGL();
-		} catch (e: unknown) {
-			if (typeof e === "string") {
-				alert(e);
-			} else if (e instanceof Error) {
-				alert(e.message);
-			}
-		}
+		this._gl = this._initWebGL();
 	}
 
 	schedule(cb: () => void) { requestAnimationFrame(cb); }
@@ -36,13 +31,7 @@ export default class TileGL extends Backend {
 		super.setOptions(opts);
 
 		this._updateSize();
-
-		const tileSet = this._options.tileSet;
-		if (tileSet && "complete" in tileSet && !tileSet.complete) {
-			tileSet.addEventListener("load", () => this._updateTexture(tileSet as HTMLImageElement));
-		} else {
-			this._updateTexture(tileSet as HTMLImageElement);
-		}
+		this._setTileSet(opts.tileSet);
 	}
 
 
@@ -87,49 +76,6 @@ export default class TileGL extends Backend {
 		}
 
 
-/*
-
-
-		for (let i=0;i<chars.length;i++) {
-
-			if (this._options.tileColorize) { // apply colorization
-				let canvas = this._colorCanvas;
-				let context = canvas.getContext("2d") as CanvasRenderingContext2D;
-				context.globalCompositeOperation = "source-over";
-				context.clearRect(0, 0, tileWidth, tileHeight);
-
-				let fg = fgs[i];
-				let bg = bgs[i];
-
-				context.drawImage(
-					this._options.tileSet!,
-					tile[0], tile[1], tileWidth, tileHeight,
-					0, 0, tileWidth, tileHeight
-				);
-
-				if (fg != "transparent") {
-					context.fillStyle = fg;
-					context.globalCompositeOperation = "source-atop";
-					context.fillRect(0, 0, tileWidth, tileHeight);
-				}
-
-				if (bg != "transparent") {
-					context.fillStyle = bg;
-					context.globalCompositeOperation = "destination-over";
-					context.fillRect(0, 0, tileWidth, tileHeight);
-				}
-
-				this._ctx.drawImage(canvas, x*tileWidth, y*tileHeight, tileWidth, tileHeight);
-			} else { // no colorizing, easy
-				this._ctx.drawImage(
-					this._options.tileSet!,
-					tile[0], tile[1], tileWidth, tileHeight,
-					x*tileWidth, y*tileHeight, tileWidth, tileHeight
-				);
-			}
-		}
-
-*/
 	}
 
 	clear() {
@@ -165,8 +111,8 @@ export default class TileGL extends Backend {
 	}
 
 	_initWebGL() {
-		const gl = document.createElement("canvas").getContext("webgl2", {preserveDrawingBuffer:true}) as WebGLRenderingContext;
-		(window as any).gl = gl;
+		const gl = document.createElement("canvas").getContext("webgl2", {preserveDrawingBuffer:true}) as WebGLRenderingContext | null;
+		if (!gl) { throw new Error("WebGL2 is not supported"); }
 		const program = createProgram(gl, VS, FS);
 		gl.useProgram(program);
 		createQuad(gl);
@@ -200,9 +146,50 @@ export default class TileGL extends Backend {
 		gl.uniform2fv(this._uniforms["targetSize"], canvasSize);
 	}
 
-	_updateTexture(tileSet: HTMLImageElement) {
-		createTexture(this._gl, tileSet);
-  	}
+	_setTileSet(tileSet: DisplayOptions["tileSet"]) {
+		if (tileSet === this._tileSet) { return; }
+
+		this._removeTileSetLoadListener();
+		this._tileSet = tileSet;
+
+		if (!tileSet) {
+			this._clearTexture();
+			return;
+		}
+
+		if ("complete" in tileSet && !tileSet.complete) {
+			const image = tileSet as HTMLImageElement;
+			const listener = () => {
+				if (this._tileSet !== image) { return; }
+				this._tileSetLoadListener = null;
+				this._updateTexture(image);
+			};
+			this._tileSetLoadListener = { tileSet: image, listener };
+			image.addEventListener("load", listener, { once: true });
+			return;
+		}
+
+		this._updateTexture(tileSet);
+	}
+
+	_removeTileSetLoadListener() {
+		if (!this._tileSetLoadListener) { return; }
+		const { tileSet, listener } = this._tileSetLoadListener;
+		tileSet.removeEventListener("load", listener);
+		this._tileSetLoadListener = null;
+	}
+
+	_updateTexture(tileSet: Exclude<DisplayOptions["tileSet"], null>) {
+		const texture = createTexture(this._gl, tileSet);
+		if (this._texture) { this._gl.deleteTexture(this._texture); }
+		this._texture = texture;
+	}
+
+	_clearTexture() {
+		if (!this._texture) { return; }
+		this._gl.deleteTexture(this._texture);
+		this._texture = null;
+	}
 }
 
 const UNIFORMS = ["targetPosRel", "tilesetPosAbs", "tileSize", "targetSize", "colorize", "bg", "tint"];
@@ -281,8 +268,9 @@ function createQuad(gl: WebGLRenderingContext) {
 	gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0);
 }
 
-function createTexture(gl: WebGLRenderingContext, data: HTMLImageElement) {
+function createTexture(gl: WebGLRenderingContext, data: TexImageSource) {
 	const t = gl.createTexture();
+	if (!t) { throw new Error("Unable to create WebGL texture"); }
 	gl.bindTexture(gl.TEXTURE_2D, t);
 	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
 	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
