@@ -12,7 +12,7 @@ export class Action<T = unknown> extends Scheduler<T> {
 	 * @see ROT.Scheduler#add
 	 */
 	add(item: T, repeat: boolean, time?: number) {
-		this._queue.add(item, time !== undefined ? time : this.defaultDuration);
+		this.queue.add(item, time !== undefined ? time : this.defaultDuration);
 		return super.add(item, repeat);
 	}
 
@@ -22,7 +22,7 @@ export class Action<T = unknown> extends Scheduler<T> {
 	}
 
 	remove(item: T) {
-		if (item === this._current) { this.duration = this.defaultDuration; }
+		if (item === this.current) { this.duration = this.defaultDuration; }
 		return super.remove(item);
 	}
 
@@ -30,8 +30,8 @@ export class Action<T = unknown> extends Scheduler<T> {
 	 * @see ROT.Scheduler#next
 	 */
 	next() {
-		if (this._current !== null && this._repeat.indexOf(this._current) !== -1) {
-			this._queue.add(this._current, this.duration);
+		if (this.current !== null && this.repeat.indexOf(this.current) !== -1) {
+			this.queue.add(this.current, this.duration);
 			this.duration = this.defaultDuration;
 		}
 		return super.next();
@@ -41,7 +41,7 @@ export class Action<T = unknown> extends Scheduler<T> {
 	 * Set duration for the active item
 	 */
 	setDuration(time: number) {
-		if (this._current !== null) { this.duration = time; }
+		if (this.current !== null) { this.duration = time; }
 		return this;
 	}
 }

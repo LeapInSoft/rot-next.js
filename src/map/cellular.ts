@@ -80,14 +80,14 @@ export class Cellular extends Map {
 	}
 
 	private serviceCallback(callback: CreateCallback) {
-		for (let j=0;j<this._height;j++) {
+		for (let j=0;j<this.height;j++) {
 			let widthStep = 1;
 			let widthStart = 0;
 			if (this.options.topology === 6) {
 				widthStep = 2;
 				widthStart = j%2;
 			}
-			for (let i=widthStart; i<this._width; i+=widthStep) {
+			for (let i=widthStart; i<this.width; i+=widthStep) {
 				callback(i, j, this.cells[i][j]);
 			}
 		}
@@ -100,7 +100,7 @@ export class Cellular extends Map {
 		return this.directions.reduce((count, [dx, dy]) => {
 			const x = cx + dx;
 			const y = cy + dy;
-			if (x < 0 || x >= this._width || y < 0 || y >= this._height) { return count; }
+			if (x < 0 || x >= this.width || y < 0 || y >= this.height) { return count; }
 			return count + (this.cells[x][y] === 1 ? 1 : 0);
 		}, 0);
 	}
@@ -124,8 +124,8 @@ export class Cellular extends Map {
 			widthStep = 2;
 			widthStarts = [0, 1];
 		}
-		for (let y = 0; y < this._height; y++) {
-			for (let x = widthStarts[y % 2]; x < this._width; x += widthStep) {
+		for (let y = 0; y < this.height; y++) {
+			for (let x = widthStarts[y % 2]; x < this.width; x += widthStep) {
 				if (this.freeSpace(x, y, value)) {
 					const point: Point = [x, y];
 					notConnected[this.pointKey(point)] = point;
@@ -336,7 +336,7 @@ export class Cellular extends Map {
 	}
 
 	private freeSpace(x: number, y: number, value: number) {
-		return x >= 0 && x < this._width && y >= 0 && y < this._height && this.cells[x][y] === value;
+		return x >= 0 && x < this.width && y >= 0 && y < this.height && this.cells[x][y] === value;
 	}
 
 	private pointKey(point: Point) { return `${point[0]}.${point[1]}`; }

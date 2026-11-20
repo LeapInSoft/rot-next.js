@@ -5,10 +5,10 @@ import { DisplayOptions, DisplayData } from "@/src/display/types.js";
  * @private
  */
 export abstract class Backend {
-	_options!: DisplayOptions;
+	options!: DisplayOptions;
 
 	getContainer(): HTMLElement | null { return null; }
-	setOptions(options: DisplayOptions) { this._options = options; }
+	setOptions(options: DisplayOptions) { this.options = options; }
 
 	abstract schedule(cb: ()=>void): void;
 	abstract cancelSchedule(): void;

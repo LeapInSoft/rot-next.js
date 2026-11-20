@@ -52,7 +52,7 @@ export class Dijkstra extends Path {
 			const item = this.todo.shift() as Item;
 			const isOrigin = item.x === fromX && item.y === fromY;
 
-			this._getNeighbors(item.x, item.y)
+			this.getNeighbors(item.x, item.y)
 				.filter(([x, y]) => !(`${x},${y}` in this.computed))
 				.forEach(([x, y]) => {
 					// side-effect

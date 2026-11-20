@@ -10,59 +10,59 @@ type Point = [number, number];
  * @augments ROT.Map
  */
 export class DividedMaze extends Map {
-	_stack: Room[] = [];
-	_map: number[][] = [];
+	stack: Room[] = [];
+	map: number[][] = [];
 
 	create(callback?: CreateCallback) {
-		const w = this._width;
-		const h = this._height;
+		const w = this.width;
+		const h = this.height;
 		
-		this._map = [];
+		this.map = [];
 		
 		for (let i=0;i<w;i++) {
-			this._map.push([]);
+			this.map.push([]);
 			for (let j=0;j<h;j++) {
 				const border = (i == 0 || j == 0 || i+1 == w || j+1 == h);
-				this._map[i].push(border ? 1 : 0);
+				this.map[i].push(border ? 1 : 0);
 			}
 		}
 		
-		this._stack = [
+		this.stack = [
 			[1, 1, w-2, h-2]
 		];
-		this._process();
+		this.process();
 		
 		if (callback) {
 			for (let i=0;i<w;i++) {
 				for (let j=0;j<h;j++) {
-					callback(i, j, this._map[i][j]);
+					callback(i, j, this.map[i][j]);
 				}
 			}
 		}
-		this._map = [];
+		this.map = [];
 		return this;
 	}
 
-	_process() {
-		while (this._stack.length) {
-			const room = this._stack.shift() as Room; /* [left, top, right, bottom] */
-			this._partitionRoom(room);
+	process() {
+		while (this.stack.length) {
+			const room = this.stack.shift() as Room; /* [left, top, right, bottom] */
+			this.partitionRoom(room);
 		}
 	}
 
-	_partitionRoom(room: Room) {
+	partitionRoom(room: Room) {
 		const availX: number[] = [];
 		const availY: number[] = [];
 		
 		for (let i=room[0]+1;i<room[2];i++) {
-			const top = this._map[i][room[1]-1];
-			const bottom = this._map[i][room[3]+1];
+			const top = this.map[i][room[1]-1];
+			const bottom = this.map[i][room[3]+1];
 			if (top && bottom && !(i % 2)) { availX.push(i); }
 		}
 		
 		for (let j=room[1]+1;j<room[3];j++) {
-			const left = this._map[room[0]-1][j];
-			const right = this._map[room[2]+1][j];
+			const left = this.map[room[0]-1][j];
+			const right = this.map[room[2]+1][j];
 			if (left && right && !(j % 2)) { availY.push(j); }
 		}
 
@@ -71,31 +71,31 @@ export class DividedMaze extends Map {
 		const x = RNG.getItem(availX) as number;
 		const y = RNG.getItem(availY) as number;
 		
-		this._map[x][y] = 1;
+		this.map[x][y] = 1;
 		
 		const walls: Point[][] = [];
 		
 		let w: Point[] = []; walls.push(w); /* left part */
 		for (let i=room[0]; i<x; i++) { 
-			this._map[i][y] = 1;
+			this.map[i][y] = 1;
 			if (i % 2) w.push([i, y]); 
 		}
 		
 		w = []; walls.push(w); /* right part */
 		for (let i=x+1; i<=room[2]; i++) { 
-			this._map[i][y] = 1;
+			this.map[i][y] = 1;
 			if (i % 2) w.push([i, y]); 
 		}
 
 		w = []; walls.push(w); /* top part */
 		for (let j=room[1]; j<y; j++) { 
-			this._map[x][j] = 1;
+			this.map[x][j] = 1;
 			if (j % 2) w.push([x, j]); 
 		}
 		
 		w = []; walls.push(w); /* bottom part */
 		for (let j=y+1; j<=room[3]; j++) { 
-			this._map[x][j] = 1;
+			this.map[x][j] = 1;
 			if (j % 2) w.push([x, j]); 
 		}
 			
@@ -105,12 +105,12 @@ export class DividedMaze extends Map {
 			if (w == solid) { continue; }
 			
 			const hole = RNG.getItem(w) as Point;
-			this._map[hole[0]][hole[1]] = 0;
+			this.map[hole[0]][hole[1]] = 0;
 		}
 
-		this._stack.push([room[0], room[1], x-1, y-1]); /* left top */
-		this._stack.push([x+1, room[1], room[2], y-1]); /* right top */
-		this._stack.push([room[0], y+1, x-1, room[3]]); /* left bottom */
-		this._stack.push([x+1, y+1, room[2], room[3]]); /* right bottom */
+		this.stack.push([room[0], room[1], x-1, y-1]); /* left top */
+		this.stack.push([x+1, room[1], room[2], y-1]); /* right top */
+		this.stack.push([room[0], y+1, x-1, room[3]]); /* left bottom */
+		this.stack.push([x+1, y+1, room[2], room[3]]); /* right bottom */
 	}
 }

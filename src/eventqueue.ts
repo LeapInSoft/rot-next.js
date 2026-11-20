@@ -1,27 +1,27 @@
 import {MinHeap} from "@/src/min_heap.js";
 
 export class EventQueue<T = any> {
-	_time: number;
-	_events: MinHeap<T>;
+	time: number;
+	events: MinHeap<T>;
 
 	/**
 	 * @class Generic event queue: stores events and retrieves them based on their time
 	 */
 	constructor() {
-		this._time = 0;
-		this._events = new MinHeap();
+		this.time = 0;
+		this.events = new MinHeap();
 	}
 
 	/**
 	 * @returns {number} Elapsed time
 	 */
-	getTime() { return this._time; }
+	getTime() { return this.time; }
 
 	/**
 	 * Clear all scheduled events
 	 */
 	clear() {
-		this._events = new MinHeap();
+		this.events = new MinHeap();
 		return this;
 	}
 
@@ -30,7 +30,7 @@ export class EventQueue<T = any> {
 	 * @param {number} time
 	 */
 	add(event: T, time: number) {
-		this._events.push(event,time);
+		this.events.push(event,time);
 	}
 
 	/**
@@ -38,12 +38,12 @@ export class EventQueue<T = any> {
 	 * @returns {? || null} The event previously added by addEvent, null if no event available
 	 */
 	get() {
-		if (!this._events.len()) { return null; }
+		if (!this.events.len()) { return null; }
 
-		const { key: time, value: event } = this._events.pop();
+		const { key: time, value: event } = this.events.pop();
 		if (time > 0) { /* advance */
-			this._time += time;
-			this._events.shift(-time);
+			this.time += time;
+			this.events.shift(-time);
 		}
 
 		return event;
@@ -55,7 +55,7 @@ export class EventQueue<T = any> {
 	 * @returns {number} time
 	 */
 	getEventTime(event: T) {
-		const r = this._events.find(event);
+		const r = this.events.find(event);
 		if (r) {
 			const { key } = r;
 			return key;
@@ -69,7 +69,7 @@ export class EventQueue<T = any> {
 	 * @returns {bool} success?
 	 */
 	remove(event: T) {
-		return this._events.remove(event);
+		return this.events.remove(event);
 	};
 }
 

@@ -7,8 +7,8 @@ import type { CreateCallback } from '@/src/map/map.js';
  */
 export class Arena extends Map {
 	create(callback?: CreateCallback) {
-		const w = this._width-1;
-		const h = this._height-1;
+		const w = this.width-1;
+		const h = this.height-1;
 		for (let i=0;i<=w;i++) {
 			for (let j=0;j<=h;j++) {
 				const empty = (i && j && i<w && j<h);

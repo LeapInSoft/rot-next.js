@@ -12,7 +12,7 @@ export class PreciseShadowcasting extends FOV {
 		callback(x, y, 0, 1);
 
 		/* standing in a dark place. FIXME is this a good idea?  */
-		if (!this._lightPasses(x, y)) { return; }
+		if (!this.lightPasses(x, y)) { return; }
 		
 		/* list of all shadows */
 		const SHADOWS: Arc[] = [];
@@ -21,7 +21,7 @@ export class PreciseShadowcasting extends FOV {
 
 		/* analyze surrounding cells in concentric rings, starting from the center */
 		for (let r=1; r<=R; r++) {
-			const neighbors = this._getCircle(x, y, r);
+			const neighbors = this.getCircle(x, y, r);
 			const neighborCount = neighbors.length;
 
 			for (let i=0;i<neighborCount;i++) {
@@ -31,8 +31,8 @@ export class PreciseShadowcasting extends FOV {
 				A1 = [i ? 2*i-1 : 2*neighborCount-1, 2*neighborCount];
 				A2 = [2*i+1, 2*neighborCount]; 
 				
-				blocks = !this._lightPasses(cx, cy);
-				visibility = this._checkVisibility(A1 as Arc, A2 as Arc, blocks, SHADOWS);
+				blocks = !this.lightPasses(cx, cy);
+				visibility = this.checkVisibility(A1 as Arc, A2 as Arc, blocks, SHADOWS);
 				if (visibility) { callback(cx, cy, r, visibility); }
 
 				if (SHADOWS.length == 2 && SHADOWS[0][0] == 0 && SHADOWS[1][0] == SHADOWS[1][1]) { return; } /* cutoff? */
@@ -47,10 +47,10 @@ export class PreciseShadowcasting extends FOV {
 	 * @param {bool} blocks Does current arc block visibility?
 	 * @param {int[][]} SHADOWS list of active shadows
 	 */
-	_checkVisibility(A1: Arc, A2: Arc, blocks: boolean, SHADOWS: Arc[]): number {
+	checkVisibility(A1: Arc, A2: Arc, blocks: boolean, SHADOWS: Arc[]): number {
 		if (A1[0] > A2[0]) { /* split into two sub-arcs */
-			const v1 = this._checkVisibility(A1, [A1[1], A1[1]], blocks, SHADOWS);
-			const v2 = this._checkVisibility([0, 1], A2, blocks, SHADOWS);
+			const v1 = this.checkVisibility(A1, [A1[1], A1[1]], blocks, SHADOWS);
+			const v2 = this.checkVisibility([0, 1], A2, blocks, SHADOWS);
 			return (v1+v2)/2;
 		}
 

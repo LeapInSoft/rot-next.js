@@ -10,7 +10,7 @@ export class DiscreteShadowcasting extends FOV {
 		callback(x, y, 0, 1);
 
 		/* standing in a dark place. FIXME is this a good idea?  */
-		if (!this._lightPasses(x, y)) { return; }
+		if (!this.lightPasses(x, y)) { return; }
 		
 		/* start and end angles */
 		const DATA: number[] = [];
@@ -19,7 +19,7 @@ export class DiscreteShadowcasting extends FOV {
 
 		/* analyze surrounding cells in concentric rings, starting from the center */
 		for (let r=1; r<=R; r++) {
-			const neighbors = this._getCircle(x, y, r);
+			const neighbors = this.getCircle(x, y, r);
 			const angle = 360 / neighbors.length;
 
 			for (let i=0;i<neighbors.length;i++) {
@@ -28,8 +28,8 @@ export class DiscreteShadowcasting extends FOV {
 				A = angle * (i - 0.5);
 				B = A + angle;
 				
-				blocks = !this._lightPasses(cx, cy);
-				if (this._visibleCoords(Math.floor(A), Math.ceil(B), blocks, DATA)) { callback(cx, cy, r, 1); }
+				blocks = !this.lightPasses(cx, cy);
+				if (this.visibleCoords(Math.floor(A), Math.ceil(B), blocks, DATA)) { callback(cx, cy, r, 1); }
 				
 				if (DATA.length == 2 && DATA[0] == 0 && DATA[1] == 360) { return; } /* cutoff? */
 
@@ -43,10 +43,10 @@ export class DiscreteShadowcasting extends FOV {
 	 * @param {bool} blocks Does current cell block visibility?
 	 * @param {int[][]} DATA shadowed angle pairs
 	 */
-	_visibleCoords(A: number, B: number, blocks: boolean, DATA: number[]): boolean {
+	visibleCoords(A: number, B: number, blocks: boolean, DATA: number[]): boolean {
 		if (A < 0) { 
-			const v1 = this._visibleCoords(0, B, blocks, DATA);
-			const v2 = this._visibleCoords(360+A, 360, blocks, DATA);
+			const v1 = this.visibleCoords(0, B, blocks, DATA);
+			const v2 = this.visibleCoords(360+A, 360, blocks, DATA);
 			return v1 || v2;
 		}
 		

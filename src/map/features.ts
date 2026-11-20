@@ -38,19 +38,19 @@ abstract class Feature {
  * @param {int} [doorY]
  */
 export class Room extends Feature {
-	_x1: number;
-	_y1: number;
-	_x2: number;
-	_y2: number;
-	_doors: { [key:string]: number };
+	x1: number;
+	y1: number;
+	x2: number;
+	y2: number;
+	doors: { [key:string]: number };
 
 	constructor(x1: number, y1: number, x2: number, y2: number, doorX?: number, doorY?: number) {
 		super();
-		this._x1 = x1;
-		this._y1 = y1;
-		this._x2 = x2;
-		this._y2 = y2;
-		this._doors = {};
+		this.x1 = x1;
+		this.y1 = y1;
+		this.x2 = x2;
+		this.y2 = y2;
+		this.doors = {};
 		if (doorX !== undefined && doorY !== undefined) { this.addDoor(doorX, doorY); }
 	};
 
@@ -133,7 +133,7 @@ export class Room extends Feature {
 	}
 
 	addDoor(x: number, y: number) {
-		this._doors[x+","+y] = 1;
+		this.doors[x+","+y] = 1;
 		return this;
 	}
 
@@ -141,7 +141,7 @@ export class Room extends Feature {
 	 * @param {function}
 	 */
 	getDoors(cb: (x:number, y:number) => void) {
-		for (const key in this._doors) {
+		for (const key in this.doors) {
 			const parts = key.split(",");
 			cb(parseInt(parts[0]), parseInt(parts[1]));
 		}
@@ -149,15 +149,15 @@ export class Room extends Feature {
 	}
 
 	clearDoors() {
-		this._doors = {};
+		this.doors = {};
 		return this;
 	}
 
 	addDoors(isWallCallback: TestPositionCallback) {
-		const left = this._x1-1;
-		const right = this._x2+1;
-		const top = this._y1-1;
-		const bottom = this._y2+1;
+		const left = this.x1-1;
+		const right = this.x2+1;
+		const top = this.y1-1;
+		const bottom = this.y2+1;
 
 		for (let x=left; x<=right; x++) {
 			for (let y=top; y<=bottom; y++) {
@@ -172,14 +172,14 @@ export class Room extends Feature {
 	}
 
 	debug() {
-		console.log("room", this._x1, this._y1, this._x2, this._y2);
+		console.log("room", this.x1, this.y1, this.x2, this.y2);
 	}
 
 	isValid(isWallCallback: TestPositionCallback, canBeDugCallback: TestPositionCallback) { 
-		const left = this._x1-1;
-		const right = this._x2+1;
-		const top = this._y1-1;
-		const bottom = this._y2+1;
+		const left = this.x1-1;
+		const right = this.x2+1;
+		const top = this.y1-1;
+		const bottom = this.y2+1;
 		
 		for (let x=left; x<=right; x++) {
 			for (let y=top; y<=bottom; y++) {
@@ -198,15 +198,15 @@ export class Room extends Feature {
 	 * @param {function} digCallback Dig callback with a signature (x, y, value). Values: 0 = empty, 1 = wall, 2 = door. Multiple doors are allowed.
 	 */
 	create(digCallback: DigCallback) { 
-		const left = this._x1-1;
-		const right = this._x2+1;
-		const top = this._y1-1;
-		const bottom = this._y2+1;
+		const left = this.x1-1;
+		const right = this.x2+1;
+		const top = this.y1-1;
+		const bottom = this.y2+1;
 		
 		let value = 0;
 		for (let x=left; x<=right; x++) {
 			for (let y=top; y<=bottom; y++) {
-				if (x+","+y in this._doors) {
+				if (x+","+y in this.doors) {
 					value = 2;
 				} else if (x == left || x == right || y == top || y == bottom) {
 					value = 1;
@@ -219,13 +219,13 @@ export class Room extends Feature {
 	}
 
 	getCenter() {
-		return [Math.round((this._x1 + this._x2)/2), Math.round((this._y1 + this._y2)/2)];
+		return [Math.round((this.x1 + this.x2)/2), Math.round((this.y1 + this.y2)/2)];
 	}
 
-	getLeft() { return this._x1; }
-	getRight() { return this._x2; }
-	getTop() { return this._y1; }
-	getBottom() { return this._y2; }
+	getLeft() { return this.x1; }
+	getRight() { return this.x2; }
+	getTop() { return this.y1; }
+	getBottom() { return this.y2; }
 }
 
 /**
@@ -237,19 +237,19 @@ export class Room extends Feature {
  * @param {int} endY
  */
 export class Corridor extends Feature {
-	_startX: number;
-	_startY: number;
-	_endX: number;
-	_endY: number;
-	_endsWithAWall: boolean;
+	startX: number;
+	startY: number;
+	endX: number;
+	endY: number;
+	endsWithAWall: boolean;
 
 	constructor(startX: number, startY: number, endX: number, endY: number) {
 		super();
-		this._startX = startX;
-		this._startY = startY;
-		this._endX = endX; 
-		this._endY = endY;
-		this._endsWithAWall = true;
+		this.startX = startX;
+		this.startY = startY;
+		this.endX = endX; 
+		this.endY = endY;
+		this.endsWithAWall = true;
 	}
 
 	static createRandomAt(x: number, y: number, dx: number, dy: number, options: CorridorOptions) {
@@ -261,14 +261,14 @@ export class Corridor extends Feature {
 	}
 
 	debug() {
-		console.log("corridor", this._startX, this._startY, this._endX, this._endY);
+		console.log("corridor", this.startX, this.startY, this.endX, this.endY);
 	}
 
 	isValid(isWallCallback: TestPositionCallback, canBeDugCallback: TestPositionCallback){ 
-		const sx = this._startX;
-		const sy = this._startY;
-		let dx = this._endX-sx;
-		let dy = this._endY-sy;
+		const sx = this.startX;
+		const sy = this.startY;
+		let dx = this.endX-sx;
+		let dy = this.endY-sy;
 		let length = 1 + Math.max(Math.abs(dx), Math.abs(dy));
 		
 		if (dx) { dx = dx/Math.abs(dx); }
@@ -287,8 +287,8 @@ export class Corridor extends Feature {
 			
 			if (!ok) {
 				length = i;
-				this._endX = x-dx;
-				this._endY = y-dy;
+				this.endX = x-dx;
+				this.endY = y-dy;
 				break;
 			}
 		}
@@ -301,7 +301,7 @@ export class Corridor extends Feature {
 		if (length == 0) { return false; } 
 		
 		 /* length 1 allowed only if the next space is empty */
-		if (length == 1 && isWallCallback(this._endX + dx, this._endY + dy)) { return false; }
+		if (length == 1 && isWallCallback(this.endX + dx, this.endY + dy)) { return false; }
 		
 		/**
 		 * We do not want the corridor to crash into a corner of a room;
@@ -315,10 +315,10 @@ export class Corridor extends Feature {
 		 * The corridor was dug from left to right.
 		 * 1, 2 - problematic corners, ? = N+1th cell (not dug)
 		 */
-		const firstCornerBad = !isWallCallback(this._endX + dx + nx, this._endY + dy + ny);
-		const secondCornerBad = !isWallCallback(this._endX + dx - nx, this._endY + dy - ny);
-		this._endsWithAWall = isWallCallback(this._endX + dx, this._endY + dy);
-		if ((firstCornerBad || secondCornerBad) && this._endsWithAWall) { return false; }
+		const firstCornerBad = !isWallCallback(this.endX + dx + nx, this.endY + dy + ny);
+		const secondCornerBad = !isWallCallback(this.endX + dx - nx, this.endY + dy - ny);
+		this.endsWithAWall = isWallCallback(this.endX + dx, this.endY + dy);
+		if ((firstCornerBad || secondCornerBad) && this.endsWithAWall) { return false; }
 
 		return true;
 	}
@@ -327,10 +327,10 @@ export class Corridor extends Feature {
 	 * @param {function} digCallback Dig callback with a signature (x, y, value). Values: 0 = empty.
 	 */
 	create(digCallback: DigCallback) { 
-		const sx = this._startX;
-		const sy = this._startY;
-		let dx = this._endX-sx;
-		let dy = this._endY-sy;
+		const sx = this.startX;
+		const sy = this.startY;
+		let dx = this.endX-sx;
+		let dy = this.endY-sy;
 		const length = 1+Math.max(Math.abs(dx), Math.abs(dy));
 		
 		if (dx) { dx = dx/Math.abs(dx); }
@@ -346,20 +346,20 @@ export class Corridor extends Feature {
 	}
 
 	createPriorityWalls(priorityWallCallback: (x:number, y:number) => void) {
-		if (!this._endsWithAWall) { return; }
+		if (!this.endsWithAWall) { return; }
 
-		const sx = this._startX;
-		const sy = this._startY;
+		const sx = this.startX;
+		const sy = this.startY;
 
-		let dx = this._endX-sx;
-		let dy = this._endY-sy;
+		let dx = this.endX-sx;
+		let dy = this.endY-sy;
 		if (dx) { dx = dx/Math.abs(dx); }
 		if (dy) { dy = dy/Math.abs(dy); }
 		const nx = dy;
 		const ny = -dx;
 
-		priorityWallCallback(this._endX + dx, this._endY + dy);
-		priorityWallCallback(this._endX + nx, this._endY + ny);
-		priorityWallCallback(this._endX - nx, this._endY - ny);
+		priorityWallCallback(this.endX + dx, this.endY + dy);
+		priorityWallCallback(this.endX + nx, this.endY + ny);
+		priorityWallCallback(this.endX - nx, this.endY - ny);
 	}
 }

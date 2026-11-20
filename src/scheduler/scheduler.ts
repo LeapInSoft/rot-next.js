@@ -1,30 +1,30 @@
 import { EventQueue } from "@/src/eventqueue.js";
 
 export class Scheduler<T = any> {
-	_queue: EventQueue<T>;
-	_repeat: T[];
-	_current: any;
+	queue: EventQueue<T>;
+	repeat: T[];
+	current: any;
 
 	/**
 	 * @class Abstract scheduler
 	 */
 	constructor() {
-		this._queue = new EventQueue<T>();
-		this._repeat = [];
-		this._current = null;
+		this.queue = new EventQueue<T>();
+		this.repeat = [];
+		this.current = null;
 	}
 
 	/**
 	 * @see ROT.EventQueue#getTime
 	 */
-	getTime() { return this._queue.getTime(); }
+	getTime() { return this.queue.getTime(); }
 
 	/**
 	 * @param {?} item
 	 * @param {bool} repeat
 	 */
 	add(item:T, repeat:boolean) {
-		if (repeat) { this._repeat.push(item); }
+		if (repeat) { this.repeat.push(item); }
 		return this;
 	}
 
@@ -34,16 +34,16 @@ export class Scheduler<T = any> {
 	 * @returns {number} time
 	 */
 	getTimeOf(item: T) {
-		return this._queue.getEventTime(item);
+		return this.queue.getEventTime(item);
 	}
 
 	/**
 	 * Clear all items
 	 */
 	clear() {
-		this._queue.clear();
-		this._repeat = [];
-		this._current = null;
+		this.queue.clear();
+		this.repeat = [];
+		this.current = null;
 		return this;
 	}
 
@@ -53,12 +53,12 @@ export class Scheduler<T = any> {
 	 * @returns {bool} successful?
 	 */
 	remove(item: any) {
-		const result = this._queue.remove(item);
+		const result = this.queue.remove(item);
 
-		const index = this._repeat.indexOf(item);
-		if (index != -1) { this._repeat.splice(index, 1); }
+		const index = this.repeat.indexOf(item);
+		if (index != -1) { this.repeat.splice(index, 1); }
 
-		if (this._current == item) { this._current = null; }
+		if (this.current == item) { this.current = null; }
 
 		return result;
 	}
@@ -68,7 +68,7 @@ export class Scheduler<T = any> {
 	 * @returns {?}
 	 */
 	next() {
-		this._current = this._queue.get();
-		return this._current;
+		this.current = this.queue.get();
+		return this.current;
 	}
 }

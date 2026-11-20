@@ -27,34 +27,34 @@ function termcolor(color: string) {
 
 
 export class Term extends Backend {
-	_offset: [number, number];
-	_cursor: [number, number];
-	_lastColor: string;
-	private _timeout: ReturnType<typeof setTimeout> | null = null;
+	offset: [number, number];
+	cursor: [number, number];
+	lastColor: string;
+	private timeout: ReturnType<typeof setTimeout> | null = null;
 
 	constructor() {
 		super();
-		this._offset = [0, 0];
-		this._cursor = [-1, -1];
-		this._lastColor = "";
+		this.offset = [0, 0];
+		this.cursor = [-1, -1];
+		this.lastColor = "";
 	}
 
-	schedule(cb: ()=>void) { this._timeout = setTimeout(cb, 1000/60); }
+	schedule(cb: ()=>void) { this.timeout = setTimeout(cb, 1000/60); }
 	cancelSchedule() {
-		if (this._timeout === null) { return; }
-		clearTimeout(this._timeout);
-		this._timeout = null;
+		if (this.timeout === null) { return; }
+		clearTimeout(this.timeout);
+		this.timeout = null;
 	}
 
 	setOptions(options: DisplayOptions) {
 		super.setOptions(options);
 		const size = [options.width, options.height];
 		const avail = this.computeSize();
-		this._offset = avail.map((val, index) => Math.floor((val as number - size[index])/2)) as [number, number];
+		this.offset = avail.map((val, index) => Math.floor((val as number - size[index])/2)) as [number, number];
 	}
 
 	clear() {
-		process.stdout.write(clearToAnsi(this._options.bg));
+		process.stdout.write(clearToAnsi(this.options.bg));
 	}
 
 	draw(data: DisplayData, clearBefore: boolean) {
@@ -63,15 +63,15 @@ export class Term extends Backend {
 		let ch = data[2];
 
 		// determine if we need to move the terminal cursor
-		const dx = this._offset[0] + x;
-		const dy = this._offset[1] + y;
+		const dx = this.offset[0] + x;
+		const dy = this.offset[1] + y;
 		const size = this.computeSize();
 		if (dx < 0 || dx >= size[0]) { return; }
 		if (dy < 0 || dy >= size[1]) { return; }
-		if (dx !== this._cursor[0] || dy !== this._cursor[1]) {
+		if (dx !== this.cursor[0] || dy !== this.cursor[1]) {
 			process.stdout.write(positionToAnsi(dx, dy));
-			this._cursor[0] = dx;
-			this._cursor[1] = dy;
+			this.cursor[0] = dx;
+			this.cursor[1] = dy;
 		}
 
 		// terminals automatically clear, but if we're clearing when we're
@@ -85,9 +85,9 @@ export class Term extends Backend {
 
 		// determine if we need to change colors
 		const newColor = colorToAnsi(fg, bg);
-		if (newColor !== this._lastColor) {
+		if (newColor !== this.lastColor) {
 			process.stdout.write(newColor);
-			this._lastColor = newColor;
+			this.lastColor = newColor;
 		}
 
 		if (ch != '\t') {
@@ -97,10 +97,10 @@ export class Term extends Backend {
 		}
 
 		// update our position, given that we wrote a character
-		this._cursor[0]++;
-		if (this._cursor[0] >= size[0]) {
-			this._cursor[0] = 0;
-			this._cursor[1]++;
+		this.cursor[0]++;
+		if (this.cursor[0] >= size[0]) {
+			this.cursor[0] = 0;
+			this.cursor[1]++;
 		}
 	}
 

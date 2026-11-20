@@ -2,45 +2,45 @@ import { Backend } from "@/src/display/backend.js";
 import { DisplayOptions } from "@/src/display/types.js";
 
 export abstract class Canvas extends Backend {
-	_ctx: CanvasRenderingContext2D;
-	private _animationFrame: number | null = null;
+	ctx: CanvasRenderingContext2D;
+	private animationFrame: number | null = null;
 
 	constructor() {
 		super();
-		this._ctx = document.createElement("canvas").getContext("2d") as CanvasRenderingContext2D;
+		this.ctx = document.createElement("canvas").getContext("2d") as CanvasRenderingContext2D;
 	}
 
-	schedule(cb: () => void) { this._animationFrame = requestAnimationFrame(cb); }
+	schedule(cb: () => void) { this.animationFrame = requestAnimationFrame(cb); }
 	cancelSchedule() {
-		if (this._animationFrame === null) { return; }
-		cancelAnimationFrame(this._animationFrame);
-		this._animationFrame = null;
+		if (this.animationFrame === null) { return; }
+		cancelAnimationFrame(this.animationFrame);
+		this.animationFrame = null;
 	}
-	getContainer() { return this._ctx.canvas; }
+	getContainer() { return this.ctx.canvas; }
 
 	setOptions(opts: DisplayOptions) {
 		super.setOptions(opts);
 
 		const style = (opts.fontStyle ? `${opts.fontStyle} ` : ``);
 		const font = `${style} ${opts.fontSize}px ${opts.fontFamily}`;
-		this._ctx.font = font;
-		this._updateSize();
+		this.ctx.font = font;
+		this.updateSize();
 
-		this._ctx.font = font;
-		this._ctx.textAlign = "center";
-		this._ctx.textBaseline = "middle";
+		this.ctx.font = font;
+		this.ctx.textAlign = "center";
+		this.ctx.textBaseline = "middle";
 	}
 
 	clear() {
-		const oldComposite = this._ctx.globalCompositeOperation;
-		this._ctx.globalCompositeOperation = "copy"
-		this._ctx.fillStyle = this._options.bg;
-		this._ctx.fillRect(0, 0, this._ctx.canvas.width, this._ctx.canvas.height);
-		this._ctx.globalCompositeOperation = oldComposite;
+		const oldComposite = this.ctx.globalCompositeOperation;
+		this.ctx.globalCompositeOperation = "copy"
+		this.ctx.fillStyle = this.options.bg;
+		this.ctx.fillRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
+		this.ctx.globalCompositeOperation = oldComposite;
 	}
 
 	eventToPosition(x: number, y: number): [number, number] {
-		const canvas = this._ctx.canvas;
+		const canvas = this.ctx.canvas;
 		const rect = canvas.getBoundingClientRect();
 		x -= rect.left;
 		y -= rect.top;
@@ -50,9 +50,9 @@ export abstract class Canvas extends Backend {
 
 		if (x < 0 || y < 0 || x >= canvas.width || y >= canvas.height) { return [-1, -1]; }
 
-		return this._normalizedEventToPosition(x, y);
+		return this.normalizedEventToPosition(x, y);
 	}
 
-	abstract _normalizedEventToPosition(x: number, y: number): [number, number];
-	abstract _updateSize(): void;
+	abstract normalizedEventToPosition(x: number, y: number): [number, number];
+	abstract updateSize(): void;
 }

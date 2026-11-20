@@ -7,98 +7,98 @@ import { mod } from "@/src/util.js";
  * @private
  */
 export class Hex extends Canvas {
-	_spacingX: number;
-	_spacingY: number;
-	_hexSize: number;
+	spacingX: number;
+	spacingY: number;
+	hexSize: number;
 
 	constructor() {
 		super();
-		this._spacingX = 0;
-		this._spacingY = 0;
-		this._hexSize = 0;
+		this.spacingX = 0;
+		this.spacingY = 0;
+		this.hexSize = 0;
 	}
 
 	draw(data: DisplayData, clearBefore: boolean) {
 		const [x, y, ch, fg, bg] = data;
 
 		const px = [
-			(x+1) * this._spacingX,
-			y * this._spacingY + this._hexSize
+			(x+1) * this.spacingX,
+			y * this.spacingY + this.hexSize
 		];
-		if (this._options.transpose) { px.reverse(); }
+		if (this.options.transpose) { px.reverse(); }
 
 		if (clearBefore) {
-			this._ctx.fillStyle = bg;
-			this._fill(px[0], px[1]);
+			this.ctx.fillStyle = bg;
+			this.fill(px[0], px[1]);
 		}
 
 		if (!ch) { return; }
 
-		this._ctx.fillStyle = fg;
+		this.ctx.fillStyle = fg;
 
 		const chars = ([] as string[]).concat(ch);
 		for (let i=0;i<chars.length;i++) {
-			this._ctx.fillText(chars[i], px[0], Math.ceil(px[1]));
+			this.ctx.fillText(chars[i], px[0], Math.ceil(px[1]));
 		}
 	}
 
 	computeSize(availWidth: number, availHeight: number): [number, number] {
-		if (this._options.transpose) {
+		if (this.options.transpose) {
 			availWidth += availHeight;
 			availHeight = availWidth - availHeight;
 			availWidth -= availHeight;
 		}
 
-		const width = Math.floor(availWidth / this._spacingX) - 1;
-		const height = Math.floor((availHeight - 2*this._hexSize) / this._spacingY + 1);
+		const width = Math.floor(availWidth / this.spacingX) - 1;
+		const height = Math.floor((availHeight - 2*this.hexSize) / this.spacingY + 1);
 		return [width, height];
 	}
 
 	computeFontSize(availWidth: number, availHeight: number) {
-		if (this._options.transpose) {
+		if (this.options.transpose) {
 			availWidth += availHeight;
 			availHeight = availWidth - availHeight;
 			availWidth -= availHeight;
 		}
 
-		const hexSizeWidth = 2*availWidth / ((this._options.width+1) * Math.sqrt(3)) - 1;
-		const hexSizeHeight = availHeight / (2 + 1.5*(this._options.height-1));
+		const hexSizeWidth = 2*availWidth / ((this.options.width+1) * Math.sqrt(3)) - 1;
+		const hexSizeHeight = availHeight / (2 + 1.5*(this.options.height-1));
 		let hexSize = Math.min(hexSizeWidth, hexSizeHeight);
 
 		// compute char ratio
-		const oldFont = this._ctx.font;
-		this._ctx.font = "100px " + this._options.fontFamily;
-		const width = Math.ceil(this._ctx.measureText("W").width);
-		this._ctx.font = oldFont;
+		const oldFont = this.ctx.font;
+		this.ctx.font = "100px " + this.options.fontFamily;
+		const width = Math.ceil(this.ctx.measureText("W").width);
+		this.ctx.font = oldFont;
 		const ratio = width / 100;
 
 		hexSize = Math.floor(hexSize)+1; // closest larger hexSize
 
 		// FIXME char size computation does not respect transposed hexes
-		const fontSize = 2*hexSize / (this._options.spacing * (1 + ratio / Math.sqrt(3)));
+		const fontSize = 2*hexSize / (this.options.spacing * (1 + ratio / Math.sqrt(3)));
 
 		// closest smaller fontSize
 		return Math.ceil(fontSize)-1;
 	}
 
-	_normalizedEventToPosition(x: number, y: number): [number, number] {
+	normalizedEventToPosition(x: number, y: number): [number, number] {
 		let nodeSize;
-		if (this._options.transpose) {
+		if (this.options.transpose) {
 			x += y;
 			y = x-y;
 			x -= y;
-			nodeSize = this._ctx.canvas.width;
+			nodeSize = this.ctx.canvas.width;
 		} else {
-			nodeSize = this._ctx.canvas.height;
+			nodeSize = this.ctx.canvas.height;
 		}
-		const size = nodeSize / this._options.height;
+		const size = nodeSize / this.options.height;
 		y = Math.floor(y/size);
 
 		if (mod(y, 2)) { /* odd row */
-			x -= this._spacingX;
-			x = 1 + 2*Math.floor(x/(2*this._spacingX));
+			x -= this.spacingX;
+			x = 1 + 2*Math.floor(x/(2*this.spacingX));
 		} else {
-			x = 2*Math.floor(x/(2*this._spacingX));
+			x = 2*Math.floor(x/(2*this.spacingX));
 		}
 
 		return [x, y];
@@ -107,39 +107,39 @@ export class Hex extends Canvas {
 	/**
 	 * Arguments are pixel values. If "transposed" mode is enabled, then these two are already swapped.
 	 */
-	_fill(cx: number, cy: number) {
-		const a = this._hexSize;
-		const b = this._options.border;
-		const ctx = this._ctx;
+	fill(cx: number, cy: number) {
+		const a = this.hexSize;
+		const b = this.options.border;
+		const ctx = this.ctx;
 
 		ctx.beginPath();
 
-		if (this._options.transpose) {
+		if (this.options.transpose) {
 			ctx.moveTo(cx-a+b,		cy);
-			ctx.lineTo(cx-a/2+b,	cy+this._spacingX-b);
-			ctx.lineTo(cx+a/2-b,	cy+this._spacingX-b);
+			ctx.lineTo(cx-a/2+b,	cy+this.spacingX-b);
+			ctx.lineTo(cx+a/2-b,	cy+this.spacingX-b);
 			ctx.lineTo(cx+a-b,		cy);
-			ctx.lineTo(cx+a/2-b,	cy-this._spacingX+b);
-			ctx.lineTo(cx-a/2+b,	cy-this._spacingX+b);
+			ctx.lineTo(cx+a/2-b,	cy-this.spacingX+b);
+			ctx.lineTo(cx-a/2+b,	cy-this.spacingX+b);
 			ctx.lineTo(cx-a+b,		cy);
 		} else {
 			ctx.moveTo(cx,					cy-a+b);
-			ctx.lineTo(cx+this._spacingX-b,	cy-a/2+b);
-			ctx.lineTo(cx+this._spacingX-b,	cy+a/2-b);
+			ctx.lineTo(cx+this.spacingX-b,	cy-a/2+b);
+			ctx.lineTo(cx+this.spacingX-b,	cy+a/2-b);
 			ctx.lineTo(cx,					cy+a-b);
-			ctx.lineTo(cx-this._spacingX+b,	cy+a/2-b);
-			ctx.lineTo(cx-this._spacingX+b,	cy-a/2+b);
+			ctx.lineTo(cx-this.spacingX+b,	cy+a/2-b);
+			ctx.lineTo(cx-this.spacingX+b,	cy-a/2+b);
 			ctx.lineTo(cx,					cy-a+b);
 		}
 		ctx.fill();
 	}
 
-	_updateSize() {
-		const opts = this._options;
-		const charWidth = Math.ceil(this._ctx.measureText("W").width);
-		this._hexSize = Math.floor(opts.spacing * (opts.fontSize + charWidth/Math.sqrt(3)) / 2);
-		this._spacingX = this._hexSize * Math.sqrt(3) / 2;
-		this._spacingY = this._hexSize * 1.5;
+	updateSize() {
+		const opts = this.options;
+		const charWidth = Math.ceil(this.ctx.measureText("W").width);
+		this.hexSize = Math.floor(opts.spacing * (opts.fontSize + charWidth/Math.sqrt(3)) / 2);
+		this.spacingX = this.hexSize * Math.sqrt(3) / 2;
+		this.spacingY = this.hexSize * 1.5;
 
 		let xprop: "width" | "height";
 		let yprop: "width" | "height";
@@ -150,8 +150,8 @@ export class Hex extends Canvas {
 			xprop = "width";
 			yprop = "height";
 		}
-		this._ctx.canvas[xprop] = Math.ceil( (opts.width + 1) * this._spacingX );
-		this._ctx.canvas[yprop] = Math.ceil( (opts.height - 1) * this._spacingY + 2*this._hexSize );
+		this.ctx.canvas[xprop] = Math.ceil( (opts.width + 1) * this.spacingX );
+		this.ctx.canvas[yprop] = Math.ceil( (opts.height - 1) * this.spacingY + 2*this.hexSize );
 
 	}
 }

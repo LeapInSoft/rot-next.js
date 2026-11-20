@@ -16,31 +16,31 @@ export interface Options {
  * @param {int} [options.topology=8]
  */
 export abstract class Path {
-	_toX: number;
-	_toY: number;
-	_passableCallback: PassableCallback;
-	_options: Options;
-	_dirs: number[][];
+	toX: number;
+	toY: number;
+	passableCallback: PassableCallback;
+	options: Options;
+	dirs: number[][];
 
 	constructor(toX: number, toY: number, passableCallback: PassableCallback, options: Partial<Options> = {}) {
-		this._toX = toX;
-		this._toY = toY;
-		this._passableCallback = passableCallback;
-		this._options = Object.assign({
+		this.toX = toX;
+		this.toY = toY;
+		this.passableCallback = passableCallback;
+		this.options = Object.assign({
 			topology: 8
 		}, options);
 
-		this._dirs = DIRS[this._options.topology];
-		if (this._options.topology == 8) { /* reorder dirs for more aesthetic result (vertical/horizontal first) */
-			this._dirs = [
-				this._dirs[0],
-				this._dirs[2],
-				this._dirs[4],
-				this._dirs[6],
-				this._dirs[1],
-				this._dirs[3],
-				this._dirs[5],
-				this._dirs[7]
+		this.dirs = DIRS[this.options.topology];
+		if (this.options.topology == 8) { /* reorder dirs for more aesthetic result (vertical/horizontal first) */
+			this.dirs = [
+				this.dirs[0],
+				this.dirs[2],
+				this.dirs[4],
+				this.dirs[6],
+				this.dirs[1],
+				this.dirs[3],
+				this.dirs[5],
+				this.dirs[7]
 			]
 		}
 	}
@@ -53,14 +53,14 @@ export abstract class Path {
 	 */
 	abstract compute(fromX: number, fromY: number, callback: ComputeCallback): void;
 
-	_getNeighbors(cx: number, cy: number) {
+	getNeighbors(cx: number, cy: number) {
 		const result = [];
-		for (let i=0;i<this._dirs.length;i++) {
-			const dir = this._dirs[i];
+		for (let i=0;i<this.dirs.length;i++) {
+			const dir = this.dirs[i];
 			const x = cx + dir[0];
 			const y = cy + dir[1];
 			
-			if (!this._passableCallback(x, y)) { continue; }
+			if (!this.passableCallback(x, y)) { continue; }
 			result.push([x, y]);
 		}
 		

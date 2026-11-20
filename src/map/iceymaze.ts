@@ -7,18 +7,18 @@ import { RNG } from '@/src/rng.js';
  * See http://roguebasin.com/index.php/Simple_maze for explanation
  */
 export class IceyMaze extends Map {
-	_regularity: number;
-	_map: number[][];
+	regularity: number;
+	map: number[][];
 
 	constructor(width: number, height: number, regularity = 0) {
 		super(width, height);
-		this._regularity = regularity;
-		this._map = [];
+		this.regularity = regularity;
+		this.map = [];
 	}
 
 	create(callback?: CreateCallback) {
-		let width = this._width;
-		let height = this._height;
+		let width = this.width;
+		let height = this.height;
 		const map = this.fillMap(1);
 		
 		width -= (width % 2 ? 1 : 2);
@@ -44,14 +44,14 @@ export class IceyMaze extends Map {
 			if (!done) { map[cx][cy] = 0; }
 			
 			if (!map[cx][cy]) {
-				this._randomize(dirs);
+				this.randomize(dirs);
 				do {
-					if (Math.floor(RNG.getUniform()*(this._regularity+1)) == 0) { this._randomize(dirs); }
+					if (Math.floor(RNG.getUniform()*(this.regularity+1)) == 0) { this.randomize(dirs); }
 					blocked = true;
 					for (let i=0;i<4;i++) {
 						nx = cx + dirs[i][0]*2;
 						ny = cy + dirs[i][1]*2;
-						if (this._isFree(map, nx, ny, width, height)) {
+						if (this.isFree(map, nx, ny, width, height)) {
 							map[nx][ny] = 0;
 							map[cx + dirs[i][0]][cy + dirs[i][1]] = 0;
 							
@@ -67,17 +67,17 @@ export class IceyMaze extends Map {
 		} while (done+1 < width*height/4);
 		
 		if (callback) {
-			for (let i=0;i<this._width;i++) {
-				for (let j=0;j<this._height;j++) {
+			for (let i=0;i<this.width;i++) {
+				for (let j=0;j<this.height;j++) {
 					callback(i, j, map[i][j]);
 				}
 			}
 		}
-		this._map = [];
+		this.map = [];
 		return this;
 	}
 
-	_randomize(dirs: number[][]) {
+	randomize(dirs: number[][]) {
 		for (let i=0;i<4;i++) {
 			dirs[i][0] = 0;
 			dirs[i][1] = 0;
@@ -103,7 +103,7 @@ export class IceyMaze extends Map {
 		}
 	}
 
-	_isFree(map: number[][], x: number, y: number, width: number, height: number) {
+	isFree(map: number[][], x: number, y: number, width: number, height: number) {
 		if (x < 1 || y < 1 || x >= width || y >= height) { return false; }
 		return map[x][y];
 	}

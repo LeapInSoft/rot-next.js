@@ -6,12 +6,12 @@ import { Scheduler } from "@/src/scheduler/scheduler.js";
  */
 
 export class Engine {
-	_scheduler: Scheduler;
-	_lock: number;
+	scheduler: Scheduler;
+	lockCount: number;
 
 	constructor(scheduler: Scheduler) {
-		this._scheduler = scheduler;
-		this._lock = 1;
+		this.scheduler = scheduler;
+		this.lockCount = 1;
 	}
 
 	/**
@@ -23,7 +23,7 @@ export class Engine {
 	 * Interrupt the engine by an asynchronous action
 	 */
 	lock() {
-		this._lock++;
+		this.lockCount++;
 		return this;
 	}
 
@@ -31,17 +31,17 @@ export class Engine {
 	 * Resume execution (paused by a previous lock)
 	 */
 	unlock() {
-		if (!this._lock) { throw new Error("Cannot unlock unlocked engine"); }
-		this._lock--;
+		if (!this.lockCount) { throw new Error("Cannot unlock unlocked engine"); }
+		this.lockCount--;
 
-		while (!this._lock) {
-			const actor = this._scheduler.next();
+		while (!this.lockCount) {
+			const actor = this.scheduler.next();
 			if (!actor) { return this.lock(); } /* no actors */
 			let result;
 			try {
 				result = actor.act();
 			} catch (error) {
-				if (!this._lock) { this.lock(); }
+				if (!this.lockCount) { this.lock(); }
 				throw error;
 			}
 			if (result && result.then) { /* actor returned a "thenable", looks like a Promise */

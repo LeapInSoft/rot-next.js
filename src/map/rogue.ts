@@ -35,7 +35,7 @@ export interface Room {
  * @author hyakugei
  */
 export class Rogue extends Map {
-	private _options: Options;
+	private options: Options;
 	private map: number[][] = [];
 	private rooms: Room[][] = [];
 
@@ -52,29 +52,29 @@ export class Rogue extends Map {
 		and the cell sizes.
 		*/
 		if (!options.hasOwnProperty("roomWidth")) {
-			options["roomWidth"] = this._calculateRoomSize(this._width, options["cellWidth"] as number);
+			options["roomWidth"] = this.calculateRoomSize(this.width, options["cellWidth"] as number);
 		}
 		if (!options.hasOwnProperty("roomHeight")) {
-			options["roomHeight"] = this._calculateRoomSize(this._height, options["cellHeight"] as number);
+			options["roomHeight"] = this.calculateRoomSize(this.height, options["cellHeight"] as number);
 		}
 
-		this._options = options as Options;
+		this.options = options as Options;
 	}
 
 	create(callback?: CreateCallback) {
 		this.map = this.fillMap(1);
 		this.rooms = [];
 
-		this._initRooms();
-		this._connectRooms();
-		this._connectUnconnectedRooms();
-		this._createRandomRoomConnections();
-		this._createRooms();
-		this._createCorridors();
+		this.initRooms();
+		this.connectRooms();
+		this.connectUnconnectedRooms();
+		this.createRandomRoomConnections();
+		this.createRooms();
+		this.createCorridors();
 
 		if (callback) {
-			for (let i = 0; i < this._width; i++) {
-				for (let j = 0; j < this._height; j++) {
+			for (let i = 0; i < this.width; i++) {
+				for (let j = 0; j < this.height; j++) {
 					callback(i, j, this.map[i][j]);
 				}
 			}
@@ -83,7 +83,7 @@ export class Rogue extends Map {
 		return this;
 	}
 
-	_calculateRoomSize(size: number, cell: number): [number, number] {
+	calculateRoomSize(size: number, cell: number): [number, number] {
 		let max = Math.floor((size/cell) * 0.8);
 		let min = Math.floor((size/cell) * 0.25);
 		if (min < 2) { min = 2; }
@@ -91,20 +91,20 @@ export class Rogue extends Map {
 		return [min, max];
 	}
 
-	_initRooms() {
+	initRooms() {
 		// create rooms array. This is the "grid" list from the algo.
-		for (let i = 0; i < this._options.cellWidth; i++) {
+		for (let i = 0; i < this.options.cellWidth; i++) {
 			this.rooms.push([]);
-			for (let j = 0; j < this._options.cellHeight; j++) {
+			for (let j = 0; j < this.options.cellHeight; j++) {
 				this.rooms[i].push({"x":0, "y":0, "width":0, "height":0, "connections":[], "cellx":i, "celly":j});
 			}
 		}
 	}
 
-	_connectRooms() {
+	connectRooms() {
 		//pick random starting grid
-		let cgx = RNG.getUniformInt(0, this._options.cellWidth-1);
-		let cgy = RNG.getUniformInt(0, this._options.cellHeight-1);
+		let cgx = RNG.getUniformInt(0, this.options.cellWidth-1);
+		let cgy = RNG.getUniformInt(0, this.options.cellHeight-1);
 
 		let idx;
 		let ncgx;
@@ -129,8 +129,8 @@ export class Rogue extends Map {
 				ncgx = cgx + DIRS[8][idx][0];
 				ncgy = cgy + DIRS[8][idx][1];
 
-				if (ncgx < 0 || ncgx >= this._options.cellWidth) { continue; }
-				if (ncgy < 0 || ncgy >= this._options.cellHeight) { continue; }
+				if (ncgx < 0 || ncgx >= this.options.cellWidth) { continue; }
+				if (ncgy < 0 || ncgy >= this.options.cellHeight) { continue; }
 
 				room = this.rooms[cgx][cgy];
 
@@ -157,9 +157,9 @@ export class Rogue extends Map {
 
 	}
 
-	_connectUnconnectedRooms() {
-		const cw = this._options.cellWidth;
-		const ch = this._options.cellHeight;
+	connectUnconnectedRooms() {
+		const cw = this.options.cellWidth;
+		const ch = this.options.cellHeight;
 		const parents = Array.from({ length: cw * ch }, (_, index) => index);
 		const find = (cell: number): number => {
 			while (parents[cell] !== cell) {
@@ -200,22 +200,22 @@ export class Rogue extends Map {
 		}
 	}
 
-	_createRandomRoomConnections() {
+	createRandomRoomConnections() {
 		// Empty for now.
 	}
 
-	_createRooms() {
-		const w = this._width;
-		const h = this._height;
+	createRooms() {
+		const w = this.width;
+		const h = this.height;
 
-		const cw = this._options.cellWidth;
-		const ch = this._options.cellHeight;
+		const cw = this.options.cellWidth;
+		const ch = this.options.cellHeight;
 
-		const cwp = Math.floor(this._width / cw);
-		const chp = Math.floor(this._height / ch);
+		const cwp = Math.floor(this.width / cw);
+		const chp = Math.floor(this.height / ch);
 
-		const roomWidth = this._options["roomWidth"];
-		const roomHeight = this._options["roomHeight"];
+		const roomWidth = this.options["roomWidth"];
+		const roomHeight = this.options["roomHeight"];
 
 		for (let i = 0; i < cw; i++) {
 			for (let j = 0; j < ch; j++) {
@@ -244,7 +244,7 @@ export class Rogue extends Map {
 		}
 	}
 
-	_getWallPosition(aRoom: Room, aDirection: number): Point {
+	getWallPosition(aRoom: Room, aDirection: number): Point {
 		let rx;
 		let ry;
 		let door;
@@ -277,7 +277,7 @@ export class Rogue extends Map {
 		return [rx, ry];
 	}
 
-	_drawCorridor(startPosition: Point, endPosition: Point) {
+	drawCorridor(startPosition: Point, endPosition: Point) {
 		const xOffset = endPosition[0] - startPosition[0];
 		const yOffset = endPosition[1] - startPosition[1];
 
@@ -331,11 +331,11 @@ export class Rogue extends Map {
 		}
 	}
 
-	_createCorridors() {
+	createCorridors() {
 		// Draw Corridors between connected rooms
 
-		const cw = this._options.cellWidth;
-		const ch = this._options.cellHeight;
+		const cw = this.options.cellWidth;
+		const ch = this.options.cellHeight;
 		let room;
 		let connection;
 		let otherRoom;
@@ -368,7 +368,7 @@ export class Rogue extends Map {
 						otherWall = 3;
 					}
 
-					this._drawCorridor(this._getWallPosition(room, wall), this._getWallPosition(otherRoom, otherWall));
+					this.drawCorridor(this.getWallPosition(room, wall), this.getWallPosition(otherRoom, otherWall));
 				}
 			}
 		}

@@ -28,8 +28,8 @@ function createOptions(layout: DisplayOptions['layout']): DisplayOptions {
 describe('Term backend', () => {
 	it('writes cursor movement and colors only when they change', () => {
 		const backend = new Term();
-		backend._options = createOptions('term');
-		backend._offset = [0, 0];
+		backend.options = createOptions('term');
+		backend.offset = [0, 0];
 		vi.spyOn(backend, 'computeSize').mockReturnValue([2, 2]);
 		const write = vi.spyOn(process.stdout, 'write').mockImplementation(() => true);
 
@@ -50,8 +50,8 @@ describe('Term backend', () => {
 
 	it('does not write cells outside the available terminal area', () => {
 		const backend = new Term();
-		backend._options = createOptions('term');
-		backend._offset = [0, 0];
+		backend.options = createOptions('term');
+		backend.offset = [0, 0];
 		vi.spyOn(backend, 'computeSize').mockReturnValue([2, 2]);
 		const write = vi.spyOn(process.stdout, 'write').mockImplementation(() => true);
 
@@ -96,15 +96,15 @@ describe('TileGL backend', () => {
 			RGBA: 0x1908,
 			UNSIGNED_BYTE: 0x1401
 		} as unknown as WebGLRenderingContext;
-		backend._gl = gl;
-		backend._options = createOptions('tile-gl');
-		backend._uniforms = {};
+		backend.gl = gl;
+		backend.options = createOptions('tile-gl');
+		backend.uniforms = {};
 		return { backend, gl };
 	}
 
 	it('fails explicitly when WebGL initialization fails', () => {
 		const initializationError = new Error('WebGL is unavailable');
-		const initialize = vi.spyOn(TileGL.prototype, '_initWebGL').mockImplementation(() => {
+		const initialize = vi.spyOn(TileGL.prototype, 'initWebGL').mockImplementation(() => {
 			throw initializationError;
 		});
 
@@ -122,15 +122,15 @@ describe('TileGL backend', () => {
 		vi.mocked(gl.createTexture)
 			.mockReturnValueOnce(firstTexture)
 			.mockReturnValueOnce(secondTexture);
-		vi.spyOn(backend, '_updateSize').mockImplementation(() => {});
+		vi.spyOn(backend, 'updateSize').mockImplementation(() => {});
 		const firstTileSet = { complete: true } as HTMLImageElement;
 		const secondTileSet = { complete: true } as HTMLImageElement;
 
-		backend.setOptions({ ...backend._options, tileSet: firstTileSet });
-		backend.setOptions({ ...backend._options, tileSet: firstTileSet });
+		backend.setOptions({ ...backend.options, tileSet: firstTileSet });
+		backend.setOptions({ ...backend.options, tileSet: firstTileSet });
 		expect(gl.createTexture).toHaveBeenCalledOnce();
 
-		backend.setOptions({ ...backend._options, tileSet: secondTileSet });
+		backend.setOptions({ ...backend.options, tileSet: secondTileSet });
 
 		expect(gl.createTexture).toHaveBeenCalledTimes(2);
 		expect(gl.deleteTexture).toHaveBeenCalledOnce();
@@ -139,14 +139,14 @@ describe('TileGL backend', () => {
 
 	it('registers only one load listener for an unchanged pending tile set', () => {
 		const { backend } = createBackend();
-		vi.spyOn(backend, '_updateSize').mockImplementation(() => {});
-		vi.spyOn(backend, '_updateTexture').mockImplementation(() => {});
+		vi.spyOn(backend, 'updateSize').mockImplementation(() => {});
+		vi.spyOn(backend, 'updateTexture').mockImplementation(() => {});
 		const tileSet = {
 			complete: false,
 			addEventListener: vi.fn(),
 			removeEventListener: vi.fn()
 		} as unknown as HTMLImageElement;
-		const options = { ...backend._options, tileSet };
+		const options = { ...backend.options, tileSet };
 
 		backend.setOptions(options);
 		backend.setOptions({ ...options, width: 3 });
@@ -154,8 +154,8 @@ describe('TileGL backend', () => {
 		expect(tileSet.addEventListener).toHaveBeenCalledOnce();
 		const listener = vi.mocked(tileSet.addEventListener).mock.calls[0][1] as EventListener;
 		listener(new Event('load'));
-		expect(backend._updateTexture).toHaveBeenCalledOnce();
-		expect(backend._updateTexture).toHaveBeenCalledWith(tileSet);
+		expect(backend.updateTexture).toHaveBeenCalledOnce();
+		expect(backend.updateTexture).toHaveBeenCalledWith(tileSet);
 	});
 
 	it('clears only the requested tile area before an empty draw', () => {

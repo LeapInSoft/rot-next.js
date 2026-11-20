@@ -17,72 +17,72 @@ type Events = { [key:string]: number };
  * Offers configurable order and prior.
  */
 export class StringGenerator {
-	_options: Options;
-	_boundary: string;
-	_suffix: string;
-	_prefix: string[];
-	_priorValues: { [key:string]: number };
-	_data: { [key:string]: Events };
+	options: Options;
+	boundary: string;
+	suffix: string;
+	prefix: string[];
+	priorValues: { [key:string]: number };
+	data: { [key:string]: Events };
 
 	constructor(options: Partial<Options>) {
-		this._options = {
+		this.options = {
 			words: false,
 			order: 3,
 			prior: 0.001
 		};
-		Object.assign(this._options, options);
+		Object.assign(this.options, options);
 
-		this._boundary = String.fromCharCode(0);
-		this._suffix = this._boundary;
-		this._prefix = [];
-		for (let i=0;i<this._options.order;i++) { this._prefix.push(this._boundary); }
+		this.boundary = String.fromCharCode(0);
+		this.suffix = this.boundary;
+		this.prefix = [];
+		for (let i=0;i<this.options.order;i++) { this.prefix.push(this.boundary); }
 
-		this._priorValues = {};
-		this._priorValues[this._boundary] = this._options.prior;
+		this.priorValues = {};
+		this.priorValues[this.boundary] = this.options.prior;
 
-		this._data = {};
+		this.data = {};
 	}
 
 	/**
 	 * Remove all learning data
 	 */
 	clear() {
-		this._data = {};
-		this._priorValues = {};
-		this._priorValues[this._boundary] = this._options.prior;
+		this.data = {};
+		this.priorValues = {};
+		this.priorValues[this.boundary] = this.options.prior;
 	}
 
 	/**
 	 * @returns {string} Generated string
 	 */
 	generate() {
-		if (Object.keys(this._data).length === 0) { return ""; }
+		if (Object.keys(this.data).length === 0) { return ""; }
 
-		const result = [this._sample(this._prefix)];
-		while (result[result.length-1] != this._boundary) {
-			result.push(this._sample(result));
+		const result = [this.sample(this.prefix)];
+		while (result[result.length-1] != this.boundary) {
+			result.push(this.sample(result));
 		}
-		return this._join(result.slice(0, -1));
+		return this.join(result.slice(0, -1));
 	}
 
 	/**
 	 * Observe (learn) a string from a training set
 	 */
 	observe(string: string) {
-		let tokens = this._split(string);
+		let tokens = this.split(string);
 
 		for (let i=0; i<tokens.length; i++) {
-			this._priorValues[tokens[i]] = this._options.prior;
+			this.priorValues[tokens[i]] = this.options.prior;
 		}
 
-		tokens = this._prefix.concat(tokens).concat(this._suffix); /* add boundary symbols */
+		tokens = this.prefix.concat(tokens).concat(this.suffix); /* add boundary symbols */
 
-		for (let i=this._options.order; i<tokens.length; i++) {
-			const context = tokens.slice(i-this._options.order, i);
+		for (let i=this.options.order; i<tokens.length; i++) {
+			const context = tokens.slice(i-this.options.order, i);
 			const event = tokens[i];
 			for (let j=0; j<context.length; j++) {
 				const subcontext = context.slice(j);
-				this._observeEvent(subcontext, event);
+				this.observeEvent(subcontext, event);
 			}
 		}
 	}
@@ -90,14 +90,14 @@ export class StringGenerator {
 	getStats() {
 		const parts = [];
 
-		let priorCount = Object.keys(this._priorValues).length;
+		let priorCount = Object.keys(this.priorValues).length;
 		priorCount--; // boundary
 		parts.push("distinct samples: " + priorCount);
 
-		const dataCount = Object.keys(this._data).length;
+		const dataCount = Object.keys(this.data).length;
 		let eventCount = 0;
-		for (const p in this._data) {
-			eventCount += Object.keys(this._data[p]).length;
+		for (const p in this.data) {
+			eventCount += Object.keys(this.data[p]).length;
 		}
 		parts.push("dictionary size (contexts): " + dataCount);
 		parts.push("dictionary size (events): " + eventCount);
@@ -109,26 +109,26 @@ export class StringGenerator {
 	 * @param {string}
 	 * @returns {string[]}
 	 */
-	_split(str: string) {
-		return str.split(this._options.words ? /\s+/ : "");
+	split(str: string) {
+		return str.split(this.options.words ? /\s+/ : "");
 	}
 
 	/**
 	 * @param {string[]}
 	 * @returns {string} 
 	 */
-	_join(arr: string[]) {
-		return arr.join(this._options.words ? " " : "");
+	join(arr: string[]) {
+		return arr.join(this.options.words ? " " : "");
 	}
 
 	/**
 	 * @param {string[]} context
 	 * @param {string} event
 	 */
-	_observeEvent(context: string[], event: string) {
-		const key = this._join(context);
-		if (!(key in this._data)) { this._data[key] = {}; }
-		const data = this._data[key];
+	observeEvent(context: string[], event: string) {
+		const key = this.join(context);
+		if (!(key in this.data)) { this.data[key] = {}; }
+		const data = this.data[key];
 
 		if (!(event in data)) { data[event] = 0; }
 		data[event]++;
@@ -138,15 +138,15 @@ export class StringGenerator {
 	 * @param {string[]}
 	 * @returns {string}
 	 */
-	_sample(context: string[]) {
-		context = this._backoff(context);
-		const key = this._join(context);
-		const data = this._data[key];
+	sample(context: string[]) {
+		context = this.backoff(context);
+		const key = this.join(context);
+		const data = this.data[key];
 
 		let available : Events = {};
 
-		if (this._options.prior) {
-			for (const event in this._priorValues) { available[event] = this._priorValues[event]; }
+		if (this.options.prior) {
+			for (const event in this.priorValues) { available[event] = this.priorValues[event]; }
 			for (const event in data) { available[event] += data[event]; }
 		} else { 
 			available = data;
@@ -159,14 +159,14 @@ export class StringGenerator {
 	 * @param {string[]}
 	 * @returns {string[]}
 	 */
-	_backoff(context: string[]) {
-		if (context.length > this._options.order) {
-			context = context.slice(-this._options.order);
-		} else if (context.length < this._options.order) {
-			context = this._prefix.slice(0, this._options.order - context.length).concat(context);
+	backoff(context: string[]) {
+		if (context.length > this.options.order) {
+			context = context.slice(-this.options.order);
+		} else if (context.length < this.options.order) {
+			context = this.prefix.slice(0, this.options.order - context.length).concat(context);
 		}
 
-		while (!(this._join(context) in this._data) && context.length > 0) { context = context.slice(1); }
+		while (!(this.join(context) in this.data) && context.length > 0) { context = context.slice(1); }
 
 		return context;
 	}

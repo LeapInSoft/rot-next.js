@@ -7,13 +7,13 @@ import * as Color from "@/src/color.js";
  * @private
  */
 export class TileGL extends Backend {
-	_gl!: WebGLRenderingContext;
-	_program!: WebGLProgram;
-	_uniforms: {[key:string]: WebGLUniformLocation | null};
-	private _texture: WebGLTexture | null = null;
-	private _tileSet: DisplayOptions["tileSet"] | undefined;
-	private _tileSetLoadListener: { tileSet: HTMLImageElement; listener: () => void } | null = null;
-	private _animationFrame: number | null = null;
+	gl!: WebGLRenderingContext;
+	program!: WebGLProgram;
+	uniforms: {[key:string]: WebGLUniformLocation | null};
+	private texture: WebGLTexture | null = null;
+	private tileSet: DisplayOptions["tileSet"] | undefined;
+	private tileSetLoadListener: { tileSet: HTMLImageElement; listener: () => void } | null = null;
+	private animationFrame: number | null = null;
 
 	static isSupported() {
 		return !!document.createElement("canvas").getContext("webgl2", {preserveDrawingBuffer:true});
@@ -21,29 +21,29 @@ export class TileGL extends Backend {
 
 	constructor() {
 		super();
-		this._uniforms = {};
-		this._gl = this._initWebGL();
+		this.uniforms = {};
+		this.gl = this.initWebGL();
 	}
 
-	schedule(cb: () => void) { this._animationFrame = requestAnimationFrame(cb); }
+	schedule(cb: () => void) { this.animationFrame = requestAnimationFrame(cb); }
 	cancelSchedule() {
-		if (this._animationFrame === null) { return; }
-		cancelAnimationFrame(this._animationFrame);
-		this._animationFrame = null;
+		if (this.animationFrame === null) { return; }
+		cancelAnimationFrame(this.animationFrame);
+		this.animationFrame = null;
 	}
-	getContainer() { return this._gl.canvas as HTMLCanvasElement; }
+	getContainer() { return this.gl.canvas as HTMLCanvasElement; }
 
 	setOptions(opts: DisplayOptions) {
 		super.setOptions(opts);
 
-		this._updateSize();
-		this._setTileSet(opts.tileSet);
+		this.updateSize();
+		this.setTileSet(opts.tileSet);
 	}
 
 
 	draw(data: DisplayData, clearBefore: boolean) {
-		const gl = this._gl;
-		const opts = this._options;
+		const gl = this.gl;
+		const opts = this.options;
 		const [x, y, ch, fg, bg] = data;
 
 		const scissorY = gl.canvas.height - (y+1)*opts.tileHeight;
@@ -64,18 +64,18 @@ export class TileGL extends Backend {
 		const bgs = ([] as string[]).concat(bg);
 		const fgs = ([] as string[]).concat(fg);
 
-		gl.uniform2fv(this._uniforms["targetPosRel"], [x, y]);
+		gl.uniform2fv(this.uniforms["targetPosRel"], [x, y]);
 
 		for (let i=0;i<chars.length;i++) {
-			const tile = this._options.tileMap[chars[i]];
+			const tile = this.options.tileMap[chars[i]];
 			if (!tile) { throw new Error(`Char "${chars[i]}" not found in tileMap`); }
 
-			gl.uniform1f(this._uniforms["colorize"], opts.tileColorize ? 1 : 0);
-			gl.uniform2fv(this._uniforms["tilesetPosAbs"], tile);
+			gl.uniform1f(this.uniforms["colorize"], opts.tileColorize ? 1 : 0);
+			gl.uniform2fv(this.uniforms["tilesetPosAbs"], tile);
 
 			if (opts.tileColorize) {
-				gl.uniform4fv(this._uniforms["tint"], parseColor(fgs[i] || fgs[0]));
-				gl.uniform4fv(this._uniforms["bg"], parseColor(bgs[i] || bgs[0]));
+				gl.uniform4fv(this.uniforms["tint"], parseColor(fgs[i] || fgs[0]));
+				gl.uniform4fv(this.uniforms["bg"], parseColor(bgs[i] || bgs[0]));
 			}
 
 			gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
@@ -85,16 +85,16 @@ export class TileGL extends Backend {
 	}
 
 	clear() {
-		const gl = this._gl;
+		const gl = this.gl;
 
-		gl.clearColor(...parseColor(this._options.bg));
+		gl.clearColor(...parseColor(this.options.bg));
 		gl.scissor(0, 0, gl.canvas.width, gl.canvas.height);
 		gl.clear(gl.COLOR_BUFFER_BIT);
 	}
 
 	computeSize(availWidth: number, availHeight: number): [number, number] {
-		const width = Math.floor(availWidth / this._options.tileWidth);
-		const height = Math.floor(availHeight / this._options.tileHeight);
+		const width = Math.floor(availWidth / this.options.tileWidth);
+		const height = Math.floor(availHeight / this.options.tileHeight);
 		return [width, height];
 	}
 
@@ -103,7 +103,7 @@ export class TileGL extends Backend {
 	}
 
 	eventToPosition(x: number, y: number): [number, number] {
-		const canvas = this._gl.canvas as HTMLCanvasElement;
+		const canvas = this.gl.canvas as HTMLCanvasElement;
 		const rect = canvas.getBoundingClientRect();
 		x -= rect.left;
 		y -= rect.top;
@@ -113,18 +113,18 @@ export class TileGL extends Backend {
 
 		if (x < 0 || y < 0 || x >= canvas.width || y >= canvas.height) { return [-1, -1]; }
 
-		return this._normalizedEventToPosition(x, y);
+		return this.normalizedEventToPosition(x, y);
 	}
 
-	_initWebGL() {
+	initWebGL() {
 		const gl = document.createElement("canvas").getContext("webgl2", {preserveDrawingBuffer:true}) as WebGLRenderingContext | null;
 		if (!gl) { throw new Error("WebGL2 is not supported"); }
 		const program = createProgram(gl, VS, FS);
 		gl.useProgram(program);
 		createQuad(gl);
 
-		UNIFORMS.forEach(name => this._uniforms[name] = gl.getUniformLocation(program, name));
-		this._program = program;
+		UNIFORMS.forEach(name => this.uniforms[name] = gl.getUniformLocation(program, name));
+		this.program = program;
 
 		gl.enable(gl.BLEND);
   		gl.blendFuncSeparate(
@@ -135,66 +135,66 @@ export class TileGL extends Backend {
 		return gl;
 	}
 
-	_normalizedEventToPosition(x:number, y:number): [number, number] {
-		return [Math.floor(x/this._options.tileWidth), Math.floor(y/this._options.tileHeight)];
+	normalizedEventToPosition(x:number, y:number): [number, number] {
+		return [Math.floor(x/this.options.tileWidth), Math.floor(y/this.options.tileHeight)];
 	}
 
-	_updateSize() {
-		const gl = this._gl;
+	updateSize() {
+		const gl = this.gl;
 
-		const opts = this._options;
+		const opts = this.options;
 		const canvasSize = [opts.width * opts.tileWidth, opts.height * opts.tileHeight];
 		gl.canvas.width = canvasSize[0];
 		gl.canvas.height = canvasSize[1];
 
 		gl.viewport(0, 0, canvasSize[0], canvasSize[1]);
-		gl.uniform2fv(this._uniforms["tileSize"], [opts.tileWidth, opts.tileHeight]);
-		gl.uniform2fv(this._uniforms["targetSize"], canvasSize);
+		gl.uniform2fv(this.uniforms["tileSize"], [opts.tileWidth, opts.tileHeight]);
+		gl.uniform2fv(this.uniforms["targetSize"], canvasSize);
 	}
 
-	_setTileSet(tileSet: DisplayOptions["tileSet"]) {
-		if (tileSet === this._tileSet) { return; }
+	setTileSet(tileSet: DisplayOptions["tileSet"]) {
+		if (tileSet === this.tileSet) { return; }
 
-		this._removeTileSetLoadListener();
-		this._tileSet = tileSet;
+		this.removeTileSetLoadListener();
+		this.tileSet = tileSet;
 
 		if (!tileSet) {
-			this._clearTexture();
+			this.clearTexture();
 			return;
 		}
 
 		if ("complete" in tileSet && !tileSet.complete) {
 			const image = tileSet as HTMLImageElement;
 			const listener = () => {
-				if (this._tileSet !== image) { return; }
-				this._tileSetLoadListener = null;
-				this._updateTexture(image);
+				if (this.tileSet !== image) { return; }
+				this.tileSetLoadListener = null;
+				this.updateTexture(image);
 			};
-			this._tileSetLoadListener = { tileSet: image, listener };
+			this.tileSetLoadListener = { tileSet: image, listener };
 			image.addEventListener("load", listener, { once: true });
 			return;
 		}
 
-		this._updateTexture(tileSet);
+		this.updateTexture(tileSet);
 	}
 
-	_removeTileSetLoadListener() {
-		if (!this._tileSetLoadListener) { return; }
-		const { tileSet, listener } = this._tileSetLoadListener;
+	removeTileSetLoadListener() {
+		if (!this.tileSetLoadListener) { return; }
+		const { tileSet, listener } = this.tileSetLoadListener;
 		tileSet.removeEventListener("load", listener);
-		this._tileSetLoadListener = null;
+		this.tileSetLoadListener = null;
 	}
 
-	_updateTexture(tileSet: Exclude<DisplayOptions["tileSet"], null>) {
-		const texture = createTexture(this._gl, tileSet);
-		if (this._texture) { this._gl.deleteTexture(this._texture); }
-		this._texture = texture;
+	updateTexture(tileSet: Exclude<DisplayOptions["tileSet"], null>) {
+		const texture = createTexture(this.gl, tileSet);
+		if (this.texture) { this.gl.deleteTexture(this.texture); }
+		this.texture = texture;
 	}
 
-	_clearTexture() {
-		if (!this._texture) { return; }
-		this._gl.deleteTexture(this._texture);
-		this._texture = null;
+	clearTexture() {
+		if (!this.texture) { return; }
+		this.gl.deleteTexture(this.texture);
+		this.texture = null;
 	}
 }
 

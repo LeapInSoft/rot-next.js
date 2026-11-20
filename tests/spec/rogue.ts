@@ -17,8 +17,8 @@ describe('Map.Rogue', () => {
 	it('calculates room size bounds with a minimum size of two', () => {
 		const map = new Rogue(15, 10, {});
 
-		expect(map._calculateRoomSize(15, 3)).toEqual([2, 4]);
-		expect(map._calculateRoomSize(5, 3)).toEqual([2, 2]);
+		expect(map.calculateRoomSize(15, 3)).toEqual([2, 4]);
+		expect(map.calculateRoomSize(5, 3)).toEqual([2, 2]);
 	});
 
 	it('creates every cell with custom grid and room options', () => {

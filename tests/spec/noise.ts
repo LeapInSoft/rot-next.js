@@ -27,8 +27,8 @@ describe('Noise.Simplex', () => {
 			ROT.RNG.setSeed(42);
 			const noise = new ROT.Noise.Simplex(8);
 
-			expect(noise._perms).toHaveLength(16);
-			expect(noise._indexes).toHaveLength(16);
+			expect(noise.perms).toHaveLength(16);
+			expect(noise.indexes).toHaveLength(16);
 			expect(noise.get(1.25, -0.5)).toEqual(expect.any(Number));
 		} finally {
 			ROT.RNG.setState(previousState);

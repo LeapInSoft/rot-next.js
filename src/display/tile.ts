@@ -6,25 +6,25 @@ import { DisplayData } from "@/src/display/types.js";
  * @private
  */
 export class Tile extends Canvas {
-	_colorCanvas: HTMLCanvasElement;
+	colorCanvas: HTMLCanvasElement;
 
 	constructor() {
 		super();
-		this._colorCanvas = document.createElement("canvas");
+		this.colorCanvas = document.createElement("canvas");
 	}
 
 	draw(data: DisplayData, clearBefore: boolean) {
 		const [x, y, ch, fg, bg] = data;
 
-		const tileWidth = this._options.tileWidth;
-		const tileHeight = this._options.tileHeight;
+		const tileWidth = this.options.tileWidth;
+		const tileHeight = this.options.tileHeight;
 
 		if (clearBefore) {
-			if (this._options.tileColorize) {
-				this._ctx.clearRect(x*tileWidth, y*tileHeight, tileWidth, tileHeight);
+			if (this.options.tileColorize) {
+				this.ctx.clearRect(x*tileWidth, y*tileHeight, tileWidth, tileHeight);
 			} else {
-				this._ctx.fillStyle = bg;
-				this._ctx.fillRect(x*tileWidth, y*tileHeight, tileWidth, tileHeight);
+				this.ctx.fillStyle = bg;
+				this.ctx.fillRect(x*tileWidth, y*tileHeight, tileWidth, tileHeight);
 			}
 		}
 
@@ -35,11 +35,11 @@ export class Tile extends Canvas {
 		const bgs = ([] as string[]).concat(bg);
 
 		for (let i=0;i<chars.length;i++) {
-			const tile = this._options.tileMap[chars[i]];
+			const tile = this.options.tileMap[chars[i]];
 			if (!tile) { throw new Error(`Char "${chars[i]}" not found in tileMap`); }
 			
-			if (this._options.tileColorize) { // apply colorization
-				const canvas = this._colorCanvas;
+			if (this.options.tileColorize) { // apply colorization
+				const canvas = this.colorCanvas;
 				const context = canvas.getContext("2d") as CanvasRenderingContext2D;
 				context.globalCompositeOperation = "source-over";
 				context.clearRect(0, 0, tileWidth, tileHeight);
@@ -48,7 +48,7 @@ export class Tile extends Canvas {
 				const bg = bgs[i] || bgs[0];
 
 				context.drawImage(
-					this._options.tileSet!,
+					this.options.tileSet!,
 					tile[0], tile[1], tileWidth, tileHeight,
 					0, 0, tileWidth, tileHeight
 				);
@@ -65,10 +65,10 @@ export class Tile extends Canvas {
 					context.fillRect(0, 0, tileWidth, tileHeight);
 				}
 
-				this._ctx.drawImage(canvas, x*tileWidth, y*tileHeight, tileWidth, tileHeight);
+				this.ctx.drawImage(canvas, x*tileWidth, y*tileHeight, tileWidth, tileHeight);
 			} else { // no colorizing, easy
-				this._ctx.drawImage(
-					this._options.tileSet!,
+				this.ctx.drawImage(
+					this.options.tileSet!,
 					tile[0], tile[1], tileWidth, tileHeight,
 					x*tileWidth, y*tileHeight, tileWidth, tileHeight
 				);
@@ -77,8 +77,8 @@ export class Tile extends Canvas {
 	}
 
 	computeSize(availWidth: number, availHeight: number): [number, number] {
-		const width = Math.floor(availWidth / this._options.tileWidth);
-		const height = Math.floor(availHeight / this._options.tileHeight);
+		const width = Math.floor(availWidth / this.options.tileWidth);
+		const height = Math.floor(availHeight / this.options.tileHeight);
 		return [width, height];
 	}
 
@@ -86,15 +86,15 @@ export class Tile extends Canvas {
 		throw new Error("Tile backend does not understand font size");
 	}
 
-	_normalizedEventToPosition(x:number, y:number): [number, number] {
-		return [Math.floor(x/this._options.tileWidth), Math.floor(y/this._options.tileHeight)];
+	normalizedEventToPosition(x:number, y:number): [number, number] {
+		return [Math.floor(x/this.options.tileWidth), Math.floor(y/this.options.tileHeight)];
 	}
 
-	_updateSize() {
-		const opts = this._options;
-		this._ctx.canvas.width = opts.width * opts.tileWidth;
-		this._ctx.canvas.height = opts.height * opts.tileHeight;
-		this._colorCanvas.width = opts.tileWidth;
-		this._colorCanvas.height = opts.tileHeight;
+	updateSize() {
+		const opts = this.options;
+		this.ctx.canvas.width = opts.width * opts.tileWidth;
+		this.ctx.canvas.height = opts.height * opts.tileHeight;
+		this.colorCanvas.width = opts.tileWidth;
+		this.colorCanvas.height = opts.tileHeight;
 	}
 }

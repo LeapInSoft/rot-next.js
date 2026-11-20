@@ -5,13 +5,13 @@ import { Scheduler } from "@/src/scheduler/scheduler.js";
  */
 export class Simple<T = any> extends Scheduler<T> {
 	add(item: any, repeat: boolean) {
-		this._queue.add(item, 0);
+		this.queue.add(item, 0);
 		return super.add(item, repeat);
 	}
 
 	next() {
-		if (this._current !== null && this._repeat.indexOf(this._current) != -1) {
-			this._queue.add(this._current, 0);
+		if (this.current !== null && this.repeat.indexOf(this.current) != -1) {
+			this.queue.add(this.current, 0);
 		}
 		return super.next();
 	}

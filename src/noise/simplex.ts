@@ -14,9 +14,9 @@ const G2 = (3 - Math.sqrt(3)) / 6;
  * Better rank ordering method by Stefan Gustavson in 2012.
  */
 export class Simplex extends Noise {
-	_gradients: number[][];
-	_indexes: number[];
-	_perms: number[];
+	gradients: number[][];
+	indexes: number[];
+	perms: number[];
 
 	/**
 	 * @param gradients Random gradients
@@ -24,7 +24,7 @@ export class Simplex extends Noise {
 	constructor(gradients = 256) {
 		super();
 
-		this._gradients = [
+		this.gradients = [
 			[ 0, -1],
 			[ 1, -1],
 			[ 1,  0],
@@ -39,18 +39,18 @@ export class Simplex extends Noise {
 		for (let i=0;i<gradients;i++) { permutations.push(i); }
 		permutations = RNG.shuffle(permutations);
 
-		this._perms = [];
-		this._indexes = [];
+		this.perms = [];
+		this.indexes = [];
 
 		for (let i=0;i<2*gradients;i++) {
-			this._perms.push(permutations[i % gradients]);
-			this._indexes.push(this._perms[i] % this._gradients.length);
+			this.perms.push(permutations[i % gradients]);
+			this.indexes.push(this.perms[i] % this.gradients.length);
 		}
 	}
 
 	get(xin: number, yin: number) {
-		const perms = this._perms;
-		const indexes = this._indexes;
+		const perms = this.perms;
+		const indexes = this.indexes;
 		const count = perms.length/2;
 
 		let n0 =0, n1 = 0, n2 = 0, gi; // Noise contributions from the three corners
@@ -93,7 +93,7 @@ export class Simplex extends Noise {
 		if (t0 >= 0) {
 			t0 *= t0;
 			gi = indexes[ii+perms[jj]];
-			const grad = this._gradients[gi];
+			const grad = this.gradients[gi];
 			n0 = t0 * t0 * (grad[0] * x0 + grad[1] * y0);
 		}
 		
@@ -101,7 +101,7 @@ export class Simplex extends Noise {
 		if (t1 >= 0) {
 			t1 *= t1;
 			gi = indexes[ii+i1+perms[jj+j1]];
-			const grad = this._gradients[gi];
+			const grad = this.gradients[gi];
 			n1 = t1 * t1 * (grad[0] * x1 + grad[1] * y1);
 		}
 		
@@ -109,7 +109,7 @@ export class Simplex extends Noise {
 		if (t2 >= 0) {
 			t2 *= t2;
 			gi = indexes[ii+1+perms[jj+1]];
-			const grad = this._gradients[gi];
+			const grad = this.gradients[gi];
 			n2 = t2 * t2 * (grad[0] * x2 + grad[1] * y2);
 		}
 

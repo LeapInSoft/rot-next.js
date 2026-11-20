@@ -9,8 +9,8 @@ export interface Options {
 }
 
 export abstract class FOV {
-	_lightPasses: LightPassesCallback;
-	_options: Options;
+	lightPasses: LightPassesCallback;
+	options: Options;
 
 	/**
 	 * @class Abstract FOV algorithm
@@ -19,8 +19,8 @@ export abstract class FOV {
 	 * @param {int} [options.topology=8] 4/6/8
 	 */
 	constructor(lightPassesCallback: LightPassesCallback, options: Partial<Options> = {}) {
-		this._lightPasses = lightPassesCallback;
-		this._options = Object.assign({topology: 8}, options);
+		this.lightPasses = lightPassesCallback;
+		this.options = Object.assign({topology: 8}, options);
 	}
 
 	/**
@@ -38,11 +38,11 @@ export abstract class FOV {
 	 * @param {int} cy center-y
 	 * @param {int} r range
 	 */
-	_getCircle(cx: number, cy: number, r: number) {
+	getCircle(cx: number, cy: number, r: number) {
 		const result = [];
 		let dirs, countFactor, startOffset;
 
-		switch (this._options.topology) {
+		switch (this.options.topology) {
 			case 4:
 				countFactor = 1;
 				startOffset = [0, 1];

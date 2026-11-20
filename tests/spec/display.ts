@@ -138,7 +138,7 @@ describe("Display", function() {
 			display.setOptions({tileSet:nextTileSet as unknown as HTMLCanvasElement});
 			const backend = (display as unknown as {backend:Tile}).backend;
 
-			expect(backend._options.tileSet).toBe(nextTileSet);
+			expect(backend.options.tileSet).toBe(nextTileSet);
 		});
 	});
 
@@ -419,9 +419,9 @@ describe("Display", function() {
 				});
 				const backend = new Tile();
 				backend.setOptions(display.getOptions());
-				vi.spyOn(backend._ctx, "drawImage").mockImplementation(() => {});
+				vi.spyOn(backend.ctx, "drawImage").mockImplementation(() => {});
 				backend.draw([0, 0, chars, "#ff0000", "#0000ff"], true);
-				const context = backend._colorCanvas.getContext("2d") as CanvasRenderingContext2D;
+				const context = backend.colorCanvas.getContext("2d") as CanvasRenderingContext2D;
 				return Array.from(context.getImageData(0, 0, 1, 1).data);
 			}
 
@@ -442,8 +442,8 @@ describe("Display", function() {
 				COLOR_BUFFER_BIT:0x4000,
 				TRIANGLE_STRIP:5
 			} as unknown as WebGLRenderingContext;
-			backend._gl = gl;
-			backend._options = {
+			backend.gl = gl;
+			backend.options = {
 				width:1,
 				height:1,
 				transpose:false,
@@ -462,7 +462,7 @@ describe("Display", function() {
 				tileSet:null,
 				tileColorize:true
 			} satisfies DisplayOptions;
-			backend._uniforms = {
+			backend.uniforms = {
 				targetPosRel:null,
 				tilesetPosAbs:null,
 				colorize:null,
