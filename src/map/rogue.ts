@@ -38,7 +38,6 @@ export class Rogue extends Map {
 	private _options: Options;
 	private map: number[][] = [];
 	private rooms: Room[][] = [];
-	private connectedCells: Point[] = [];
 
 	constructor(width: number, height: number, options: Partial<Options>) {
 		super(width, height);
@@ -65,7 +64,6 @@ export class Rogue extends Map {
 	create(callback?: CreateCallback) {
 		this.map = this.fillMap(1);
 		this.rooms = [];
-		this.connectedCells = [];
 
 		this._initRooms();
 		this._connectRooms();
@@ -148,7 +146,6 @@ export class Rogue extends Map {
 				if (otherRoom["connections"].length == 0) {
 					otherRoom["connections"].push([cgx, cgy]);
 
-					this.connectedCells.push([ncgx, ncgy]);
 					cgx = ncgx;
 					cgy = ncgy;
 					found = true;
@@ -161,56 +158,44 @@ export class Rogue extends Map {
 	}
 
 	_connectUnconnectedRooms() {
-		//While there are unconnected rooms, try to connect them to a random connected neighbor
-		//(if a room has no connected neighbors yet, just keep cycling, you'll fill out to it eventually).
 		const cw = this._options.cellWidth;
 		const ch = this._options.cellHeight;
+		const parents = Array.from({ length: cw * ch }, (_, index) => index);
+		const find = (cell: number): number => {
+			while (parents[cell] !== cell) {
+				parents[cell] = parents[parents[cell]];
+				cell = parents[cell];
+			}
+			return cell;
+		};
+		const join = (first: number, second: number): boolean => {
+			const firstRoot = find(first);
+			const secondRoot = find(second);
+			if (firstRoot === secondRoot) { return false; }
+			parents[firstRoot] = secondRoot;
+			return true;
+		};
+		const getIndex = (x: number, y: number) => x * ch + y;
 
-		this.connectedCells = RNG.shuffle(this.connectedCells);
-		let room;
-		let otherRoom!:Room;
-		let validRoom;
-
-		for (let i = 0; i < this._options.cellWidth; i++) {
-			for (let j = 0; j < this._options.cellHeight; j++)  {
-
-				room = this.rooms[i][j];
-
-				if (room["connections"].length == 0) {
-					let directions = [0, 2, 4, 6];
-					directions = RNG.shuffle(directions);
-					validRoom = false;
-
-					do {
-
-						const dirIdx = directions.pop() as number;
-						const newI = i + DIRS[8][dirIdx][0];
-						const newJ = j + DIRS[8][dirIdx][1];
-
-						if (newI < 0 || newI >= cw || newJ < 0 || newJ >= ch) { continue; }
-
-						otherRoom = this.rooms[newI][newJ];
-						validRoom = true;
-
-						if (otherRoom["connections"].length == 0) { break; }
-
-						for (let k = 0; k < otherRoom["connections"].length; k++) {
-							if (otherRoom["connections"][k][0] == i && otherRoom["connections"][k][1] == j) {
-								validRoom = false;
-								break;
-							}
-						}
-
-						if (validRoom) { break; }
-
-					} while (directions.length);
-
-					if (validRoom) {
-						room["connections"].push([otherRoom["cellx"], otherRoom["celly"]]);
-					} else {
-						console.log("-- Unable to connect room.");
-					}
+		for (let x = 0; x < cw; x++) {
+			for (let y = 0; y < ch; y++) {
+				for (const [otherX, otherY] of this.rooms[x][y].connections) {
+					join(getIndex(x, y), getIndex(otherX, otherY));
 				}
+			}
+		}
+
+		const candidateConnections: [Point, Point][] = [];
+		for (let x = 0; x < cw; x++) {
+			for (let y = 0; y < ch; y++) {
+				if (x + 1 < cw) { candidateConnections.push([[x, y], [x + 1, y]]); }
+				if (y + 1 < ch) { candidateConnections.push([[x, y], [x, y + 1]]); }
+			}
+		}
+
+		for (const [[x, y], [otherX, otherY]] of RNG.shuffle(candidateConnections)) {
+			if (join(getIndex(x, y), getIndex(otherX, otherY))) {
+				this.rooms[x][y].connections.push([otherX, otherY]);
 			}
 		}
 	}
@@ -229,60 +214,21 @@ export class Rogue extends Map {
 		const cwp = Math.floor(this._width / cw);
 		const chp = Math.floor(this._height / ch);
 
-		let roomw;
-		let roomh;
 		const roomWidth = this._options["roomWidth"];
 		const roomHeight = this._options["roomHeight"];
-		let sx;
-		let sy;
-		let otherRoom;
 
 		for (let i = 0; i < cw; i++) {
 			for (let j = 0; j < ch; j++) {
-				sx = cwp * i;
-				sy = chp * j;
-
-				if (sx == 0) { sx = 1; }
-				if (sy == 0) { sy = 1; }
-
-				roomw = RNG.getUniformInt(roomWidth[0], roomWidth[1]);
-				roomh = RNG.getUniformInt(roomHeight[0], roomHeight[1]);
-
-				if (j > 0) {
-					otherRoom = this.rooms[i][j-1];
-					while (sy - (otherRoom["y"] + otherRoom["height"] ) < 3) {
-						sy++;
-					}
-				}
-
-				if (i > 0) {
-					otherRoom = this.rooms[i-1][j];
-					while(sx - (otherRoom["x"] + otherRoom["width"]) < 3) {
-						sx++;
-					}
-				}
-
-				let sxOffset = Math.round(RNG.getUniformInt(0, cwp-roomw)/2);
-				let syOffset = Math.round(RNG.getUniformInt(0, chp-roomh)/2);
-
-				while (sx + sxOffset + roomw >= w) {
-					if(sxOffset) {
-						sxOffset--;
-					} else {
-						roomw--;
-					}
-				}
-
-				while (sy + syOffset + roomh >= h) {
-					if(syOffset) {
-						syOffset--;
-					} else {
-						roomh--;
-					}
-				}
-
-				sx = sx + sxOffset;
-				sy = sy + syOffset;
+				const cellX = cwp * i;
+				const cellY = chp * j;
+				const maxRoomWidth = Math.max(1, Math.min(cwp - 1, w - cellX - 2));
+				const maxRoomHeight = Math.max(1, Math.min(chp - 1, h - cellY - 2));
+				const roomw = Math.min(RNG.getUniformInt(roomWidth[0], roomWidth[1]), maxRoomWidth);
+				const roomh = Math.min(RNG.getUniformInt(roomHeight[0], roomHeight[1]), maxRoomHeight);
+				const maxOffsetX = Math.max(0, Math.min(cwp - roomw - 1, w - cellX - roomw - 2));
+				const maxOffsetY = Math.max(0, Math.min(chp - roomh - 1, h - cellY - roomh - 2));
+				const sx = cellX + 1 + RNG.getUniformInt(0, maxOffsetX);
+				const sy = cellY + 1 + RNG.getUniformInt(0, maxOffsetY);
 
 				this.rooms[i][j]["x"] = sx;
 				this.rooms[i][j]["y"] = sy;
