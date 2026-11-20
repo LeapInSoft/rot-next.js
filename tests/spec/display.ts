@@ -78,6 +78,35 @@ describe("Display", function() {
 			expect(display.getOptions().layout).toBe("hex");
 		});
 
+		it("should preserve defaults and unrelated options after partial updates", function() {
+			const display = new ROT.Display({width:12, fg:"#123456"});
+			const options = display.getOptions();
+
+			display.setOptions({height:7});
+
+			expect(display.getOptions()).toEqual({
+				...options,
+				height:7
+			});
+			expect(display.getOptions().width).toBe(12);
+			expect(display.getOptions().fg).toBe("#123456");
+			expect(display.getOptions().layout).toBe("rect");
+		});
+
+		it("should switch backends while preserving full display options", function() {
+			const display = new ROT.Display({width:4, height:3, layout:"rect", fontSize:18});
+
+			display.setOptions({layout:"tile", tileWidth:8, tileHeight:9});
+
+			const options = display.getOptions();
+			expect(options.layout).toBe("tile");
+			expect(options.width).toBe(4);
+			expect(options.height).toBe(3);
+			expect(options.fontSize).toBe(18);
+			expect(options.tileWidth).toBe(8);
+			expect(options.tileHeight).toBe(9);
+		});
+
 		it("should update tile dimensions after construction", function() {
 			const display = new ROT.Display({
 				width:2,
@@ -153,6 +182,16 @@ describe("Display", function() {
 		}
 
 		describe("rectangular layout", function() {
+			it("should normalize an empty touch event to an outside position", function() {
+				const d = new ROT.Display({width:10, height:10});
+				appendToBody(d);
+
+				const pos = eventToPosition(d, {touches:[], changedTouches:[]});
+
+				expect(pos).toEqual([-1, -1]);
+				unlink(d);
+			});
+
 			it("should compute inside canvas", function() {
 				const d = new ROT.Display({width:10, height:10});
 				appendToBody(d);
