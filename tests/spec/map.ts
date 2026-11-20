@@ -1,4 +1,4 @@
-import { Arena, DividedMaze, EllerMaze, IceyMaze } from '../../src/map/index.js';
+import { Arena, Cellular, Digger, DividedMaze, EllerMaze, IceyMaze, Rogue, Uniform } from '../../src/map/index.js';
 import { describe, expect, it } from 'vitest';
 
 function captureMap(generator: InstanceType<typeof Arena> | InstanceType<typeof DividedMaze> | InstanceType<typeof EllerMaze> | InstanceType<typeof IceyMaze>, width: number, height: number) {
@@ -38,9 +38,13 @@ function expectConnectedFloors(map: number[][]) {
 describe('Map.create without a callback', () => {
 	const generators = [
 		{ name: 'Arena', create: () => new Arena(5, 5) },
+		{ name: 'Cellular', create: () => new Cellular(10, 10) },
+		{ name: 'Digger', create: () => new Digger(30, 20) },
 		{ name: 'DividedMaze', create: () => new DividedMaze(10, 10) },
 		{ name: 'EllerMaze', create: () => new EllerMaze(10, 10) },
-		{ name: 'IceyMaze', create: () => new IceyMaze(10, 10) }
+		{ name: 'IceyMaze', create: () => new IceyMaze(10, 10) },
+		{ name: 'Rogue', create: () => new Rogue(30, 20) },
+		{ name: 'Uniform', create: () => new Uniform(30, 20) }
 	];
 
 	for (const { name, create } of generators) {
