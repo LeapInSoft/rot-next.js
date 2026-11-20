@@ -94,16 +94,13 @@ class RandomNumberGenerator {
 	 * @returns New array with randomized items
 	 */
 	shuffle<T>(array: T[]) {
-		const result: T[] = [];
-		const clone = array.slice();
-		while (clone.length) {
-			const item = this.getItem(clone);
-			if (item === null) { break; }
-			const index = clone.indexOf(item);
-			if (index === -1) { break; }
-			const removed = clone.splice(index, 1)[0];
-			result.push(removed);
+		const result = array.slice();
+
+		for (let i = result.length - 1; i > 0; i--) {
+			const j = Math.floor(this.getUniform() * (i + 1));
+			[result[i], result[j]] = [result[j], result[i]];
 		}
+
 		return result;
 	}
 

@@ -84,6 +84,16 @@ describe("RNG", function() {
 			expect(shuffled).toHaveLength(original.length);
 			expect([...shuffled].sort((a, b) => a - b)).toEqual(original);
 		});
+
+		it("should preserve null, undefined, and NaN items when shuffling", function() {
+			ROT.RNG.setSeed(123456);
+			const original = [null, undefined, Number.NaN, 1];
+
+			const shuffled = ROT.RNG.shuffle(original);
+
+			expect(shuffled).toHaveLength(original.length);
+			expect(shuffled).toEqual(expect.arrayContaining(original));
+		});
 	});
 
 	describe("seeding", function() {
