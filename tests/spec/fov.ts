@@ -218,6 +218,37 @@ describe("FOV", function() {
 					const fov = new ROT.FOV.RecursiveShadowcasting(lightPasses, {topology:8});
 					checkResult(fov, lightPasses.center, RESULT_MAP8_RING1);
 				});
+				it("should report each visible cell only once", function() {
+					const fov = new ROT.FOV.RecursiveShadowcasting(() => true);
+					const counts = new Map<string, number>();
+
+					fov.compute(0, 0, 3, (x, y) => {
+						const key = `${x},${y}`;
+						counts.set(key, (counts.get(key) || 0) + 1);
+					});
+
+					expect([...counts.values()].every(count => count === 1)).toBe(true);
+				});
+				it("should use a Manhattan-radius footprint for 4-topology", function() {
+					const fov = new ROT.FOV.RecursiveShadowcasting(() => true, {topology:4});
+					const visible = new Set<string>();
+
+					fov.compute(0, 0, 2, (x, y) => visible.add(`${x},${y}`));
+
+					const expected = new Set<string>();
+					for (let x = -2; x <= 2; x++) {
+						for (let y = -2; y <= 2; y++) {
+							if (Math.abs(x) + Math.abs(y) <= 2) { expected.add(`${x},${y}`); }
+						}
+					}
+					expect(visible).toEqual(expected);
+				});
+				it("should reject invalid directions for partial views", function() {
+					const fov = new ROT.FOV.RecursiveShadowcasting(() => true);
+
+					expect(() => fov.compute90(0, 0, 2, 8, () => {})).toThrow(RangeError);
+					expect(() => fov.compute180(0, 0, 2, -1, () => {})).toThrow(RangeError);
+				});
 			});
 			describe("180-degree view", function () {
 				it("should compute visible ring0 180 degrees facing north", function() {

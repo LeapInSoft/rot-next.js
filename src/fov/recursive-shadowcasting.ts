@@ -27,10 +27,11 @@ export default class RecursiveShadowcasting extends FOV {
 	 * @param {function} callback
 	 */
 	compute(x: number, y: number, R: number, callback: VisibilityCallback) {
+		const report = this._getCallback(x, y, R, callback);
 		//You can always see your own tile
-		callback(x, y, 0, 1);
+		report(x, y, 0, 1);
 		for(let i = 0; i < OCTANTS.length; i++) {
-			this._renderOctant(x, y, OCTANTS[i], R, callback);
+			this._renderOctant(x, y, OCTANTS[i], R, report);
 		}
 	}
 
@@ -43,15 +44,17 @@ export default class RecursiveShadowcasting extends FOV {
 	 * @param {function} callback
 	 */
 	compute180(x: number, y: number, R: number, dir: number, callback: VisibilityCallback) {
+		this._validateDirection(dir);
+		const report = this._getCallback(x, y, R, callback);
 		//You can always see your own tile
-		callback(x, y, 0, 1);
+		report(x, y, 0, 1);
 		const previousOctant = (dir - 1 + 8) % 8; //Need to retrieve the previous octant to render a full 180 degrees
 		const nextPreviousOctant = (dir - 2 + 8) % 8; //Need to retrieve the previous two octants to render a full 180 degrees
 		const nextOctant = (dir+ 1 + 8) % 8; //Need to grab to next octant to render a full 180 degrees
-		this._renderOctant(x, y, OCTANTS[nextPreviousOctant], R, callback);
-		this._renderOctant(x, y, OCTANTS[previousOctant], R, callback);
-		this._renderOctant(x, y, OCTANTS[dir], R, callback);
-		this._renderOctant(x, y, OCTANTS[nextOctant], R, callback);
+		this._renderOctant(x, y, OCTANTS[nextPreviousOctant], R, report);
+		this._renderOctant(x, y, OCTANTS[previousOctant], R, report);
+		this._renderOctant(x, y, OCTANTS[dir], R, report);
+		this._renderOctant(x, y, OCTANTS[nextOctant], R, report);
 	};
 
 	/**
@@ -63,11 +66,30 @@ export default class RecursiveShadowcasting extends FOV {
 	 * @param {function} callback
 	 */
 	compute90(x: number, y: number, R: number, dir: number, callback: VisibilityCallback) {
+		this._validateDirection(dir);
+		const report = this._getCallback(x, y, R, callback);
 		//You can always see your own tile
-		callback(x, y, 0, 1);
+		report(x, y, 0, 1);
 		const previousOctant = (dir - 1 + 8) % 8; //Need to retrieve the previous octant to render a full 90 degrees
-		this._renderOctant(x, y, OCTANTS[dir], R, callback);
-		this._renderOctant(x, y, OCTANTS[previousOctant], R, callback);
+		this._renderOctant(x, y, OCTANTS[dir], R, report);
+		this._renderOctant(x, y, OCTANTS[previousOctant], R, report);
+	}
+
+	_getCallback(x: number, y: number, R: number, callback: VisibilityCallback): VisibilityCallback {
+		const seen = new Set<string>();
+		return (visibleX, visibleY, distance, visibility) => {
+			const key = `${visibleX},${visibleY}`;
+			if (seen.has(key)) { return; }
+			if (this._options.topology === 4 && Math.abs(visibleX - x) + Math.abs(visibleY - y) > R) { return; }
+			seen.add(key);
+			callback(visibleX, visibleY, distance, visibility);
+		};
+	}
+
+	_validateDirection(dir: number) {
+		if (!Number.isInteger(dir) || dir < 0 || dir >= OCTANTS.length) {
+			throw new RangeError("Direction must be an integer between 0 and 7");
+		}
 	}
 
 	/**
