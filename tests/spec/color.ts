@@ -108,6 +108,19 @@ describe("Color", function() {
 		it("should handle named colors", function() {
 			expect(ROT.Color.fromString("red")).toEqual([255, 0, 0]);
 		});
+		it("should handle named colors case-insensitively", function() {
+			expect(ROT.Color.fromString("Red")).toEqual([255, 0, 0]);
+		});
+		it("should not treat inherited object properties as cached colors", function() {
+			expect(ROT.Color.fromString("toString")).toEqual([0, 0, 0]);
+			expect(ROT.Color.fromString("constructor")).toEqual([0, 0, 0]);
+		});
+		it("should reject malformed hex colors without returning invalid channels", function() {
+			expect(ROT.Color.fromString("#abcd")).toEqual([0, 0, 0]);
+		});
+		it("should handle rgba() colors while ignoring alpha", function() {
+			expect(ROT.Color.fromString("rgba(10, 20, 33, 0.5)")).toEqual([10, 20, 33]);
+		});
 		it("should not handle nonexistent colors", function() {
 			expect(ROT.Color.fromString("lol")).toEqual([0, 0, 0]);
 		});
@@ -125,6 +138,9 @@ describe("Color", function() {
 	describe("toHex", function() {
 		it("should serialize to hex", function() {
 			expect(ROT.Color.toHex([10, 20, 40])).toEqual("#0a1428");
+		});
+		it("should round fractional channel values", function() {
+			expect(ROT.Color.toHex([127.5, 0, 0])).toEqual("#800000");
 		});
 		it("should clamp values to 0..255", function() {
 			expect(ROT.Color.toHex([-100, 20, 2000])).toEqual("#0014ff");

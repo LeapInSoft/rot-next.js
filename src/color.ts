@@ -4,31 +4,23 @@ import { RNG } from '@/src/rng.js';
 export type Color = [number, number, number];
 
 export function	fromString(str: string): Color {
-	let cached:Color, r;
-	if (str in CACHE) {
-		cached = CACHE[str];
+	const normalized = str.toLowerCase();
+	let cached: Color;
+	let match: RegExpMatchArray | null;
+	if (Object.prototype.hasOwnProperty.call(CACHE, normalized)) {
+		cached = CACHE[normalized];
 	} else {
-		if (str.charAt(0) == "#") { // hex rgb
-
-			const matched = str.match(/[0-9a-f]/gi) || [];
-			const values = matched.map((x:string) => parseInt(x, 16));
-			if (values.length == 3) {
-				cached = values.map((x:number) => x*17) as Color;
-			} else {
-				for (let i=0;i<3;i++) {
-					values[i+1] += 16*values[i];
-					values.splice(i, 1);
-				}
-				cached = values as Color;
-			}
-
-		} else if ((r = str.match(/rgb\(([0-9, ]+)\)/i))) { // decimal rgb
-			cached = r[1].split(/\s*,\s*/).map((x:string) => parseInt(x)) as Color;
+		if (/^#[0-9a-f]{3}$/i.test(str)) {
+			cached = str.slice(1).split("").map(x => parseInt(x, 16) * 17) as Color;
+		} else if (/^#[0-9a-f]{6}$/i.test(str)) {
+			cached = [1, 3, 5].map(i => parseInt(str.slice(i, i + 2), 16)) as Color;
+		} else if ((match = str.match(/^rgb\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)$/i))) {
+			cached = match.slice(1, 4).map(Number) as Color;
+		} else if ((match = str.match(/^rgba\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*,\s*(?:\d+(?:\.\d*)?|\.\d+)\s*\)$/i))) {
+			cached = match.slice(1, 4).map(Number) as Color;
 		} else { // html name
 			cached = [0, 0, 0];
 		}
-
-		CACHE[str] = cached;
 	}
 
 	return cached.slice() as Color;
@@ -188,7 +180,7 @@ export function toRGB(color: Color) {
 }
 
 export function toHex(color: Color) {
-	const clamped = color.map(x => clamp(x, 0, 255).toString(16).padStart(2, "0"));
+	const clamped = color.map(x => Math.round(clamp(x, 0, 255)).toString(16).padStart(2, "0"));
 	return `#${clamped.join("")}`;
 }
 
