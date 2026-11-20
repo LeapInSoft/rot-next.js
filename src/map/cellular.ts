@@ -108,6 +108,7 @@ export class Cellular extends Map {
 
 	/**
 	 * Make sure every non-wall space is accessible.
+	 * If no cells have the requested value, the map is unchanged and the callback is still reported.
 	 * @param {function} callback to call to display map when do
 	 * @param {int} value to consider empty space - defaults to 0
 	 * @param {function} callback to call when a new connection is made
@@ -239,7 +240,7 @@ export class Cellular extends Map {
 			tests.forEach(test => {
 				// side-effect
 				const key = this.pointKey(test);
-				if (connected[key] === null && this.freeSpace(test[0], test[1], value)) {
+				if (!Object.prototype.hasOwnProperty.call(connected, key) && this.freeSpace(test[0], test[1], value)) {
 					connected[key] = test;
 					if (!keepNotConnected) { delete notConnected[key]; }
 					stack.push(test);
