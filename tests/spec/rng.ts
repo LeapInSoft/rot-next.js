@@ -38,6 +38,12 @@ describe("RNG", function() {
 		});
 	});
 
+	describe("getWeightedValue", function() {
+		it("should return undefined when no weighted values are available", function() {
+			expect(ROT.RNG.getWeightedValue({})).toBeUndefined();
+		});
+	});
+
 	describe("seeding", function() {
 		it("should return a seed number", function() {
 			expect(typeof(ROT.RNG.getSeed())).toEqual("number");

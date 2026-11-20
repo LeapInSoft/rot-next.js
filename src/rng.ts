@@ -107,7 +107,7 @@ class RandomNumberGenerator {
 	 * @param data key=whatever, value=weight (relative probability)
 	 * @returns whatever
 	 */
-	getWeightedValue(data: Record<string, number>) {
+	getWeightedValue(data: Record<string, number>): string | undefined {
 		let total = 0;
 		const ids = Object.keys(data);
 
