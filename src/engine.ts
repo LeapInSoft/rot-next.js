@@ -37,10 +37,17 @@ export default class Engine {
 		while (!this._lock) {
 			const actor = this._scheduler.next();
 			if (!actor) { return this.lock(); } /* no actors */
-			const result = actor.act();
+			let result;
+			try {
+				result = actor.act();
+			} catch (error) {
+				if (!this._lock) { this.lock(); }
+				throw error;
+			}
 			if (result && result.then) { /* actor returned a "thenable", looks like a Promise */
 				this.lock();
-				result.then(this.unlock.bind(this));
+				const unlock = this.unlock.bind(this);
+				result.then(unlock, unlock);
 			}
 		}
 

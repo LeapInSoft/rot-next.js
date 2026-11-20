@@ -40,4 +40,42 @@ describe("Engine", function() {
 		E.start();
 		expect(RESULT).toEqual(1);
 	});
+
+	it("should restore the lock when an actor throws", function() {
+		const error = new Error("Actor failed");
+		let shouldThrow = true;
+		const actor = {
+			getSpeed: function() { return 50; },
+			act: function() {
+				if (shouldThrow) {
+					shouldThrow = false;
+					throw error;
+				}
+				RESULT++;
+				E.lock();
+			}
+		};
+		S.add(actor, true);
+
+		expect(() => E.start()).toThrow(error);
+		E.start();
+		expect(RESULT).toEqual(1);
+	});
+
+	it("should resume when an actor's promise rejects", async function() {
+		let calls = 0;
+		const actor = {
+			getSpeed: function() { return 50; },
+			act: function() {
+				calls++;
+				if (calls === 1) { return Promise.reject(new Error("Actor failed")); }
+				return E.lock();
+			}
+		};
+		S.add(actor, true);
+
+		E.start();
+		await Promise.resolve();
+		expect(calls).toEqual(2);
+	});
 });
