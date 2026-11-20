@@ -1,4 +1,4 @@
-import {MinHeap} from "@/src/MinHeap.js";
+import {MinHeap} from "@/src/min_heap.js";
 
 export class EventQueue<T = any> {
 	_time: number;

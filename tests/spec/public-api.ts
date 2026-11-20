@@ -16,7 +16,7 @@ import { Display } from '@/src/display/display.js';
 import { Rect } from '@/src/display/rect.js';
 import { Hex } from '@/src/display/hex.js';
 import { Tile } from '@/src/display/tile.js';
-import { TileGL } from '@/src/display/tile-gl.js';
+import { TileGL } from '@/src/display/tile_gl.js';
 import { Term } from '@/src/display/term.js';
 
 describe('named public exports', () => {

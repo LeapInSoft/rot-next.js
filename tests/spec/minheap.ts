@@ -1,4 +1,4 @@
-import { MinHeap } from "@/src/MinHeap";
+import { MinHeap } from "@/src/min_heap";
 import { describe, expect, it } from "vitest";
 
 describe("MinHeap", function() {

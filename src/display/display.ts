@@ -2,7 +2,7 @@ import type { Backend } from "@/src/display/backend.js";
 import { Hex } from "@/src/display/hex.js";
 import { Rect } from "@/src/display/rect.js";
 import { Tile } from "@/src/display/tile.js";
-import { TileGL } from "@/src/display/tile-gl.js";
+import { TileGL } from "@/src/display/tile_gl.js";
 import { Term } from "@/src/display/term.js";
 import * as Text from "@/src/text.js";
 import type { DisplayOptions, DisplayData, LayoutType } from "@/src/display/types.js";

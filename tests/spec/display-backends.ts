@@ -1,4 +1,4 @@
-import { TileGL } from '@/src/display/tile-gl.js';
+import { TileGL } from '@/src/display/tile_gl.js';
 import { Term } from '@/src/display/term.js';
 import type { DisplayOptions } from '@/src/display/types.js';
 import { describe, expect, it, vi } from 'vitest';
