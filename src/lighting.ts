@@ -26,7 +26,7 @@ interface Options {
 	passes: number;
 	/** Cells with emissivity > threshold will be treated as light source in the next pass. Default = 100 */
 	emissionThreshold: number;
-	/** Max light range, default = 10 */
+	/** Max light range. Zero lights only the source cell. Default = 10 */
 	range: number;
 }
 
@@ -50,15 +50,21 @@ export class Lighting {
 
 	/**
 	 * Adjust options at runtime
+	 * A range of zero lights only the source cell.
 	 */
 	setOptions(options: Partial<Options>) {
 		const hasRange = Object.prototype.hasOwnProperty.call(options, 'range');
-		if (hasRange && (typeof options.range !== 'number' || !Number.isFinite(options.range) || options.range < 0)) {
+		const {range, ...remainingOptions} = options;
+		const rangeIsDefined = hasRange && range !== undefined;
+		if (rangeIsDefined && (typeof range !== 'number' || !Number.isFinite(range) || range < 0)) {
 			throw new RangeError('Lighting range must be a finite non-negative number');
 		}
 
-		Object.assign(this.options, options);
-		if (hasRange) { this.reset(); }
+		Object.assign(this.options, remainingOptions);
+		if (hasRange && range !== undefined) {
+			this.options.range = range;
+			this.reset();
+		}
 		return this;
 	}
 

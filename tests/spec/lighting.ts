@@ -130,6 +130,25 @@ describe("Lighting", function() {
 		expect(collect(lighting)).toEqual({"0,0": [100, 100, 100]});
 	});
 
+	it.each([0, 0.5, 1, 10])("accepts finite constructor range %s", function(range) {
+		expect(() => createLighting(() => 1, {range})).not.toThrow();
+	});
+
+	it("preserves the default range when range is omitted", function() {
+		const lighting = createLighting();
+		lighting.setLight(0, 0, [100, 100, 100]);
+
+		expect(collect(lighting)["10,0"]).toBeUndefined();
+	});
+
+	it("treats an undefined constructor range as omitted", function() {
+		const lighting = createLighting(() => 1, {range: undefined});
+		lighting.setLight(0, 0, [100, 100, 100]);
+
+		expect(collect(lighting)["1,0"]).toBeDefined();
+		expect(collect(lighting)["10,0"]).toBeUndefined();
+	});
+
 	it.each([-1, NaN, Infinity, -Infinity])("rejects invalid constructor range %s", function(range) {
 		expect(() => createLighting(() => 1, {range})).toThrow(RangeError);
 	});
@@ -140,5 +159,72 @@ describe("Lighting", function() {
 
 		expect(() => lighting.setOptions({range: -1})).toThrow(RangeError);
 		expect(collect(lighting)["1,0"]).toEqual([50, 50, 50]);
+	});
+
+	it("treats an undefined range update as omitted", function() {
+		const lighting = createLighting(() => 0, {range: 2});
+
+		expect(() => lighting.setOptions({range: undefined})).not.toThrow();
+		lighting.setLight(0, 0, [100, 100, 100]);
+		expect(collect(lighting)["1,0"]).toEqual([50, 50, 50]);
+	});
+
+	it.each([-1, NaN, Infinity, -Infinity])("rejects invalid range update %s with a clear error", function(range) {
+		const lighting = createLighting(() => 0, {range: 2});
+
+		expect(() => lighting.setOptions({range}))
+			.toThrowError(new RangeError("Lighting range must be a finite non-negative number"));
+	});
+
+	it("preserves the range and caches when range is omitted from setOptions", function() {
+		let passChecks = 0;
+		const lighting = createLighting(() => 0, {range: 2});
+		lighting.setFOV(new ROT.FOV.PreciseShadowcasting(() => {
+			passChecks++;
+			return true;
+		}));
+		lighting.setLight(0, 0, [100, 100, 100]);
+
+		collect(lighting);
+		const checksAfterFirstCompute = passChecks;
+		lighting.setOptions({passes: 1});
+		collect(lighting);
+
+		expect(passChecks).toBe(checksAfterFirstCompute);
+	});
+
+	it("invalidates FOV and reflectivity caches when range changes", function() {
+		let passChecks = 0;
+		let reflectivityChecks = 0;
+		const lighting = createLighting((x, y) => {
+			reflectivityChecks++;
+			return x === 1 && y === 0 ? 1 : 0;
+		}, {passes: 2, range: 2});
+		lighting.setFOV(new ROT.FOV.PreciseShadowcasting(() => {
+			passChecks++;
+			return true;
+		}));
+		lighting.setLight(0, 0, [100, 100, 100]);
+
+		collect(lighting);
+		const checksAfterFirstCompute = passChecks;
+		const reflectivityChecksAfterFirstCompute = reflectivityChecks;
+
+		lighting.setOptions({range: 3});
+		collect(lighting);
+
+		expect(passChecks).toBeGreaterThan(checksAfterFirstCompute);
+		expect(reflectivityChecks).toBeGreaterThan(reflectivityChecksAfterFirstCompute);
+	});
+
+	it("setFOV invalidates the FOV cache independently of setOptions", function() {
+		const lighting = createLighting();
+		lighting.setFOV(new ROT.FOV.PreciseShadowcasting(() => true));
+		lighting.setLight(0, 0, [100, 100, 100]);
+
+		expect(collect(lighting)["1,0"]).toBeDefined();
+
+		lighting.setFOV(new ROT.FOV.PreciseShadowcasting(() => false));
+		expect(collect(lighting)).toEqual({"0,0": [100, 100, 100]});
 	});
 });
