@@ -18,6 +18,18 @@ describe("Map.Dungeon", function() {
 		expect(() => new ROT.Map.Digger(6, 6).create()).not.toThrow();
 	});
 
+	it("should terminate Digger generation when the time limit is exhausted", function() {
+		const digger = new ROT.Map.Digger(20, 20, { timeLimit: -1 });
+
+		expect(digger.create()).toBe(digger);
+	});
+
+	it("should terminate Uniform generation when the time limit is exhausted", function() {
+		const uniform = new ROT.Map.Uniform(20, 20, { timeLimit: -1 });
+
+		expect(uniform.create()).toBeNull();
+	});
+
 	const expectConnectedFloors = function(map: number[][]) {
 		const floors = new Set<string>();
 		map.forEach((column, x) => column.forEach((value, y) => {

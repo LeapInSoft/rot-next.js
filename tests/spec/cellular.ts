@@ -2,6 +2,13 @@ import * as ROT from '@/src';
 import { describe, expect, it } from 'vitest';
 
 describe('Map.Cellular', () => {
+	it('should report an empty randomized map without a callback', () => {
+		const map = new ROT.Map.Cellular(3, 3);
+		map.randomize(0);
+
+		expect(() => map.create()).not.toThrow();
+	});
+
 	it('should generate cells according to a 4-topology rule', () => {
 		const map = new ROT.Map.Cellular(3, 3, {topology:4, born:[1], survive:[]});
 		map.set(0, 0, 1);
