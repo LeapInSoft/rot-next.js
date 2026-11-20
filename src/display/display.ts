@@ -159,9 +159,13 @@ export class Display {
 	 * @returns {int[2]} -1 for values outside of the canvas
 	 */
 	eventToPosition(e: TouchEvent | MouseEvent) {
-		const position = "touches" in e ? e.touches[0] : e;
-		const {clientX:x, clientY:y} = position;
-		return this.backend.eventToPosition(x, y);
+		if ("touches" in e) {
+			const touch = e.touches[0] ?? e.changedTouches[0];
+			if (!touch) { return [-1, -1]; }
+			return this.backend.eventToPosition(touch.clientX, touch.clientY);
+		}
+
+		return this.backend.eventToPosition(e.clientX, e.clientY);
 	}
 
 	/**

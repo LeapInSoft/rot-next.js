@@ -67,7 +67,7 @@ describe("Display", function() {
 		return canvas;
 	}
 
-	const eventToPosition = function(display: InstanceType<typeof ROT.Display>, event: {clientX:number; clientY:number} | {touches:{clientX:number; clientY:number}[]}) {
+	const eventToPosition = function(display: InstanceType<typeof ROT.Display>, event: {clientX:number; clientY:number} | {touches:{clientX:number; clientY:number}[]; changedTouches?:{clientX:number; clientY:number}[]}) {
 		return display.eventToPosition(event as MouseEvent | TouchEvent);
 	}
 
@@ -125,6 +125,22 @@ describe("Display", function() {
 				const pos = eventToPosition(d, e);
 				expect(pos[0]).toBe(1);
 				expect(pos[1]).toBe(2);
+				unlink(d);
+			});
+			it("should use the ended touch for touchend events", function() {
+				const d = new ROT.Display({width:10, height:10});
+				appendToBody(d);
+				const node = canvasFor(d);
+				const cellW = node.offsetWidth/10;
+				const cellH = node.offsetHeight/10;
+				const endedTouch = {clientX: 100 + 1.5*cellW, clientY: 100 + 2.5*cellH};
+				const e: {touches:{clientX:number; clientY:number}[]; changedTouches:{clientX:number; clientY:number}[]} = {
+					touches:[],
+					changedTouches:[endedTouch]
+				};
+				const pos = eventToPosition(d, e);
+
+				expect(pos).toEqual([1, 2]);
 				unlink(d);
 			});
 			it("should fail outside of canvas (left top)", function() {
