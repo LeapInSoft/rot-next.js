@@ -39,7 +39,7 @@ export class Rogue extends Map {
 	private map: number[][] = [];
 	private rooms: Room[][] = [];
 
-	constructor(width: number, height: number, options: Partial<Options>) {
+	constructor(width: number, height: number, options: Partial<Options> = {}) {
 		super(width, height);
 
 		options = Object.assign({

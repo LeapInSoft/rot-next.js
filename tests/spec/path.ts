@@ -69,6 +69,15 @@ describe("Path", function() {
 	
 	
 	describe("Dijkstra", function() {
+		it("should use default options when none are provided", function() {
+			const dijkstra = new ROT.Path.Dijkstra(0, 0, () => true);
+			const path: number[] = [];
+
+			dijkstra.compute(0, 0, (x, y) => path.push(x, y));
+
+			expect(path).toEqual([0, 0]);
+		});
+
 		describe("8-topology", function() {
 			const PATH_A = [0, 1, 0, 2, 0, 3, 1, 4, 2, 4, 3, 4, 4, 4];
 			const PATH_B = [2, 2, 1, 2, 0, 3, 1, 4, 2, 4, 3, 4, 4, 4];
@@ -147,6 +156,15 @@ describe("Path", function() {
 	}); /* dijkstra */
 
 	describe("A*", function() {
+		it("should use default options when none are provided", function() {
+			const astar = new ROT.Path.AStar(0, 0, () => true);
+			const path: number[] = [];
+
+			astar.compute(0, 0, (x, y) => path.push(x, y));
+
+			expect(path).toEqual([0, 0]);
+		});
+
 		describe("8-topology", function() {
 			const PATH_A = [0, 1, 0, 2, 0, 3, 1, 4, 2, 4, 3, 4, 4, 4];
 			const PATH_B = [2, 2, 1, 2, 0, 3, 1, 4, 2, 4, 3, 4, 4, 4];

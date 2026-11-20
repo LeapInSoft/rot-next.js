@@ -25,7 +25,7 @@ export class Uniform extends Dungeon {
 	_map: number[][];
 	_dug: number;
 
-	constructor(width:number, height: number, options: Partial<Options>) {
+	constructor(width:number, height: number, options: Partial<Options> = {}) {
 		super(width, height);
 
 		this._options = {

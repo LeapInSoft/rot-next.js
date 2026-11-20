@@ -16,7 +16,7 @@ export default class Dijkstra extends Path {
 	private readonly computed: {[key: string]: Item} = {};
 	private readonly todo: Item[] = [];
 
-	constructor(toX: number, toY: number, passableCallback: PassableCallback, options: Partial<Options>) {
+	constructor(toX: number, toY: number, passableCallback: PassableCallback, options: Partial<Options> = {}) {
 		super(toX, toY, passableCallback, options);
 
 		this.add(toX, toY, null);

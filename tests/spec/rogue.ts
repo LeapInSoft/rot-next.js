@@ -10,6 +10,10 @@ const sizes = [
 ];
 
 describe('Map.Rogue', () => {
+	it('constructs with default options', () => {
+		expect(() => new Rogue(30, 20)).not.toThrow();
+	});
+
 	it('calculates room size bounds with a minimum size of two', () => {
 		const map = new Rogue(15, 10, {});
 

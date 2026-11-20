@@ -4,6 +4,14 @@ import { describe, expect, it } from "vitest";
 describe("Map.Dungeon", function() {
 	const names: ("Digger" | "Uniform")[] = ["Digger", "Uniform"];
 
+	it("should construct Uniform with default options", function() {
+		expect(() => new ROT.Map.Uniform(80, 25)).not.toThrow();
+	});
+
+	it("should construct Digger with default options", function() {
+		expect(() => new ROT.Map.Digger(80, 25)).not.toThrow();
+	});
+
 	const expectConnectedFloors = function(map: number[][]) {
 		const floors = new Set<string>();
 		map.forEach((column, x) => column.forEach((value, y) => {
