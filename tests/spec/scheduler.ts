@@ -156,6 +156,17 @@ describe("Scheduler", function() {
 
 			expect(result).toEqual([A1, A2, A3, A3, A2, A1]);
 		});
+
+		it("should preserve a zero action duration", function() {
+			S.add(A1, true);
+			S.add(A2, true);
+
+			expect(S.next()).toEqual(A1);
+			S.setDuration(0);
+			expect(S.next()).toEqual(A2);
+
+			expect(S.getTimeOf(A1)).toEqual(0);
+		});
 	});
 
 	describe("Zero-ID actor", function() {
@@ -170,6 +181,22 @@ describe("Scheduler", function() {
 				for (let i=0;i<6;i++) { result.push(s.next()); }
 				expect(result).toEqual([A1, A1, A1, A1, A1, A1]);
 			});
+
+			if (schedulerCtor === ROT.Scheduler.Action) {
+				it("should set the duration for the zero-id actor", function() {
+					const actionScheduler = new ROT.Scheduler.Action();
+					const otherActor = "B";
+					actionScheduler.add(A1, true);
+					actionScheduler.add(otherActor, true);
+
+					const result = [actionScheduler.next()];
+					actionScheduler.setDuration(10);
+					result.push(actionScheduler.next());
+					result.push(actionScheduler.next());
+
+					expect(result).toEqual([A1, otherActor, otherActor]);
+				});
+			}
 		}));
 	});
 });

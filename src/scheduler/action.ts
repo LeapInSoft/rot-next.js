@@ -31,7 +31,7 @@ export class Action<T = unknown> extends Scheduler<T> {
 	 */
 	next() {
 		if (this._current !== null && this._repeat.indexOf(this._current) !== -1) {
-			this._queue.add(this._current, this.duration || this.defaultDuration);
+			this._queue.add(this._current, this.duration);
 			this.duration = this.defaultDuration;
 		}
 		return super.next();
@@ -41,7 +41,7 @@ export class Action<T = unknown> extends Scheduler<T> {
 	 * Set duration for the active item
 	 */
 	setDuration(time: number) {
-		if (this._current) { this.duration = time; }
+		if (this._current !== null) { this.duration = time; }
 		return this;
 	}
 }
