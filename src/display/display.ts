@@ -198,9 +198,7 @@ export class Display {
 		const key = `${x},${y}`;
 		const existing = this.data[key];
 		if (existing) {
-			existing[2] = ch || existing[2];
-			existing[3] = fg || existing[3];
-			existing[4] = bg || existing[4];
+			this.draw(x, y, ch || existing[2], fg || existing[3], bg || existing[4]);
 		} else {
 			this.draw(x, y, ch, fg, bg);
 		}

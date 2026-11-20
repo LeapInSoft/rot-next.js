@@ -115,4 +115,34 @@ describe("Text", function() {
 			expect(size.height).toEqual(2);
 		});
 	});
+
+	describe("tokenize", function() {
+		it("should preserve formatting commands and trim their values", function() {
+			expect(ROT.Text.tokenize("A%c{ red }B%b{ blue }C", Infinity)).toEqual([
+				{type: ROT.Text.TYPE_TEXT, value: "A"},
+				{type: ROT.Text.TYPE_FG, value: "red"},
+				{type: ROT.Text.TYPE_TEXT, value: "B"},
+				{type: ROT.Text.TYPE_BG, value: "blue"},
+				{type: ROT.Text.TYPE_TEXT, value: "C"}
+			]);
+		});
+
+		it("should emit newline tokens when wrapping at spaces", function() {
+			expect(ROT.Text.tokenize("one two", 3)).toEqual([
+				{type: ROT.Text.TYPE_TEXT, value: "one"},
+				{type: ROT.Text.TYPE_NEWLINE},
+				{type: ROT.Text.TYPE_TEXT, value: "two"}
+			]);
+		});
+
+		it("should preserve explicit newlines and consecutive color changes", function() {
+			expect(ROT.Text.tokenize("%c{red}%b{blue}a\nb", Infinity)).toEqual([
+				{type: ROT.Text.TYPE_FG, value: "red"},
+				{type: ROT.Text.TYPE_BG, value: "blue"},
+				{type: ROT.Text.TYPE_TEXT, value: "a"},
+				{type: ROT.Text.TYPE_NEWLINE},
+				{type: ROT.Text.TYPE_TEXT, value: "b"}
+			]);
+		});
+	});
 });

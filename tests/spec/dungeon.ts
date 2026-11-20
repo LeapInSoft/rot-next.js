@@ -4,6 +4,32 @@ import { describe, expect, it } from "vitest";
 describe("Map.Dungeon", function() {
 	const names: ("Digger" | "Uniform")[] = ["Digger", "Uniform"];
 
+	const expectConnectedFloors = function(map: number[][]) {
+		const floors = new Set<string>();
+		map.forEach((column, x) => column.forEach((value, y) => {
+			if (value === 0) { floors.add(`${x},${y}`); }
+		}));
+		const firstFloor = floors.values().next().value;
+		expect(firstFloor).toBeDefined();
+		if (firstFloor === undefined) { return; }
+
+		const reachable = new Set([firstFloor]);
+		const pending = [firstFloor];
+		while (pending.length) {
+			const cell = pending.pop();
+			if (cell === undefined) { continue; }
+			const [x, y] = cell.split(",").map(Number);
+			[`${x-1},${y}`, `${x+1},${y}`, `${x},${y-1}`, `${x},${y+1}`]
+				.filter(neighbor => floors.has(neighbor) && !reachable.has(neighbor))
+				.forEach(neighbor => {
+					reachable.add(neighbor);
+					pending.push(neighbor);
+				});
+		}
+
+		expect(reachable.size).toBe(floors.size);
+	}
+
 	const buildDungeonTests = function(name: "Digger" | "Uniform") {
 		const ctor = ROT.Map[name];
 		ROT.RNG.setSeed(1234);
@@ -63,6 +89,16 @@ describe("Map.Dungeon", function() {
 					})
 					expect(emptyCount).toBeGreaterThan(0);
 				}
+			});
+
+			it("should connect every floor cell", function() {
+				ROT.RNG.setSeed(1234);
+				const map = Array.from({ length: ROT.DEFAULT_WIDTH }, () => Array<number>(ROT.DEFAULT_HEIGHT).fill(-1));
+				new ctor(ROT.DEFAULT_WIDTH, ROT.DEFAULT_HEIGHT, {}).create((x, y, value) => {
+					map[x][y] = value;
+				});
+
+				expectConnectedFloors(map);
 			});
 		});
 
