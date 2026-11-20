@@ -61,6 +61,8 @@ export class Display {
 	private dirty: boolean|Record<string, boolean> = false;
 	private options: DisplayOptions = {...DEFAULT_OPTIONS};
 	private backend: Backend;
+	private scheduledBackend: Backend;
+	private destroyed = false;
 
 	static readonly Rect = Rect;
 	static readonly Hex = Hex;
@@ -72,11 +74,12 @@ export class Display {
 		this.options = {...DEFAULT_OPTIONS, ...options};
 		const BackendCtor = BACKENDS[this.options.layout];
 		this.backend = new BackendCtor();
+		this.scheduledBackend = this.backend;
 		this.backend.setOptions(this.options);
 		this.dirty = true;
 		this.DEBUG = this.DEBUG.bind(this);
 		this.tick = this.tick.bind(this);
-		this.backend.schedule(this.tick);
+		this.scheduleTick();
 	}
 
 	/**
@@ -125,6 +128,15 @@ export class Display {
 	 */
 	getContainer() {
 		return this.backend.getContainer();
+	}
+
+	/**
+	 * Stop the display update loop and cancel its pending callback.
+	 */
+	destroy() {
+		if (this.destroyed) { return; }
+		this.destroyed = true;
+		this.scheduledBackend.cancelSchedule();
 	}
 
 	/**
@@ -277,7 +289,8 @@ export class Display {
 	 * Timer tick: update dirty parts
 	 */
 	private tick() {
-		this.backend.schedule(this.tick);
+		if (this.destroyed) { return; }
+		this.scheduleTick();
 		if (!this.dirty) { return; }
 		if (this.dirty === true) {
 			this.backend.clear();
@@ -288,6 +301,11 @@ export class Display {
 			Object.keys(this.dirty).forEach(key => { this.drawCell(key, true); });
 		}
 		this.dirty = false;
+	}
+
+	private scheduleTick() {
+		this.scheduledBackend = this.backend;
+		this.backend.schedule(this.tick);
 	}
 
 	/**

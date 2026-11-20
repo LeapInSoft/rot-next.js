@@ -13,6 +13,7 @@ export default class TileGL extends Backend {
 	private _texture: WebGLTexture | null = null;
 	private _tileSet: DisplayOptions["tileSet"] | undefined;
 	private _tileSetLoadListener: { tileSet: HTMLImageElement; listener: () => void } | null = null;
+	private _animationFrame: number | null = null;
 
 	static isSupported() {
 		return !!document.createElement("canvas").getContext("webgl2", {preserveDrawingBuffer:true});
@@ -24,7 +25,12 @@ export default class TileGL extends Backend {
 		this._gl = this._initWebGL();
 	}
 
-	schedule(cb: () => void) { requestAnimationFrame(cb); }
+	schedule(cb: () => void) { this._animationFrame = requestAnimationFrame(cb); }
+	cancelSchedule() {
+		if (this._animationFrame === null) { return; }
+		cancelAnimationFrame(this._animationFrame);
+		this._animationFrame = null;
+	}
 	getContainer() { return this._gl.canvas as HTMLCanvasElement; }
 
 	setOptions(opts: DisplayOptions) {

@@ -12,6 +12,58 @@ describe("Display", function() {
 			expect(NamedDisplay).toBe(ROT.Display);
 		});
 
+		it("should cancel a pending animation frame when destroyed", function() {
+			let pendingCallback: FrameRequestCallback | undefined;
+			const requestFrame = vi.fn((callback: FrameRequestCallback) => {
+				pendingCallback = callback;
+				return 17;
+			});
+			const cancelFrame = vi.fn();
+			vi.stubGlobal("requestAnimationFrame", requestFrame);
+			vi.stubGlobal("cancelAnimationFrame", cancelFrame);
+
+			try {
+				const display = new ROT.Display();
+				const destroy = Reflect.get(display, "destroy");
+				expect(destroy).toBeTypeOf("function");
+				if (typeof destroy !== "function") { return; }
+
+				destroy.call(display);
+				pendingCallback?.(0);
+
+				expect(cancelFrame).toHaveBeenCalledWith(17);
+				expect(requestFrame).toHaveBeenCalledTimes(1);
+			} finally {
+				vi.unstubAllGlobals();
+			}
+		});
+
+		it("should cancel a pending timeout when destroyed", function() {
+			let pendingCallback: (() => void) | undefined;
+			const requestTimeout = vi.fn((callback: () => void) => {
+				pendingCallback = callback;
+				return 17;
+			});
+			const cancelTimeout = vi.fn();
+			vi.stubGlobal("setTimeout", requestTimeout);
+			vi.stubGlobal("clearTimeout", cancelTimeout);
+
+			try {
+				const display = new ROT.Display({layout:"term"});
+				const destroy = Reflect.get(display, "destroy");
+				expect(destroy).toBeTypeOf("function");
+				if (typeof destroy !== "function") { return; }
+
+				destroy.call(display);
+				pendingCallback?.();
+
+				expect(cancelTimeout).toHaveBeenCalledWith(17);
+				expect(requestTimeout).toHaveBeenCalledTimes(1);
+			} finally {
+				vi.unstubAllGlobals();
+			}
+		});
+
 		it("should use the exported default dimensions", function() {
 			const display = new ROT.Display();
 

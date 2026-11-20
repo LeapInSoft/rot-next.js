@@ -3,13 +3,19 @@ import { DisplayOptions } from "@/src/display/types.js";
 
 export default abstract class Canvas extends Backend {
 	_ctx: CanvasRenderingContext2D;
+	private _animationFrame: number | null = null;
 
 	constructor() {
 		super();
 		this._ctx = document.createElement("canvas").getContext("2d") as CanvasRenderingContext2D;
 	}
 
-	schedule(cb: () => void) { requestAnimationFrame(cb); }
+	schedule(cb: () => void) { this._animationFrame = requestAnimationFrame(cb); }
+	cancelSchedule() {
+		if (this._animationFrame === null) { return; }
+		cancelAnimationFrame(this._animationFrame);
+		this._animationFrame = null;
+	}
 	getContainer() { return this._ctx.canvas; }
 
 	setOptions(opts: DisplayOptions) {

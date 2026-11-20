@@ -30,6 +30,7 @@ export default class Term extends Backend {
 	_offset: [number, number];
 	_cursor: [number, number];
 	_lastColor: string;
+	private _timeout: ReturnType<typeof setTimeout> | null = null;
 
 	constructor() {
 		super();
@@ -38,7 +39,12 @@ export default class Term extends Backend {
 		this._lastColor = "";
 	}
 
-	schedule(cb: ()=>void) { setTimeout(cb, 1000/60); }
+	schedule(cb: ()=>void) { this._timeout = setTimeout(cb, 1000/60); }
+	cancelSchedule() {
+		if (this._timeout === null) { return; }
+		clearTimeout(this._timeout);
+		this._timeout = null;
+	}
 
 	setOptions(options: DisplayOptions) {
 		super.setOptions(options);
