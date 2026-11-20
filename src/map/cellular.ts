@@ -236,6 +236,7 @@ export class Cellular extends Map {
 			}
 
 			tests.forEach(test => {
+				// side-effect
 				const key = this.pointKey(test);
 				if (connected[key] === null && this.freeSpace(test[0], test[1], value)) {
 					connected[key] = test;

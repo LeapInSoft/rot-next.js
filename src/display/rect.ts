@@ -57,8 +57,8 @@ export class Rect extends Canvas {
 				ctx.textBaseline = "middle";
 
 				const chars = ([] as string[]).concat(ch);
-				for (let i=0;i<chars.length;i++) {
-					ctx.fillText(chars[i], this.spacingX/2, Math.ceil(this.spacingY/2));
+				for (const character of chars) {
+					ctx.fillText(character, this.spacingX/2, Math.ceil(this.spacingY/2));
 				}
 			}
 			this.canvasCache[hash] = canvas;
@@ -81,8 +81,8 @@ export class Rect extends Canvas {
 		this.ctx.fillStyle = fg;
 
 		const chars = ([] as string[]).concat(ch);
-		for (let i=0;i<chars.length;i++) {
-			this.ctx.fillText(chars[i], (x+0.5) * this.spacingX, Math.ceil((y+0.5) * this.spacingY));
+		for (const character of chars) {
+			this.ctx.fillText(character, (x+0.5) * this.spacingX, Math.ceil((y+0.5) * this.spacingY));
 		}
 	}
 

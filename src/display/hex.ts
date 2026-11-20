@@ -37,8 +37,8 @@ export class Hex extends Canvas {
 		this.ctx.fillStyle = fg;
 
 		const chars = ([] as string[]).concat(ch);
-		for (let i=0;i<chars.length;i++) {
-			this.ctx.fillText(chars[i], px[0], Math.ceil(px[1]));
+		for (const character of chars) {
+			this.ctx.fillText(character, px[0], Math.ceil(px[1]));
 		}
 	}
 

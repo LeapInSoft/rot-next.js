@@ -34,9 +34,9 @@ export class Tile extends Canvas {
 		const fgs = ([] as string[]).concat(fg);
 		const bgs = ([] as string[]).concat(bg);
 
-		for (let i=0;i<chars.length;i++) {
-			const tile = this.options.tileMap[chars[i]];
-			if (!tile) { throw new Error(`Char "${chars[i]}" not found in tileMap`); }
+		for (const [i, character] of chars.entries()) {
+			const tile = this.options.tileMap[character];
+			if (!tile) { throw new Error(`Char "${character}" not found in tileMap`); }
 			
 			if (this.options.tileColorize) { // apply colorization
 				const canvas = this.colorCanvas;

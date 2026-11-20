@@ -69,9 +69,9 @@ export class TileGL extends Backend {
 
 		gl.uniform2fv(this.uniforms["targetPosRel"], [x, y]);
 
-		for (let i=0;i<chars.length;i++) {
-			const tile = this.options.tileMap[chars[i]];
-			if (!tile) { throw new Error(`Char "${chars[i]}" not found in tileMap`); }
+		for (const [i, character] of chars.entries()) {
+			const tile = this.options.tileMap[character];
+			if (!tile) { throw new Error(`Char "${character}" not found in tileMap`); }
 
 			gl.uniform1f(this.uniforms["colorize"], opts.tileColorize ? 1 : 0);
 			gl.uniform2fv(this.uniforms["tilesetPosAbs"], tile);
@@ -127,7 +127,10 @@ export class TileGL extends Backend {
 		gl.useProgram(program);
 		createQuad(gl);
 
-		UNIFORMS.forEach(name => this.uniforms[name] = gl.getUniformLocation(program, name));
+		UNIFORMS.forEach(name => {
+			// side-effect
+			this.uniforms[name] = gl.getUniformLocation(program, name);
+		});
 		this.program = program;
 
 		gl.enable(gl.BLEND);
