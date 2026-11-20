@@ -16,7 +16,11 @@ export abstract class Map {
 		this.height = height;
 	};
 
-	abstract create(callback?: CreateCallback): void;
+	/**
+	 * Create the map.
+	 * @returns The generator after success, or null if generation timed out.
+	 */
+	abstract create(callback?: CreateCallback): this | null;
 
 	protected fillMap(value: number) {
 		const map: number[][] = [];

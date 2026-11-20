@@ -25,9 +25,32 @@ describe("Map.Dungeon", function() {
 	});
 
 	it("should terminate Uniform generation when the time limit is exhausted", function() {
-		const uniform = new ROT.Map.Uniform(20, 20, { timeLimit: -1 });
+		ROT.RNG.setSeed(1234);
+		const uniform = new ROT.Map.Uniform(5, 5, { timeLimit: 1 });
+		let callbackInvocations = 0;
 
-		expect(uniform.create()).toBeNull();
+		const result = uniform.create(() => { callbackInvocations++; });
+
+		expect(result).toBeNull();
+		expect(callbackInvocations).toBe(0);
+		expect(uniform.getRooms()).toEqual([]);
+		expect(uniform.getCorridors()).toEqual([]);
+	});
+
+	it("should return Uniform itself and invoke the callback after success", function() {
+		ROT.RNG.setSeed(1234);
+		const uniform = new ROT.Map.Uniform(30, 20);
+		let callbackInvocations = 0;
+
+		const result = uniform.create((x, y, value) => {
+			callbackInvocations++;
+			expect(x).toBeGreaterThanOrEqual(0);
+			expect(y).toBeGreaterThanOrEqual(0);
+			expect([0, 1, 2]).toContain(value);
+		});
+
+		expect(result).toBe(uniform);
+		expect(callbackInvocations).toBe(30 * 20);
 	});
 
 	const expectConnectedFloors = function(map: number[][]) {

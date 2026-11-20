@@ -62,7 +62,7 @@ export class Cellular extends Map {
 
 	set(x: number, y: number, value: number) { this.cells[x][y] = value; }
 
-	create(callback?: CreateCallback) {
+	create(callback?: CreateCallback): this | null {
 		const born = this.options.born;
 		const survive = this.options.survive;
 		const isHex = this.options.topology === 6;
@@ -77,6 +77,7 @@ export class Cellular extends Map {
 
 		this.cells = newMap;
 		callback && this.serviceCallback(callback);
+		return this;
 	}
 
 	private serviceCallback(callback: CreateCallback) {

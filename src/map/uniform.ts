@@ -50,14 +50,18 @@ export class Uniform extends Dungeon {
 	}
 
 	/**
-	 * Create a map. If the time limit has been hit, returns null.
+	 * Create a map.
+	 * @returns This generator after success, or null if the time limit is hit.
 	 * @see ROT.Map#create
 	 */
-	create(callback?: CreateCallback) {
+	create(callback?: CreateCallback): this | null {
 		const t1 = Date.now();
 		while (1) {
 			const t2 = Date.now();
-			if (t2 - t1 > this.options.timeLimit) { return null; } /* time limit! */
+			if (t2 - t1 > this.options.timeLimit) {
+				this.resetGeneration();
+				return null;
+			} /* time limit! */
 		
 			this.map = this.fillMap(1);
 			this.dug = 0;
@@ -77,6 +81,15 @@ export class Uniform extends Dungeon {
 		}
 		
 		return this;
+	}
+
+	private resetGeneration() {
+		this.map = this.fillMap(1);
+		this.dug = 0;
+		this.rooms = [];
+		this.corridors = [];
+		this.connected = [];
+		this.unconnected = [];
 	}
 
 	/**
