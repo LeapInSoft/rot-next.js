@@ -12,6 +12,13 @@ describe("Display", function() {
 			expect(NamedDisplay).toBe(ROT.Display);
 		});
 
+		it("should use the exported default dimensions", function() {
+			const display = new ROT.Display();
+
+			expect(display.getOptions().width).toBe(ROT.DEFAULT_WIDTH);
+			expect(display.getOptions().height).toBe(ROT.DEFAULT_HEIGHT);
+		});
+
 		it("should update layout options", function() {
 			const display = new ROT.Display({layout:"rect"});
 			display.setOptions({layout:"hex"});
