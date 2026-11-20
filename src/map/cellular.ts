@@ -133,6 +133,11 @@ export class Cellular extends Map {
 				}
 			}
 		}
+		if (!allFreeSpace.length) {
+			callback && this.serviceCallback(callback);
+			return;
+		}
+
 		const start = allFreeSpace[RNG.getUniformInt(0, allFreeSpace.length - 1)];
 
 		const key = this.pointKey(start);

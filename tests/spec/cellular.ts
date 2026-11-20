@@ -38,4 +38,12 @@ describe('Map.Cellular', () => {
 
 		expect(alive).toEqual(['1,0', '0,1']);
 	});
+
+	it('should report the map when no cells have the requested value', () => {
+		const map = new ROT.Map.Cellular(2, 2);
+		const cells: string[] = [];
+
+		expect(() => map.connect((x, y, value) => cells.push(`${x},${y}:${value}`), 1)).not.toThrow();
+		expect(cells).toEqual(['0,0:0', '1,0:0', '0,1:0', '1,1:0']);
+	});
 });
