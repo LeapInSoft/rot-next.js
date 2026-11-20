@@ -286,7 +286,7 @@ export class Cellular extends Map {
 			connected[pointKey] = point;
 			delete notConnected[pointKey];
 		}
-		if (connectionCallback && a[1] < b[1]) { connectionCallback([b[0], a[1]], [b[0], b[1]]); }
+		if (connectionCallback && a[1] < b[1]) { connectionCallback([x, a[1]], [x, b[1]]); }
 	}
 
 	private tunnelToConnected6(to: Point, from: Point,
