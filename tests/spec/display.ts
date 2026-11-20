@@ -1,5 +1,9 @@
 import * as ROT from "@/src";
-import { describe, expect, it } from "vitest";
+import { createCanvas } from "@napi-rs/canvas";
+import { describe, expect, it, vi } from "vitest";
+import Tile from "@/src/display/tile.js";
+import TileGL from "@/src/display/tile-gl.js";
+import type { DisplayOptions } from "@/src/display/types.js";
 
 describe("Display", function() {
 	const canvasFor = function(display: InstanceType<typeof ROT.Display>) {
@@ -217,6 +221,84 @@ describe("Display", function() {
 			const d = new ROT.Display({width:10, height:10});
 			const lines = d.drawText(7, 0, "aaaaaa");
 			expect(lines).toBe(2);
+		});
+	});
+
+	describe("tile colorization", function() {
+		it("should reuse cell colors for every character in the canvas tile backend", function() {
+			const render = function(chars: string[]) {
+				const tileSet = createCanvas(1, 1);
+				const tileContext = tileSet.getContext("2d");
+				const image = tileContext.createImageData(1, 1);
+				image.data.set([255, 255, 255, 128]);
+				tileContext.putImageData(image, 0, 0);
+
+				const display = new ROT.Display({
+					width:1,
+					height:1,
+					layout:"tile",
+					tileWidth:1,
+					tileHeight:1,
+					tileMap:{a:[0, 0], b:[0, 0]},
+					tileSet:tileSet as unknown as HTMLCanvasElement,
+					tileColorize:true
+				});
+				const backend = display._backend as Tile;
+				vi.spyOn(backend._ctx, "drawImage").mockImplementation(() => {});
+				backend.draw([0, 0, chars, "#ff0000", "#0000ff"], true);
+				const context = backend._colorCanvas.getContext("2d") as CanvasRenderingContext2D;
+				return Array.from(context.getImageData(0, 0, 1, 1).data);
+			}
+
+			expect(render(["a", "b"])).toEqual(render(["a"]));
+		});
+
+		it("should reuse cell colors for every character in the WebGL tile backend", function() {
+			const backend = Object.create(TileGL.prototype) as TileGL;
+			const gl = {
+				canvas:{width:1, height:1},
+				scissor:vi.fn(),
+				clearColor:vi.fn(),
+				clear:vi.fn(),
+				uniform2fv:vi.fn(),
+				uniform1f:vi.fn(),
+				uniform4fv:vi.fn(),
+				drawArrays:vi.fn(),
+				COLOR_BUFFER_BIT:0x4000,
+				TRIANGLE_STRIP:5
+			} as unknown as WebGLRenderingContext;
+			backend._gl = gl;
+			backend._options = {
+				width:1,
+				height:1,
+				transpose:false,
+				layout:"tile-gl",
+				fontSize:15,
+				spacing:1,
+				border:0,
+				forceSquareRatio:false,
+				fontFamily:"monospace",
+				fontStyle:"",
+				fg:"#ccc",
+				bg:"#000",
+				tileWidth:1,
+				tileHeight:1,
+				tileMap:{a:[0, 0], b:[0, 0]},
+				tileSet:null,
+				tileColorize:true
+			} satisfies DisplayOptions;
+			backend._uniforms = {
+				targetPosRel:null,
+				tilesetPosAbs:null,
+				colorize:null,
+				tint:null,
+				bg:null
+			};
+
+			backend.draw([0, 0, ["a", "b"], "#ff0000", "#0000ff"], false);
+
+			expect(gl.uniform4fv).toHaveBeenNthCalledWith(3, null, [1, 0, 0, 1]);
+			expect(gl.uniform4fv).toHaveBeenNthCalledWith(4, null, [0, 0, 1, 1]);
 		});
 	});
 

@@ -79,8 +79,8 @@ export default class TileGL extends Backend {
 			gl.uniform2fv(this._uniforms["tilesetPosAbs"], tile);
 
 			if (opts.tileColorize) {
-				gl.uniform4fv(this._uniforms["tint"], parseColor(fgs[i]));
-				gl.uniform4fv(this._uniforms["bg"], parseColor(bgs[i]));
+				gl.uniform4fv(this._uniforms["tint"], parseColor(fgs[i] || fgs[0]));
+				gl.uniform4fv(this._uniforms["bg"], parseColor(bgs[i] || bgs[0]));
 			}
 
 			gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);

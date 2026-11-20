@@ -44,8 +44,8 @@ export default class Tile extends Canvas {
 				context.globalCompositeOperation = "source-over";
 				context.clearRect(0, 0, tileWidth, tileHeight);
 
-				const fg = fgs[i];
-				const bg = bgs[i];
+				const fg = fgs[i] || fgs[0];
+				const bg = bgs[i] || bgs[0];
 
 				context.drawImage(
 					this._options.tileSet!,
