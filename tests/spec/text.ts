@@ -16,6 +16,11 @@ describe("Text", function() {
 			expect(size.height).toEqual(1);
 		});
 
+		it("should break text with a negative max width", function() {
+			const tokens = ROT.Text.tokenize("abc", -1);
+			expect(tokens.map(token => token.type === ROT.Text.TYPE_TEXT ? token.value : "\n").join("")).toBe("a\nb\nc");
+		});
+
 		it("should break when max length requested", function() {
 			const size = measure(A100, 30);
 			expect(size.height).toEqual(4);

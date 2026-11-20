@@ -81,6 +81,7 @@ export function tokenize(str: string, maxWidth: number) {
 /* insert line breaks into first-pass tokenized data */
 function breakLines(tokens: any[], maxWidth: number) {
 	if (!maxWidth) { maxWidth = Infinity; }
+	if (maxWidth < 0) { maxWidth = 1; }
 
 	let i = 0;
 	let lineLength = 0;

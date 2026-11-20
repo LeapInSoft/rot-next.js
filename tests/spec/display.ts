@@ -270,6 +270,18 @@ describe("Display", function() {
 			const lines = d.drawText(7, 0, "aaaaaa");
 			expect(lines).toBe(2);
 		});
+
+		it("should not draw text when x is outside the display", function() {
+			const d = new ROT.Display({width:10, height:10});
+			const lines = d.drawText(11, 0, "text");
+			expect(lines).toBe(0);
+		});
+
+		it("should not draw text when x is at the display width", function() {
+			const d = new ROT.Display({width:10, height:10});
+			const lines = d.drawText(10, 0, "text");
+			expect(lines).toBe(0);
+		});
 	});
 
 	describe("tile colorization", function() {

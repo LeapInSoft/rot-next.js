@@ -215,6 +215,7 @@ export class Display {
 	 * @returns {int} lines drawn
 	 */
 	drawText(x:number, y:number, text:string, maxWidth?:number) {
+		if (!maxWidth && x >= this.options.width) { return 0; }
 		if (!maxWidth) { maxWidth = this.options.width-x; }
 
 		const tokens = Text.tokenize(text, maxWidth) as TextToken[];
