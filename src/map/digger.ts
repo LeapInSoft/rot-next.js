@@ -147,7 +147,14 @@ export class Digger extends Dungeon {
 	_firstRoom() {
 		const cx = Math.floor(this._width/2);
 		const cy = Math.floor(this._height/2);
-		const room = Room.createRandomCenter(cx, cy, this._options);
+		const maxRoomWidth = Math.min(this._options.roomWidth[1], cx, this._width - cx - 1);
+		const maxRoomHeight = Math.min(this._options.roomHeight[1], cy, this._height - cy - 1);
+		const options: Options = {
+			...this._options,
+			roomWidth: [Math.min(this._options.roomWidth[0], maxRoomWidth), maxRoomWidth],
+			roomHeight: [Math.min(this._options.roomHeight[0], maxRoomHeight), maxRoomHeight]
+		};
+		const room = Room.createRandomCenter(cx, cy, options);
 		this._rooms.push(room);
 		room.create(this._digCallback);
 	}

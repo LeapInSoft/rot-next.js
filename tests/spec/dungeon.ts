@@ -12,6 +12,12 @@ describe("Map.Dungeon", function() {
 		expect(() => new ROT.Map.Digger(80, 25)).not.toThrow();
 	});
 
+	it("should generate a 6x6 Digger map with seed 2", function() {
+		ROT.RNG.setSeed(2);
+
+		expect(() => new ROT.Map.Digger(6, 6).create()).not.toThrow();
+	});
+
 	const expectConnectedFloors = function(map: number[][]) {
 		const floors = new Set<string>();
 		map.forEach((column, x) => column.forEach((value, y) => {
