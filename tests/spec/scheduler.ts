@@ -128,6 +128,11 @@ describe("Scheduler", function() {
 			expect(result).toEqual([A1, A3, A2, A1, A3, A2]);
 		});
 
+		it("should preserve an explicit zero delay", function() {
+			S.add(A1, true, 0);
+			expect(S.getTimeOf(A1)).toEqual(0);
+		});
+
 		it("should schedule with respect to action duration", function() {
 			S.add(A1, true);
 			S.add(A2, true);

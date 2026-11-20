@@ -1,37 +1,28 @@
-import Scheduler from "@/src/scheduler/scheduler.js";
+import Scheduler from './scheduler.js';
 
-/**
- * @class Action-based scheduler
- * @augments ROT.Scheduler
- */
-export default class Action<T = any> extends Scheduler<T> {
-	_defaultDuration: number;
-	_duration: number;
-
-	constructor() {
-		super();
-		this._defaultDuration = 1; /* for newly added */
-		this._duration = this._defaultDuration; /* for this._current */
-	}
+/** Action-based scheduler. */
+export class Action<T = unknown> extends Scheduler<T> {
+	private readonly defaultDuration = 1;
+	private duration = this.defaultDuration;
 
 	/**
-	 * @param {object} item
-	 * @param {bool} repeat
-	 * @param {number} [time=1]
+	 * @param item Item to schedule.
+	 * @param repeat Whether to schedule the item repeatedly.
+	 * @param time Delay before the item is scheduled.
 	 * @see ROT.Scheduler#add
 	 */
-	add(item:T, repeat:boolean, time?: number) {
-		this._queue.add(item, time || this._defaultDuration);
+	add(item: T, repeat: boolean, time?: number) {
+		this._queue.add(item, time !== undefined ? time : this.defaultDuration);
 		return super.add(item, repeat);
 	}
 
 	clear() {
-		this._duration = this._defaultDuration;
+		this.duration = this.defaultDuration;
 		return super.clear();
 	}
 
-	remove(item:T) {
-		if (item == this._current) { this._duration = this._defaultDuration; }
+	remove(item: T) {
+		if (item === this._current) { this.duration = this.defaultDuration; }
 		return super.remove(item);
 	}
 
@@ -39,9 +30,9 @@ export default class Action<T = any> extends Scheduler<T> {
 	 * @see ROT.Scheduler#next
 	 */
 	next() {
-		if (this._current !== null && this._repeat.indexOf(this._current) != -1) {
-			this._queue.add(this._current, this._duration || this._defaultDuration);
-			this._duration = this._defaultDuration;
+		if (this._current !== null && this._repeat.indexOf(this._current) !== -1) {
+			this._queue.add(this._current, this.duration || this.defaultDuration);
+			this.duration = this.defaultDuration;
 		}
 		return super.next();
 	}
@@ -50,7 +41,7 @@ export default class Action<T = any> extends Scheduler<T> {
 	 * Set duration for the active item
 	 */
 	setDuration(time: number) {
-		if (this._current) { this._duration = time; }
+		if (this._current) { this.duration = time; }
 		return this;
 	}
 }
