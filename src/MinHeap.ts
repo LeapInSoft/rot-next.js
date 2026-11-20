@@ -7,15 +7,18 @@ export interface HeapWrapper<T> {
 export class MinHeap<T> {
 	private heap: HeapWrapper<T>[];
 	private timestamp : number;
+	/* Logical keys are stored as heap keys plus this shared offset. */
+	private offset: number;
 	constructor() {
 		this.heap = [];
 		this.timestamp=0;
+		this.offset=0;
 	}
 	lessThan(a:HeapWrapper<T>,b:HeapWrapper<T>){
 		return a.key==b.key?a.timestamp<b.timestamp:a.key<b.key;
 	}
 	shift(v: number) {
-		this.heap = this.heap.map(({ key, value,timestamp }) => ({ key: key + v, value,timestamp }));
+		this.offset += v;
 	}
 	len() {
 		return this.heap.length;
@@ -23,7 +26,7 @@ export class MinHeap<T> {
 	push(value: T,key : number) {
 		this.timestamp+=1;
 		const loc = this.len();
-		this.heap.push({value,timestamp : this.timestamp,key});
+		this.heap.push({value,timestamp : this.timestamp,key: key - this.offset});
 		this.updateUp(loc);
 	}
 	pop(): HeapWrapper<T> {
@@ -37,40 +40,39 @@ export class MinHeap<T> {
 		} else {
 			this.heap.pop();
 		}
-		return top;
+		return { ...top, key: top.key + this.offset };
 	}
 	find(v: T): HeapWrapper<T> | null {
 		for (let i = 0; i < this.len(); i++) {
-			if (v == this.heap[i].value) {
-				return this.heap[i];
+			if (v === this.heap[i].value) {
+				return { ...this.heap[i], key: this.heap[i].key + this.offset };
 			}
 		}
 		return null;
 	}
 	remove(v: T) {
-		let index = null;
+		let index = -1;
 		for (let i = 0; i < this.len(); i++) {
-			if (v == this.heap[i].value) {
+			if (v === this.heap[i].value) {
 				index = i;
+				break;
 			}
 		}
-		if (index === null) { return false; }
+		if (index === -1) { return false; }
 
-		if (this.len() > 1) {
-			const last = this.heap.pop() as HeapWrapper<T>;
-			if (last.value != v) { // if the last one is being removed, do nothing
-				this.heap[index] = last;
-				if (index > 0 && this.lessThan(last, this.heap[this.parentNode(index)])) {
-					this.updateUp(index);
-				} else {
-					this.updateDown(index);
-				}
-			}
-			return true;
-		} else {
+		const lastIndex = this.len() - 1;
+		if (index === lastIndex) {
 			this.heap.pop();
+			return true;
 		}
 
+		const last = this.heap.pop() as HeapWrapper<T>;
+		this.heap[index] = last;
+		if (index > 0 && this.lessThan(last, this.heap[this.parentNode(index)])) {
+			this.updateUp(index);
+		} else {
+			this.updateDown(index);
+		}
 		return true;
 	}
 	private parentNode(x: number): number {
@@ -123,7 +125,7 @@ export class MinHeap<T> {
 		}
 	}
 	debugPrint() {
-		console.log(this.heap);
+		console.log(this.heap.map(({ key, value, timestamp }) => ({ key: key + this.offset, value, timestamp })));
 	}
 
 }

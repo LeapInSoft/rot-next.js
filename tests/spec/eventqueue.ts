@@ -1,5 +1,5 @@
 import * as ROT from "@/src";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 describe("EventQueue", function() {
 	it("should return added event", function() {
@@ -75,6 +75,24 @@ describe("EventQueue", function() {
 		q.get();
 		q.get();
 		expect(q.getTime()).toEqual(15);
+	});
+
+	it("should not shift the whole heap when advancing time", function() {
+		const q = new ROT.EventQueue();
+		q.add(456, 10);
+		q.add(123, 5);
+
+		const map = vi.spyOn(Array.prototype, "map");
+		let event: number | null = null;
+		let mapCalls = 0;
+		try {
+			event = q.get();
+			mapCalls = map.mock.calls.length;
+		} finally {
+			map.mockRestore();
+		}
+		expect(event).toEqual(123);
+		expect(mapCalls).toBe(0);
 	});
 
 	it("should maintain event order for same timestamps", function() {

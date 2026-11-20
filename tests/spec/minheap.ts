@@ -2,6 +2,25 @@ import { MinHeap } from "@/src/MinHeap";
 import { describe, expect, it } from "vitest";
 
 describe("MinHeap", function() {
+	it("should use strict equality when finding and removing values", function() {
+		const heap = new MinHeap<number | string>();
+		heap.push(1, 0);
+
+		expect(heap.find("1")).toBeNull();
+		expect(heap.remove("1")).toBe(false);
+		expect(heap.pop().value).toBe(1);
+	});
+
+	it("should remove the first matching duplicate value", function() {
+		const heap = new MinHeap<string>();
+		heap.push("duplicate", 2);
+		heap.push("duplicate", 3);
+
+		expect(heap.find("duplicate")?.key).toBe(2);
+		expect(heap.remove("duplicate")).toBe(true);
+		expect(heap.find("duplicate")?.key).toBe(3);
+	});
+
 	it("should preserve heap order when removing a node whose replacement belongs higher", function() {
 		const heap = new MinHeap<string>();
 		heap.push("root", 0);
