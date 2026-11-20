@@ -103,14 +103,13 @@ export class Display {
 	 */
 	setOptions(options: Partial<DisplayOptions>) {
 		Object.assign(this.options, options);
-		if (options.width || options.height || options.fontSize || options.fontFamily || options.spacing || options.layout) {
-			if (options.layout) {
-				const ctor = BACKENDS[options.layout];
-				this.backend = new ctor();
-			}
-			this.backend.setOptions(this.options);
-			this.dirty = true;
+		if (options.layout) {
+			const ctor = BACKENDS[options.layout];
+			this.backend = new ctor();
 		}
+		if (Object.keys(options).length === 0) { return this; }
+		this.backend.setOptions(this.options);
+		this.dirty = true;
 		return this;
 	}
 

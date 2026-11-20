@@ -18,6 +18,40 @@ describe("Display", function() {
 
 			expect(display.getOptions().layout).toBe("hex");
 		});
+
+		it("should update tile dimensions after construction", function() {
+			const display = new ROT.Display({
+				width:2,
+				height:2,
+				layout:"tile",
+				tileWidth:10,
+				tileHeight:20,
+			});
+			display.setOptions({tileWidth:30, tileHeight:40});
+			const canvas = display.getContainer();
+
+			expect(canvas).toBeInstanceOf(HTMLCanvasElement);
+			expect((canvas as HTMLCanvasElement).width).toBe(60);
+			expect((canvas as HTMLCanvasElement).height).toBe(80);
+		});
+
+		it("should update the tile set after construction", function() {
+			const initialTileSet = createCanvas(1, 1);
+			const nextTileSet = createCanvas(1, 1);
+			const display = new ROT.Display({
+				width:1,
+				height:1,
+				layout:"tile",
+				tileWidth:1,
+				tileHeight:1,
+				tileMap:{a:[0, 0]},
+				tileSet:initialTileSet as unknown as HTMLCanvasElement,
+			});
+			display.setOptions({tileSet:nextTileSet as unknown as HTMLCanvasElement});
+			const backend = (display as unknown as {backend:Tile}).backend;
+
+			expect(backend._options.tileSet).toBe(nextTileSet);
+		});
 	});
 
 	const canvasFor = function(display: InstanceType<typeof ROT.Display>) {
