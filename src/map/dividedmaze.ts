@@ -13,7 +13,7 @@ export class DividedMaze extends Map {
 	_stack: Room[] = [];
 	_map: number[][] = [];
 
-	create(callback: CreateCallback ) {
+	create(callback?: CreateCallback) {
 		const w = this._width;
 		const h = this._height;
 		
@@ -32,9 +32,11 @@ export class DividedMaze extends Map {
 		];
 		this._process();
 		
-		for (let i=0;i<w;i++) {
-			for (let j=0;j<h;j++) {
-				callback(i, j, this._map[i][j]);
+		if (callback) {
+			for (let i=0;i<w;i++) {
+				for (let j=0;j<h;j++) {
+					callback(i, j, this._map[i][j]);
+				}
 			}
 		}
 		this._map = [];

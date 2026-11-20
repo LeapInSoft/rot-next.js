@@ -29,7 +29,7 @@ function removeFromList(i: number, L: List, R: List) {
  * See http://homepages.cwi.nl/~tromp/maze.html for explanation
  */
 export class EllerMaze extends Map {
-	create(callback: CreateCallback) {
+	create(callback?: CreateCallback) {
 		const map = this.fillMap(1);
 		const w = Math.ceil((this._width-2)/2);
 		
@@ -87,9 +87,11 @@ export class EllerMaze extends Map {
 			removeFromList(i, L, R);
 		}
 		
-		for (let i=0;i<this._width;i++) {
-			for (let j=0;j<this._height;j++) {
-				callback(i, j, map[i][j]);
+		if (callback) {
+			for (let i=0;i<this._width;i++) {
+				for (let j=0;j<this._height;j++) {
+					callback(i, j, map[i][j]);
+				}
 			}
 		}
 		

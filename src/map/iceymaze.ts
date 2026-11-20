@@ -16,7 +16,7 @@ export class IceyMaze extends Map {
 		this._map = [];
 	}
 
-	create(callback: CreateCallback) {
+	create(callback?: CreateCallback) {
 		let width = this._width;
 		let height = this._height;
 		const map = this.fillMap(1);
@@ -66,9 +66,11 @@ export class IceyMaze extends Map {
 			}
 		} while (done+1 < width*height/4);
 		
-		for (let i=0;i<this._width;i++) {
-			for (let j=0;j<this._height;j++) {
-				callback(i, j, map[i][j]);
+		if (callback) {
+			for (let i=0;i<this._width;i++) {
+				for (let j=0;j<this._height;j++) {
+					callback(i, j, map[i][j]);
+				}
 			}
 		}
 		this._map = [];
