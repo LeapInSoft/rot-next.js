@@ -63,6 +63,8 @@ export class Rogue extends Map {
 	}
 
 	create(callback?: CreateCallback) {
+		if (this.width < this.options.cellWidth * 3 || this.height < this.options.cellHeight * 3) { return null; }
+
 		this.map = this.fillMap(1);
 		this.rooms = [];
 

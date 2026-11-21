@@ -55,6 +55,8 @@ export class Uniform extends Dungeon {
 	 * @see ROT.Map#create
 	 */
 	create(callback?: CreateCallback): this | null {
+		if (this.width < 5 || this.height < 5) { return null; }
+
 		const t1 = Date.now();
 		while (1) {
 			const t2 = Date.now();

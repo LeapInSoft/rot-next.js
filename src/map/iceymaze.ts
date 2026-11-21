@@ -17,6 +17,8 @@ export class IceyMaze extends Map {
 	}
 
 	create(callback?: CreateCallback) {
+		if (this.width < 3 || this.height < 3) { return null; }
+
 		let width = this.width;
 		let height = this.height;
 		const map = this.fillMap(1);

@@ -1,4 +1,5 @@
 import { Arena, Cellular, Digger, DividedMaze, EllerMaze, IceyMaze, Rogue, Uniform } from '../../src/map/index.js';
+import { RNG } from '../../src/rng.js';
 import { describe, expect, it } from 'vitest';
 
 function captureMap(generator: InstanceType<typeof Arena> | InstanceType<typeof DividedMaze> | InstanceType<typeof EllerMaze> | InstanceType<typeof IceyMaze>, width: number, height: number) {
@@ -34,6 +35,46 @@ function expectConnectedFloors(map: number[][]) {
 
 	expect(reachable.size).toBe(floors.size);
 }
+
+describe('Map.create dimensions', () => {
+	const generators = [
+		{ name: 'Arena', create: (width: number, height: number) => new Arena(width, height) },
+		{ name: 'Cellular', create: (width: number, height: number) => new Cellular(width, height) },
+		{ name: 'Digger', create: (width: number, height: number) => new Digger(width, height, { timeLimit: 0 }) },
+		{ name: 'DividedMaze', create: (width: number, height: number) => new DividedMaze(width, height) },
+		{ name: 'EllerMaze', create: (width: number, height: number) => new EllerMaze(width, height) },
+		{ name: 'IceyMaze', create: (width: number, height: number) => new IceyMaze(width, height) },
+		{ name: 'Rogue', create: (width: number, height: number) => new Rogue(width, height) },
+		{ name: 'Uniform', create: (width: number, height: number) => new Uniform(width, height, { timeLimit: 1 }) }
+	];
+
+	it.each([
+		{ name: 'Digger', create: () => new Digger(1, 1) },
+		{ name: 'IceyMaze', create: () => new IceyMaze(2, 2) },
+		{ name: 'Rogue', create: () => new Rogue(6, 6) },
+		{ name: 'Uniform', create: () => new Uniform(1, 1) }
+	])('%s returns null when its dimensions are too small', ({ create }) => {
+		expect(create().create()).toBeNull();
+	});
+
+	it('succeeds or returns null for small dimensions across multiple seeds', () => {
+		for (const { name, create } of generators) {
+			for (let width = 1; width <= 16; width++) {
+				for (let height = 1; height <= 16; height++) {
+					for (let seed = 0; seed < 20; seed++) {
+						RNG.setSeed(seed);
+						const generator = create(width, height);
+
+						expect(() => {
+							const result = generator.create();
+							expect(result === null || result === generator).toBe(true);
+						}, `${name} ${width}x${height}, seed ${seed}`).not.toThrow();
+					}
+				}
+			}
+		}
+	}, 60000);
+});
 
 describe('Map.create without a callback', () => {
 	const generators = [

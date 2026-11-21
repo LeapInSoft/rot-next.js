@@ -18,7 +18,7 @@ export abstract class Map {
 
 	/**
 	 * Create the map.
-	 * @returns The generator after success, or null if generation timed out.
+	 * @returns The generator after generation, or null if the dimensions are too small. Generators with a timeout may also return null when it is hit.
 	 */
 	abstract create(callback?: CreateCallback): this | null;
 

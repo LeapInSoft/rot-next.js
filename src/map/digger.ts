@@ -59,6 +59,8 @@ export class Digger extends Dungeon {
 	}
 
 	create(callback?: CreateCallback) {
+		if (this.width < 5 || this.height < 5) { return null; }
+
 		this.rooms = [];
 		this.corridors = [];
 		this.map = this.fillMap(1);
