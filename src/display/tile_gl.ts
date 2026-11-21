@@ -1,6 +1,12 @@
 import { Backend } from "@/src/display/backend.js";
-import { DisplayOptions, DisplayData } from "@/src/display/types.js";
+import type { DisplayCanvas, DisplayData, DisplayOptions, DisplayTileSet } from "@/src/display/types.js";
 import * as Color from "@/src/color.js";
+import { getWebGLImageSource } from "@/src/display/tile-source.js";
+
+type LoadableDisplayTileSet = Extract<DisplayTileSet, { complete: boolean }> & {
+	addEventListener(type: "load", listener: () => void, options?: { once?: boolean }): void;
+	removeEventListener(type: "load", listener: () => void): void;
+};
 
 /**
  * @class Tile backend
@@ -12,7 +18,7 @@ export class TileGL extends Backend {
 	uniforms: {[key:string]: WebGLUniformLocation | null};
 	private texture: WebGLTexture | null = null;
 	private tileSet: DisplayOptions["tileSet"] | undefined;
-	private tileSetLoadListener: { tileSet: HTMLImageElement; listener: () => void } | null = null;
+	private tileSetLoadListener: { tileSet: LoadableDisplayTileSet; listener: () => void } | null = null;
 	private animationFrame: number | null = null;
 
 	static isSupported() {
@@ -31,7 +37,7 @@ export class TileGL extends Backend {
 		cancelAnimationFrame(this.animationFrame);
 		this.animationFrame = null;
 	}
-	getContainer() {
+	getContainer(): DisplayCanvas {
 		if (!(this.gl.canvas instanceof HTMLCanvasElement)) { throw new Error("WebGL canvas is unavailable"); }
 		return this.gl.canvas;
 	}
@@ -171,10 +177,10 @@ export class TileGL extends Backend {
 		}
 
 		if ("complete" in tileSet && !tileSet.complete) {
-			const image = tileSet;
-			if (!("addEventListener" in image) || typeof image.addEventListener !== "function") {
+			if (!isLoadableDisplayTileSet(tileSet)) {
 				throw new Error("Pending tile set cannot receive load events");
 			}
+			const image = tileSet;
 			const listener = () => {
 				if (this.tileSet !== image) { return; }
 				this.tileSetLoadListener = null;
@@ -196,7 +202,7 @@ export class TileGL extends Backend {
 	}
 
 	updateTexture(tileSet: Exclude<DisplayOptions["tileSet"], null>) {
-		const texture = createTexture(this.gl, tileSet);
+		const texture = createTexture(this.gl, getWebGLImageSource(tileSet));
 		if (this.texture) { this.gl.deleteTexture(this.texture); }
 		this.texture = texture;
 	}
@@ -285,6 +291,17 @@ function createQuad(gl: WebGLRenderingContext) {
 	gl.bufferData(gl.ARRAY_BUFFER, pos, gl.STATIC_DRAW);
 	gl.enableVertexAttribArray(0);
 	gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0);
+}
+
+function isLoadableDisplayTileSet(tileSet: DisplayTileSet): tileSet is LoadableDisplayTileSet {
+	return (
+		"complete" in tileSet &&
+		typeof tileSet.complete === "boolean" &&
+		"addEventListener" in tileSet &&
+		typeof tileSet.addEventListener === "function" &&
+		"removeEventListener" in tileSet &&
+		typeof tileSet.removeEventListener === "function"
+	);
 }
 
 function createTexture(gl: WebGLRenderingContext, data: TexImageSource) {

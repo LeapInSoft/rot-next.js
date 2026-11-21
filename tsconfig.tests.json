@@ -12,5 +12,6 @@
 		"allowImportingTsExtensions": true
 	},
 	"files": [],
-	"include": ["tests/**/*.ts", "vitest.config.mts"]
+	"include": ["tests/**/*.ts", "vitest.config.mts"],
+	"exclude": ["tests/types/**"]
 }

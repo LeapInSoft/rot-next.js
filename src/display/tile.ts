@@ -1,5 +1,6 @@
 import { Canvas } from "@/src/display/canvas.js";
-import { DisplayData } from "@/src/display/types.js";
+import type { DisplayData } from "@/src/display/types.js";
+import { getCanvasImageSource } from "@/src/display/tile-source.js";
 
 /**
  * @class Tile backend
@@ -30,6 +31,7 @@ export class Tile extends Canvas {
 
 		if (!ch) { return; }
 
+		const imageSource = getCanvasImageSource(this.options.tileSet);
 		const chars = ([] as string[]).concat(ch);
 		const fgs = ([] as string[]).concat(fg);
 		const bgs = ([] as string[]).concat(bg);
@@ -49,7 +51,7 @@ export class Tile extends Canvas {
 				const bg = bgs[i] || bgs[0];
 
 				context.drawImage(
-					this.options.tileSet!,
+					imageSource,
 					tile[0], tile[1], tileWidth, tileHeight,
 					0, 0, tileWidth, tileHeight
 				);
@@ -69,7 +71,7 @@ export class Tile extends Canvas {
 				this.ctx.drawImage(canvas, x*tileWidth, y*tileHeight, tileWidth, tileHeight);
 			} else { // no colorizing, easy
 				this.ctx.drawImage(
-					this.options.tileSet!,
+					imageSource,
 					tile[0], tile[1], tileWidth, tileHeight,
 					x*tileWidth, y*tileHeight, tileWidth, tileHeight
 				);

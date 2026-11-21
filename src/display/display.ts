@@ -5,10 +5,13 @@ import { Tile } from "@/src/display/tile.js";
 import { TileGL } from "@/src/display/tile_gl.js";
 import { Term } from "@/src/display/term.js";
 import * as Text from "@/src/text.js";
-import type { DisplayOptions, DisplayData, LayoutType } from "@/src/display/types.js";
+import type { DisplayData, DisplayEventCoordinates, DisplayOptions, DisplayTouchEventCoordinates, LayoutType } from "@/src/display/types.js";
 import { DEFAULT_WIDTH, DEFAULT_HEIGHT } from "@/src/constants.js";
 
-type BackendConstructor = new () => Backend;
+interface BackendConstructor {
+	new (): Backend;
+	prototype: Backend;
+}
 
 interface TextRenderState {
 	cx: number;
@@ -64,11 +67,11 @@ export class Display {
 	private scheduledBackend: Backend;
 	private destroyed = false;
 
-	static readonly Rect = Rect;
-	static readonly Hex = Hex;
-	static readonly Tile = Tile;
-	static readonly TileGL = TileGL;
-	static readonly Term = Term;
+	static readonly Rect: BackendConstructor = Rect;
+	static readonly Hex: BackendConstructor = Hex;
+	static readonly Tile: BackendConstructor = Tile;
+	static readonly TileGL: BackendConstructor = TileGL;
+	static readonly Term: BackendConstructor = Term;
 
 	constructor(options: Partial<DisplayOptions> = {}) {
 		this.options = {...DEFAULT_OPTIONS, ...options};
@@ -179,7 +182,7 @@ export class Display {
 	 * @param {Event} e event
 	 * @returns {int[2]} -1 for values outside of the canvas
 	 */
-	eventToPosition(e: TouchEvent | MouseEvent) {
+	eventToPosition(e: DisplayEventCoordinates | DisplayTouchEventCoordinates) {
 		if ("touches" in e) {
 			const touch = e.touches[0] ?? e.changedTouches[0];
 			if (!touch) { return [-1, -1]; }

@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "strict": true,
+    "skipLibCheck": false,
+    "lib": ["ES2022"],
+    "types": [],
+    "paths": {
+      "rot-next.js": ["../../lib/index.d.ts"]
+    }
+  },
+  "files": ["node-only-consumer.ts"]
+}

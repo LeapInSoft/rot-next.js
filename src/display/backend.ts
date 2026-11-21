@@ -1,4 +1,4 @@
-import { DisplayOptions, DisplayData } from "@/src/display/types.js";
+import type { DisplayCanvas, DisplayOptions, DisplayData } from "@/src/display/types.js";
 
 /**
  * @class Abstract display backend module
@@ -7,7 +7,7 @@ import { DisplayOptions, DisplayData } from "@/src/display/types.js";
 export abstract class Backend {
 	options!: DisplayOptions;
 
-	getContainer(): HTMLElement | null { return null; }
+	getContainer(): DisplayCanvas | null { return null; }
 	setOptions(options: DisplayOptions) { this.options = options; }
 
 	abstract schedule(cb: ()=>void): void;

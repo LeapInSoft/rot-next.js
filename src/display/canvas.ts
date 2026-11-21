@@ -1,5 +1,5 @@
 import { Backend } from "@/src/display/backend.js";
-import { DisplayOptions } from "@/src/display/types.js";
+import { DisplayOptions, type DisplayCanvas } from "@/src/display/types.js";
 
 export abstract class Canvas extends Backend {
 	ctx: CanvasRenderingContext2D;
@@ -18,7 +18,7 @@ export abstract class Canvas extends Backend {
 		cancelAnimationFrame(this.animationFrame);
 		this.animationFrame = null;
 	}
-	getContainer() { return this.ctx.canvas; }
+	getContainer(): DisplayCanvas { return this.ctx.canvas; }
 
 	setOptions(opts: DisplayOptions) {
 		super.setOptions(opts);
