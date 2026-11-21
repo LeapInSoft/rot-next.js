@@ -42,7 +42,8 @@
     "bundle": "rollup --config rollup.config.mjs",
     "docs": "typedoc --out doc --readme none --excludePrivate --excludeProtected --validation.invalidLink --name \"rot.js\" src/index.ts",
     "build": "npm run clean && npm run typecheck && npm run bundle && npm run docs",
-    "test": "tsc --project tsconfig.json --noEmit && npm run typecheck:tests && vitest run"
+    "test": "tsc --project tsconfig.json --noEmit && npm run typecheck:tests && vitest run",
+    "examples:serve": "http-server . -p 8080 -c-1"
   },
   "repository": {
     "type": "git",
@@ -58,6 +59,7 @@
     "@typescript-eslint/parser": "^8.73.0",
     "eslint": "^10.15.0",
     "happy-dom": "^21.0.4",
+    "http-server": "^14.1.1",
     "rollup": "^4.68.5",
     "typedoc": "^0.28.20",
     "typescript": "^6.0.3",
