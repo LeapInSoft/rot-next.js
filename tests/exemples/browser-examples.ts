@@ -19,6 +19,7 @@ describe("browser examples", function() {
 		const example = readFileSync(resolve("examples/dist/example.js"), "utf8");
 
 		window.eval(bundle);
+		expect(window.eval("typeof ROT.Display")).toBe("function");
 		window.eval(example);
 
 		expect(document.body.querySelector("canvas")).not.toBeNull();

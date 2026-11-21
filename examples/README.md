@@ -94,3 +94,11 @@ http://localhost:8080/examples/bundled-modules/
 
 Regenerate `dist/example.bundle.js` after changing `example.source.js` or rebuilding
 `lib/`.
+
+## Automated smoke tests
+
+Build the required artifacts and run all example smoke tests with:
+
+```text
+npm run test:examples
+```

@@ -3,6 +3,24 @@ import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 
 describe("Node example", function() {
+	it("exports Display through the CommonJS package entry point", function() {
+		const child = spawn(process.execPath, [
+			"-e",
+			'const ROT = require(process.cwd()); if (typeof ROT.Display !== "function") process.exit(1);'
+		], {
+			cwd: resolve("."),
+			stdio: "ignore"
+		});
+
+		return new Promise<void>((resolveTest, reject) => {
+			child.on("error", reject);
+			child.on("close", code => {
+				expect(code).toBe(0);
+				resolveTest();
+			});
+		});
+	});
+
 	it("renders without initialization or draw errors", async function() {
 		await new Promise<void>((resolveTest, reject) => {
 			const child = spawn(process.execPath, [resolve("examples/node/example.js")], {
