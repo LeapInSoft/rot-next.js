@@ -1,20 +1,27 @@
 import { Display } from "../../lib/index.js";
 
-let o = {
+const displayOptions = {
 	width: 11,
 	height: 5
-}
-let d = new Display(o);
-document.body.appendChild(d.getContainer());
+};
+const display = new Display(displayOptions);
+document.body.appendChild(display.getContainer());
 
-for (let i=0; i<o.width; i++) {
-	for (let j=0; j<o.height; j++) {
-		if (!i || !j || i+1 == o.width || j+1 == o.height) {
-			d.draw(i, j, "#", "gray");
-		} else {
-			d.draw(i, j, ".", "#666");
-
-		}
+for (let x = 0; x < displayOptions.width; x++) {
+	for (let y = 0; y < displayOptions.height; y++) {
+		// side-effect: draw the room into the browser display.
+		const isBorder = x === 0
+			|| y === 0
+			|| x + 1 === displayOptions.width
+			|| y + 1 === displayOptions.height;
+		isBorder
+			? display.draw(x, y, "#", "gray")
+			: display.draw(x, y, ".", "#666");
 	}
 }
-d.draw(o.width >> 1, o.height >> 1, "@", "goldenrod");
+display.draw(
+	displayOptions.width >> 1,
+	displayOptions.height >> 1,
+	"@",
+	"goldenrod"
+);

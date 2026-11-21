@@ -1,12 +1,11 @@
 <!doctype html>
 <html>
 <head>
-	<title>rot.js: bundle file</title>
+	<title>rot-next.js: Prebuilt browser bundle</title>
 </head>
 <body>
-	<h1>rot.js: bundle file</h1>
-	<p>This example includes rot.js using a pre-built JavaScript bundle. Every browser supports this mechanism without the need to bundle/compile your code. You will, however, always load the complete library, even if you plan on using only a small part of it.</p>
-	
+	<h1>Prebuilt browser bundle</h1>
+	<p>This example loads the prebuilt <code>dist/rot.js</code> bundle, which exposes the library as the global <code>ROT</code> object. Build the bundle with <code>npm run build</code> and serve this example over HTTP; no application bundler is required.</p>
 	<script src="../../dist/rot.js"></script>
 	<script src="example.js"></script>
 </body>
