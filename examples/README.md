@@ -81,16 +81,16 @@ application bundle created from `example.source.js` and `lib/index.js`.
 
 Build the example with Rollup and Babel from the repository root:
 
-```sh
-cd examples/bundled-modules
-./run.sh
+```text
+npm run examples:bundle
 ```
 
-The POSIX-compatible `run.sh` writes `example.bundle.js`. Then open:
+This cross-platform npm script rebuilds `lib/` and writes
+`examples/bundled-modules/dist/example.bundle.js`. Then open:
 
 ```text
 http://localhost:8080/examples/bundled-modules/
 ```
 
-Regenerate `example.bundle.js` after changing `example.source.js` or rebuilding
+Regenerate `dist/example.bundle.js` after changing `example.source.js` or rebuilding
 `lib/`.
