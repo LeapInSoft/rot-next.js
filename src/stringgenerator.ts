@@ -9,7 +9,12 @@ interface Options {
 	prior: number;
 }
 
-type Events = { [key:string]: number };
+type Events = Record<string, number>;
+
+// A null prototype keeps arbitrary string keys from resolving inherited properties.
+function createDictionary<T>(): Record<string, T> {
+	return Object.create(null) as Record<string, T>;
+}
 
 /**
  * @class (Markov process)-based string generator. 
@@ -37,18 +42,18 @@ export class StringGenerator {
 		this.prefix = [];
 		for (let i=0;i<this.options.order;i++) { this.prefix.push(this.boundary); }
 
-		this.priorValues = {};
+		this.priorValues = createDictionary<number>();
 		this.priorValues[this.boundary] = this.options.prior;
 
-		this.data = {};
+		this.data = createDictionary<Events>();
 	}
 
 	/**
 	 * Remove all learning data
 	 */
 	clear() {
-		this.data = {};
-		this.priorValues = {};
+		this.data = createDictionary<Events>();
+		this.priorValues = createDictionary<number>();
 		this.priorValues[this.boundary] = this.options.prior;
 	}
 
@@ -102,10 +107,7 @@ export class StringGenerator {
 		parts.push("distinct samples: " + priorCount);
 
 		const dataCount = Object.keys(this.data).length;
-		let eventCount = 0;
-		for (const p in this.data) {
-			eventCount += Object.keys(this.data[p]).length;
-		}
+		const eventCount = Object.values(this.data).reduce((count, events) => count + Object.keys(events).length, 0);
 		parts.push("dictionary size (contexts): " + dataCount);
 		parts.push("dictionary size (events): " + eventCount);
 
@@ -134,11 +136,10 @@ export class StringGenerator {
 	 */
 	observeEvent(context: string[], event: string) {
 		const key = this.join(context);
-		if (!(key in this.data)) { this.data[key] = {}; }
+		if (this.data[key] === undefined) { this.data[key] = createDictionary<number>(); }
 		const data = this.data[key];
 
-		if (!(event in data)) { data[event] = 0; }
-		data[event]++;
+		data[event] = (data[event] ?? 0) + 1;
 	}
 
 	/**
@@ -148,14 +149,15 @@ export class StringGenerator {
 	sample(context: string[]) {
 		context = this.backoff(context);
 		const key = this.join(context);
-		const data = this.data[key];
-
-		let available : Events = {};
+		const data = this.data[key] ?? createDictionary<number>();
+		let available: Events = createDictionary<number>();
 
 		if (this.options.prior) {
-			for (const event in this.priorValues) { available[event] = this.priorValues[event]; }
-			for (const event in data) { available[event] += data[event]; }
-		} else { 
+			for (const [event, weight] of Object.entries(this.priorValues)) { available[event] = weight; }
+			for (const [event, weight] of Object.entries(data)) {
+				available[event] = (available[event] ?? 0) + weight;
+			}
+		} else {
 			available = data;
 		}
 
@@ -173,7 +175,7 @@ export class StringGenerator {
 			context = this.prefix.slice(0, this.options.order - context.length).concat(context);
 		}
 
-		while (!(this.join(context) in this.data) && context.length > 0) { context = context.slice(1); }
+		while (this.data[this.join(context)] === undefined && context.length > 0) { context = context.slice(1); }
 
 		return context;
 	}

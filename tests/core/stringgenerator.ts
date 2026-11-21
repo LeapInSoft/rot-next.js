@@ -39,4 +39,21 @@ describe("StringGenerator", function() {
 
 		expect(generator.getStats()).toBe("distinct samples: 2, dictionary size (contexts): 9, dictionary size (events): 9");
 	});
+
+	it('should safely learn words named after Object prototype properties', function() {
+		const generator = new ROT.StringGenerator({ words: true, order: 1 });
+		const valueDescriptor = Object.getOwnPropertyDescriptor(Object.prototype, 'value');
+
+		try {
+			expect(() => generator.observe('__proto__ value constructor toString hasOwnProperty')).not.toThrow();
+			expect(Object.getOwnPropertyDescriptor(Object.prototype, 'value')).toEqual(valueDescriptor);
+			expect(generator.getStats()).toBe('distinct samples: 5, dictionary size (contexts): 6, dictionary size (events): 6');
+		} finally {
+			if (valueDescriptor) {
+				Object.defineProperty(Object.prototype, 'value', valueDescriptor);
+			} else {
+				Reflect.deleteProperty(Object.prototype, 'value');
+			}
+		}
+	});
 });
