@@ -1,14 +1,18 @@
-rot.js addons
-=============
+# rot.js addons
 
-This directory contains "skeleton" files to be re-used and adjusted as necessary. They correspond to common design patterns, utilities and general game architecture modules.
+Addon modules are opt-in architecture patterns. They have no global state and
+do not monkey-patch the core library.
 
-  * `pubsub.js`: simple pub-sub implementation. Suitable for cross-component messaging/notification.
-  * `xy.js`: 2D Coords
-  * `game.js`: sample main namespace
-  * `level.js`: empty level encapsulating entities
-  * `entity.js`: abstract displayable game entity
-  * `being.js`: rudimentary game being
-  * `player.js`: custom game being with keyboard control
-  * `textbuffer.js`: buffering text output and displaying it within a ROT.Display subset
-  * `sample.html`: working game with a display, level/map and an interactive player character
+## Phase A domain foundation
+
+- `core/grid.ts`: immutable grid coordinates and spatial helpers.
+- `entities/registry.ts`: entity and component registries.
+- `turns/actor.ts`: the turn-aware actor contract and scheduler registration.
+- `pubsub/event_bus.ts`: typed event publication and subscriptions.
+- `text/text_buffer.ts`: bounded message history.
+
+## Legacy examples
+
+The JavaScript files in this directory are legacy rot.js 0.5-era samples. They
+remain available for reference, but the Phase A TypeScript modules above are the
+supported addon foundation and are covered by contract tests.
