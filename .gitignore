@@ -3,5 +3,7 @@ node_modules
 .idea
 .DS_Store
 lib
+dist
+doc
 examples/bundled-modules/dist
 examples/basic-addon/addons
