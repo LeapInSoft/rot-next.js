@@ -14,16 +14,36 @@ describe("browser examples", function() {
 		expect(document.body.querySelector("canvas")).not.toBeNull();
 	});
 
-	it("runs the basic addon example with an in-game message", async function() {
+	it("runs the complete basic addon slice and supports player actions", async function() {
 		const npmCommand = process.platform === "win32" ? "npm.cmd" : "npm";
 		execSync(`${npmCommand} run examples:addons`, {
 			cwd: resolve("."),
 			stdio: "pipe"
 		});
 
-		await vi.importActual("../../examples/basic-addon/example.js");
+		interface BasicAddonScene {
+			getState(): {
+				readonly player: {readonly hp: number};
+				readonly monster: {readonly alive: boolean};
+				readonly turn: number;
+			};
+			readonly messages: {toString(): string};
+			act(action: {readonly type: "wait"}): void;
+			destroy(): void;
+		}
+		const {basicAddonScene} = await vi.importActual<{
+			readonly basicAddonScene: BasicAddonScene;
+		}>("../../examples/basic-addon/example.js");
+		const scene = basicAddonScene;
 
 		expect(document.body.querySelector("canvas")).not.toBeNull();
+		expect(scene.getState().player.hp).toBeGreaterThan(0);
+		expect(scene.getState().monster.alive).toBe(true);
+
+		scene.act({type: "wait"});
+		expect(scene.getState().turn).toBe(1);
+		expect(scene.messages.toString()).toContain("Ada waits.");
+		scene.destroy();
 	}, 60_000);
 
 	it("appends a display container from the prebuilt-bundle entry point", function() {

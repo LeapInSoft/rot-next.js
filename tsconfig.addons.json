@@ -14,6 +14,7 @@
 		"addons/entities/**/*.ts",
 		"addons/pubsub/**/*.ts",
 		"addons/text/**/*.ts",
-		"addons/turns/**/*.ts"
+		"addons/turns/**/*.ts",
+		"addons/game/**/*.ts"
 	]
 }

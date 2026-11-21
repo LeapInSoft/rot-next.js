@@ -1,15 +1,13 @@
 import { Display } from "../../lib/index.js";
-import { createGridCoordinate, gridKey } from "./addons/core/grid.js";
 import { ComponentRegistry, EntityRegistry } from "./addons/entities/registry.js";
+import { createInitialGameState, transitionGame } from "./addons/game/game.js";
+import { gameActionForKey } from "./addons/game/controls.js";
 import { TypedEventBus } from "./addons/pubsub/event_bus.js";
 import { TextBuffer } from "./addons/text/text_buffer.js";
 import { registerTurnActor } from "./addons/turns/actor.js";
 
-const displayOptions = {
-	width: 21,
-	height: 12
-};
-
+const displayOptions = {width: 38, height: 17};
+const mapOptions = {width: 11, height: 9, top: 1};
 export function createBasicAddonScene() {
 	const display = new Display(displayOptions);
 	document.body.appendChild(display.getContainer());
@@ -17,106 +15,119 @@ export function createBasicAddonScene() {
 	const entities = new EntityRegistry();
 	const positions = new ComponentRegistry();
 	const events = new TypedEventBus();
-	const messages = new TextBuffer(1);
+	const messages = new TextBuffer(3);
 	const hero = {id: "hero", name: "Ada"};
+	const goblin = {id: "goblin", name: "Goblin"};
 	entities.add(hero);
-	positions.set({entityId: hero.id, x: 10, y: 5});
+	entities.add(goblin);
+
+	let state = createInitialGameState();
+	positions.set({entityId: hero.id, ...state.player.position});
+	positions.set({entityId: goblin.id, ...state.monster.position});
+
+	const updatePositions = () => {
+		positions.set({entityId: hero.id, ...state.player.position});
+		positions.set({entityId: goblin.id, ...state.monster.position});
+	};
 
 	const drawScene = () => {
-		for (let x = 0; x < displayOptions.width; x++) {
-			for (let y = 0; y < displayOptions.height - 2; y++) {
+		for (let x = 0; x < mapOptions.width; x++) {
+			for (let y = 0; y < mapOptions.height; y++) {
 				// side-effect: draw the room into the display.
 				const isBorder = x === 0
 					|| y === 0
-					|| x + 1 === displayOptions.width
-					|| y + 1 === displayOptions.height - 2;
+					|| x + 1 === mapOptions.width
+					|| y + 1 === mapOptions.height;
+				const screenY = y + mapOptions.top;
 				isBorder
-					? display.draw(x, y, "#", "gray")
-					: display.draw(x, y, ".", "#666");
+					? display.draw(x, screenY, "#", "gray")
+					: display.draw(x, screenY, ".", "#666");
 			}
 		}
 
-		const position = positions.get(hero.id);
-		if (position) {
-			display.draw(position.x, position.y, "@", "goldenrod");
+		state.groundLoot.forEach(({position}) => {
+			display.draw(position.x, position.y + mapOptions.top, "!", "chartreuse");
+		});
+
+		const playerPosition = positions.get(hero.id);
+		const monsterPosition = positions.get(goblin.id);
+		if (playerPosition && state.player.alive) {
+			display.draw(playerPosition.x, playerPosition.y + mapOptions.top, "@", "goldenrod");
+		}
+		if (monsterPosition && state.monster.alive) {
+			display.draw(monsterPosition.x, monsterPosition.y + mapOptions.top, "g", "orangered");
 		}
 
-		display.drawText(
-			0,
-			displayOptions.height - 1,
-			messages.toString()
-		);
+		const {player, monster} = state;
+		display.drawText(13, 1, "<b>THE GOBLIN CAVE</b>");
+		display.drawText(13, 3, `Ada  HP ${player.hp}/${player.maxHp}`);
+		display.drawText(13, 4, `XP ${player.xp}   Turns ${state.turn}`);
+		display.drawText(13, 6, `Weapon: ${player.equipment.weapon?.name ?? "none"}`);
+		display.drawText(13, 7, `Armor:  ${player.equipment.armor?.name ?? "none"}`);
+		display.drawText(13, 9, `Goblin: ${monster.alive ? `${monster.hp} HP` : "defeated"}`);
+		display.drawText(13, 11, "Items:");
+		const inventory = player.inventory.length
+			? player.inventory.map(({name}) => name).join(", ")
+			: "(empty)";
+		display.drawText(13, 12, inventory);
+		display.drawText(0, 12, "Messages:");
+		messages.getLines().forEach((message, index) => {
+			display.drawText(0, 13 + index, message);
+		});
 	};
 
-	const movement = {
-		ArrowLeft: [-1, 0],
-		ArrowRight: [1, 0],
-		ArrowUp: [0, -1],
-		ArrowDown: [0, 1]
+	const gameActor = {
+		act(action) {
+			const transition = transitionGame(state, action);
+			state = transition.state;
+			updatePositions();
+			transition.messages.forEach(message => events.emit({type: "message", message}));
+			events.emit({type: "updated"});
+		},
 	};
 
-	const heroActor = {
-		act(direction) {
-			const position = positions.get(hero.id);
-			if (!position || !direction) {
-				return;
-			}
-
-			const [deltaX, deltaY] = direction;
-			const nextPosition = createGridCoordinate(
-				position.x + deltaX,
-				position.y + deltaY
-			);
-			const isWall = nextPosition.x === 0
-				|| nextPosition.y === 0
-				|| nextPosition.x + 1 === displayOptions.width
-				|| nextPosition.y + 1 === displayOptions.height - 2;
-			if (isWall) {
-				messages.append("A wall blocks the way.");
-				drawScene();
-				return;
-			}
-
-			positions.set({
-				entityId: hero.id,
-				x: nextPosition.x,
-				y: nextPosition.y
-			});
-			events.emit({
-				type: "moved",
-				entityId: hero.id,
-				position: nextPosition
-			});
-		}
-	};
-
-	events.subscribe("moved", event => {
-		messages.append(`${event.entityId} moved to ${gridKey(event.position)}`);
+	events.subscribe("message", event => {
+		messages.append(event.message);
+	});
+	events.subscribe("updated", () => {
 		drawScene();
 	});
 
 	const scheduler = {
 		add() {
 			return this;
+		},
+	};
+	registerTurnActor(scheduler, gameActor);
+
+	const handleKeyDown = event => {
+		// side-effect: translate keyboard input into a game action.
+		const action = gameActionForKey(event.key, state.player.inventory);
+		if (action) {
+			event.preventDefault();
+			gameActor.act(action);
 		}
 	};
-	registerTurnActor(scheduler, heroActor);
+	document.addEventListener("keydown", handleKeyDown);
 
-	document.addEventListener("keydown", event => {
-		// side-effect: translate keyboard input into an addon actor action.
-		const direction = movement[event.key];
-		if (direction) {
-			event.preventDefault();
-			heroActor.act(direction);
-		}
-	});
-
-	messages.append("Ada entered the room.");
+	messages.append("Find the goblin. Move with the arrow keys.");
 	drawScene();
 
-	return {display, entities, positions, events, messages};
+	return {
+		display,
+		entities,
+		positions,
+		events,
+		messages,
+		getState: () => state,
+		act: action => gameActor.act(action),
+		destroy() {
+			document.removeEventListener("keydown", handleKeyDown);
+			display.getContainer().remove();
+		},
+	};
 }
 
-if (typeof document !== "undefined") {
-	createBasicAddonScene();
-}
+export const basicAddonScene = typeof document === "undefined"
+	? undefined
+	: createBasicAddonScene();

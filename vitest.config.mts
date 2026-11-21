@@ -14,7 +14,7 @@ export default defineConfig({
 		include: [
 			"tests/core/**/*.ts",
 			"tests/exemples/**.ts",
-			"tests/addons/**.ts"
+			"tests/addons/**/*.ts"
 		],
 		setupFiles: ["./tests/setup.ts"],
 		globals: true

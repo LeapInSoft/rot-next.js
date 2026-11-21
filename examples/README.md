@@ -97,10 +97,13 @@ Regenerate `dist/example.bundle.js` after changing `example.source.js` or rebuil
 
 ## Basic addon composition
 
-[`basic-addon/index.html`](basic-addon/index.html) combines the Phase A addon
-modules with `ROT.Display`. It demonstrates immutable grid coordinates, entity
-and component registries, typed movement events, a bounded in-game message
-buffer, and turn actor registration.
+[`basic-addon/index.html`](basic-addon/index.html) is a complete, deterministic
+combat slice rendered with `ROT.Display`. It combines immutable grid
+coordinates, entity and component registries, typed events, a bounded message
+buffer, and turn actor registration. The game rules are separated into types,
+scenario, combat, monster-turn, inventory, and keyboard-control modules. The
+slice includes player movement, melee combat, HP, death, XP, loot, inventory, a
+healing potion, and weapon/armor slots.
 
 Build the addon modules and serve the repository from the root:
 
@@ -115,9 +118,10 @@ Open:
 http://localhost:8080/examples/basic-addon/
 ```
 
-Use the arrow keys to move the `@` character. Movement updates and wall notices
-appear in the display's message line; the example does not write game messages
-to the terminal.
+Use the arrow keys to move or attack, Space to wait, and `G` to pick up loot.
+Press `1` to use a potion, `2` to equip a weapon, or `3` to equip armor. The HUD
+shows player/monster health, XP, equipment, inventory, and recent messages. The
+example does not write game messages to the terminal.
 
 ## Automated smoke tests
 
