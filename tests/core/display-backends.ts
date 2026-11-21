@@ -102,6 +102,23 @@ describe('TileGL backend', () => {
 		return { backend, gl };
 	}
 
+	it('passes normalized RGBA foreground and background colors to the tint uniforms', () => {
+		const { backend, gl } = createBackend();
+		backend.options = { ...backend.options, tileColorize: true };
+		backend.uniforms = {
+			targetPosRel: null,
+			tilesetPosAbs: null,
+			colorize: null,
+			tint: null,
+			bg: null
+		};
+
+		backend.draw([0, 0, '@', 'rgba(255,128,64,1)', 'rgba(0,0,0,0.5)'], false);
+
+		expect(gl.uniform4fv).toHaveBeenNthCalledWith(1, null, [1, 128 / 255, 64 / 255, 1]);
+		expect(gl.uniform4fv).toHaveBeenNthCalledWith(2, null, [0, 0, 0, 0.5]);
+	});
+
 	it('fails explicitly when WebGL initialization fails', () => {
 		const initializationError = new Error('WebGL is unavailable');
 		const initialize = vi.spyOn(TileGL.prototype, 'initWebGL').mockImplementation(() => {

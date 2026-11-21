@@ -329,8 +329,7 @@ function parseColor(color: string) {
 			const matches = color.match(/[\d.]+/g);
 			if (!matches || matches.length < 3) { throw new Error(`Invalid RGBA color: ${color}`); }
 			const channels = matches.slice(0, 4).map(Number);
-			parsed = [channels[0] / 255, channels[1] / 255, channels[2] / 255, (channels[3] ?? 255) / 255];
-			for (let i=0;i<3;i++) { parsed[i] = parsed[i]/255; }
+			parsed = [channels[0] / 255, channels[1] / 255, channels[2] / 255, channels[3] ?? 1];
 		} else {
 			const [red, green, blue] = Color.fromString(color);
 			parsed = [red / 255, green / 255, blue / 255, 1];
