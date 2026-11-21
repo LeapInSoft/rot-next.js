@@ -1,0 +1,19 @@
+{
+	"compilerOptions": {
+		"strict": true,
+		"target": "es2017",
+		"module": "es2022",
+		"moduleResolution": "bundler",
+		"rootDir": "addons",
+		"outDir": "examples/basic-addon/addons",
+		"declaration": false,
+		"noEmit": false
+	},
+	"include": [
+		"addons/core/**/*.ts",
+		"addons/entities/**/*.ts",
+		"addons/pubsub/**/*.ts",
+		"addons/text/**/*.ts",
+		"addons/turns/**/*.ts"
+	]
+}

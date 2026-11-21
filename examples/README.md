@@ -95,6 +95,30 @@ http://localhost:8080/examples/bundled-modules/
 Regenerate `dist/example.bundle.js` after changing `example.source.js` or rebuilding
 `lib/`.
 
+## Basic addon composition
+
+[`basic-addon/index.html`](basic-addon/index.html) combines the Phase A addon
+modules with `ROT.Display`. It demonstrates immutable grid coordinates, entity
+and component registries, typed movement events, a bounded in-game message
+buffer, and turn actor registration.
+
+Build the addon modules and serve the repository from the root:
+
+```text
+npm run examples:addons
+npm run examples:serve
+```
+
+Open:
+
+```text
+http://localhost:8080/examples/basic-addon/
+```
+
+Use the arrow keys to move the `@` character. Movement updates and wall notices
+appear in the display's message line; the example does not write game messages
+to the terminal.
+
 ## Automated smoke tests
 
 Build the required artifacts and run all example smoke tests with:

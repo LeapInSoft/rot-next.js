@@ -4,3 +4,4 @@ node_modules
 .DS_Store
 lib
 examples/bundled-modules/dist
+examples/basic-addon/addons

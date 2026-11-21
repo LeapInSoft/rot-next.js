@@ -14,6 +14,18 @@ describe("browser examples", function() {
 		expect(document.body.querySelector("canvas")).not.toBeNull();
 	});
 
+	it("runs the basic addon example with an in-game message", async function() {
+		const npmCommand = process.platform === "win32" ? "npm.cmd" : "npm";
+		execSync(`${npmCommand} run examples:addons`, {
+			cwd: resolve("."),
+			stdio: "pipe"
+		});
+
+		await vi.importActual("../../examples/basic-addon/example.js");
+
+		expect(document.body.querySelector("canvas")).not.toBeNull();
+	}, 60_000);
+
 	it("appends a display container from the prebuilt-bundle entry point", function() {
 		const bundle = readFileSync(resolve("dist/rot.js"), "utf8");
 		const example = readFileSync(resolve("examples/dist/example.js"), "utf8");
