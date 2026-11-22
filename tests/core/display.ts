@@ -257,7 +257,7 @@ describe("Display", function() {
 
 		const unlink = function(display: InstanceType<typeof ROT.Display>) {
 			const c = canvasFor(display);
-			c.parentNode.removeChild(c);
+			c.parentNode?.removeChild(c);
 		}
 
 		describe("rectangular layout", function() {

@@ -153,8 +153,6 @@ describe("Map.Dungeon", function() {
 
 	}
 
-	while (names.length) {
-		const name = names.shift();
-		buildDungeonTests(name);
-	}
+	// side-effect: register a suite for each dungeon generator.
+	names.forEach(name => buildDungeonTests(name));
 });

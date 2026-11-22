@@ -183,12 +183,7 @@ describe("Color", function() {
 				[100, 120, 140]
 			]
 
-			while (rgb.length) {
-				const color = rgb.pop();
-				const hsl = ROT.Color.rgb2hsl(color);
-				const rgb2 = ROT.Color.hsl2rgb(hsl);
-				expect(rgb2).toEqual(color);
-			}
+			expect(rgb.map(color => ROT.Color.hsl2rgb(ROT.Color.rgb2hsl(color)))).toEqual(rgb);
 		});
 
 		it("should round converted values", function() {
