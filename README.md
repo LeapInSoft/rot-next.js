@@ -16,6 +16,8 @@ rot-next.js is written in TypeScript and provides several ways to use the librar
 
 For browser examples, see [native modules](./examples/native-modules/), [bundled modules](./examples/bundled-modules/), and [the prebuilt bundle](./examples/dist/).
 
+The map generators are available individually (`Arena`, `Digger`, and others) and through the `Maps` namespace. The legacy `Map` namespace remains as an alias for compatibility; the base generator class is exported as `BaseMap` to avoid confusing it with that namespace.
+
 ### Downloading
 
 - Clone this repository to access the source and included distribution files.

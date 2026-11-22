@@ -8,4 +8,5 @@ import { IceyMaze } from '@/src/map/iceymaze.js';
 import { Rogue } from '@/src/map/rogue.js';
 
 export { Arena, Uniform, Cellular, Digger, EllerMaze, DividedMaze, IceyMaze, Rogue };
-export const Map = { Arena, Uniform, Cellular, Digger, EllerMaze, DividedMaze, IceyMaze, Rogue };
+export const Maps = { Arena, Uniform, Cellular, Digger, EllerMaze, DividedMaze, IceyMaze, Rogue };
+export { Maps as Map };

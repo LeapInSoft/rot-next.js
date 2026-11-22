@@ -18,6 +18,26 @@ import { Hex } from '@/src/display/hex.js';
 import { Tile } from '@/src/display/tile.js';
 import { TileGL } from '@/src/display/tile_gl.js';
 import { Term } from '@/src/display/term.js';
+import {
+	Arena,
+	BaseMap,
+	BasePath,
+	Maps,
+	Map as MapNamespace,
+	MinHeap,
+	Corridor,
+} from '@/src/index.js';
+import type {
+	Backend,
+	ComputeCallback,
+	CreateCallback,
+	DisplayOptions,
+	Dungeon,
+	LightPassesCallback,
+	PassableCallback,
+	Room,
+	VisibilityCallback,
+} from '@/src/index.js';
 
 describe('named public exports', () => {
 	it('exports core classes by name', () => {
@@ -48,5 +68,30 @@ describe('named public exports', () => {
 		expect(Tile).toBeTypeOf('function');
 		expect(TileGL).toBeTypeOf('function');
 		expect(Term).toBeTypeOf('function');
+	});
+
+	it('exports map generators by name and keeps the legacy Map namespace', () => {
+		expect(Arena).toBeTypeOf('function');
+		expect(Maps.Arena).toBe(Arena);
+		expect(MapNamespace).toBe(Maps);
+		expect(BaseMap).toBeTypeOf('function');
+	});
+
+	it('exports public callback and map types', () => {
+		type PublicTypes = [
+			Backend,
+			ComputeCallback,
+			CreateCallback,
+			DisplayOptions,
+			Dungeon,
+			LightPassesCallback,
+			PassableCallback,
+			Room,
+			VisibilityCallback,
+		];
+		const types: PublicTypes | null = null;
+		expect(types).toBeNull();
+		expect(new MinHeap()).toBeTypeOf('object');
+		expect(Corridor).toBeTypeOf('function');
 	});
 });
