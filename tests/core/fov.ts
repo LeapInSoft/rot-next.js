@@ -175,6 +175,15 @@ describe("FOV", function() {
 	}
 
 	describe("Discrete Shadowcasting", function() {
+		it("should show an opaque origin but block visibility beyond it", function() {
+			const fov = new ROT.FOV.DiscreteShadowcasting(() => false);
+			const visible: string[] = [];
+
+			fov.compute(2, 2, 2, (x, y) => { visible.push(`${x},${y}`); });
+
+			expect(visible).toEqual(["2,2"]);
+		});
+
 		describe("8-topology", function() {
 			it("should compute visible ring0", function() {
 				const lightPasses = buildLightCallback(MAP8_RING0);
@@ -190,6 +199,15 @@ describe("FOV", function() {
 	});
 
 	describe("Precise Shadowcasting", function() {
+		it("should show an opaque origin but block visibility beyond it", function() {
+			const fov = new ROT.FOV.PreciseShadowcasting(() => false);
+			const visible: string[] = [];
+
+			fov.compute(2, 2, 2, (x, y) => { visible.push(`${x},${y}`); });
+
+			expect(visible).toEqual(["2,2"]);
+		});
+
 		describe("8-topology", function() {
 			const topology = 8 as const;
 			it("should compute visible ring0", function() {

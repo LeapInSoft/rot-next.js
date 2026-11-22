@@ -74,7 +74,6 @@ export class Hex extends Canvas {
 
 		hexSize = Math.floor(hexSize)+1; // closest larger hexSize
 
-		// FIXME char size computation does not respect transposed hexes
 		const fontSize = 2*hexSize / (this.options.spacing * (1 + ratio / Math.sqrt(3)));
 
 		// closest smaller fontSize

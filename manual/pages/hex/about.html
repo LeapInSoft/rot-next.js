@@ -39,6 +39,8 @@ for (var y = 0; y &lt; 5; y++) {
 
 <p>If you <strong>absolutely</strong> need inverted hex layout ("flat-tops"), you can force transposed rendering by passing the <code>transpose:true</code> option to the <code>ROT.Display</code> constructor. Please note that this inverts the x-y values of all display-related functions and operations.</p>
 
+<p>For transposed hex displays, <code>computeFontSize()</code> does not account for the flat-top orientation when estimating character fit. Set <code>fontSize</code> explicitly if you need precise glyph sizing.</p>
+
 <div class="example">
 var display = new ROT.Display({
 	width:10, height:4, spacing:2.5,

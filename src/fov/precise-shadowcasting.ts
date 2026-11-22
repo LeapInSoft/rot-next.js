@@ -11,7 +11,7 @@ export class PreciseShadowcasting extends FOV {
 		/* this place is always visible */
 		callback(x, y, 0, 1);
 
-		/* standing in a dark place. FIXME is this a good idea?  */
+		/* An opaque origin is visible but blocks visibility beyond itself. */
 		if (!this.lightPasses(x, y)) { return; }
 		
 		/* list of all shadows */

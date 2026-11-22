@@ -88,8 +88,6 @@ export class Digger extends Dungeon {
 			const dir = this.getDiggingDirection(x, y);
 			if (!dir) { continue; } /* this wall is not suitable */
 			
-	//		console.log("wall", x, y);
-
 			/* try adding a feature */
 			let featureAttempts = 0;
 			do {
@@ -196,13 +194,10 @@ export class Digger extends Dungeon {
 		const feature = ctor.createRandomAt(x, y, dx, dy, this.options);
 		
 		if (!feature.isValid(this.isWallCallback, this.canBeDugCallback)) {
-	//		console.log("not valid");
-	//		feature.debug();
 			return false;
 		}
 		
 		feature.create(this.digCallback);
-	//	feature.debug();
 
 		if (feature instanceof Room) { this.rooms.push(feature); }
 		if (feature instanceof Corridor) { 
