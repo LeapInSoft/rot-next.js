@@ -50,7 +50,7 @@ export class EventQueue<T = unknown> {
 	}
 
 	/**
-	 * Get the time associated with the given event
+	 * Get the time until the next matching event is due. Duplicate events are supported; ties use insertion order.
 	 * @param {?} event
 	 * @returns {number} time
 	 */

@@ -73,14 +73,14 @@ describe("MinHeap", function() {
 		expect(values).toEqual(["root", "other branch", "first child", "second child", "other child", "replacement"]);
 	});
 
-	it("should remove the earliest-inserted matching duplicate value", function() {
+	it("should find the earliest-key duplicate and remove the earliest-inserted one", function() {
 		const heap = new MinHeap<string>();
 		heap.push("duplicate", 10);
 		heap.push("other", 4);
 		heap.push("duplicate", 6);
 		heap.push("first", 2);
 
-		expect(heap.find("duplicate")?.key).toBe(10);
+		expect(heap.find("duplicate")?.key).toBe(6);
 		expect(heap.remove("duplicate")).toBe(true);
 		expect(heap.pop().value).toBe("first");
 		expect(heap.pop().value).toBe("other");

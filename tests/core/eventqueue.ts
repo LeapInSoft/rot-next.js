@@ -48,6 +48,18 @@ describe("EventQueue", function() {
 		expect(q.get()).toEqual(456);
 	});
 
+	it("should report the earliest due time for duplicate events", function() {
+		const q = new ROT.EventQueue<string>();
+		q.add("duplicate", 10);
+		q.add("duplicate", 5);
+		q.add("other", 1);
+
+		expect(q.getEventTime("duplicate")).toBe(5);
+		expect(q.get()).toBe("other");
+		expect(q.getEventTime("duplicate")).toBe(4);
+		expect(q.get()).toBe("duplicate");
+	});
+
 	it("should remove the earliest-inserted matching duplicate event", function() {
 		const q = new ROT.EventQueue<string>();
 		q.add("duplicate", 10);
@@ -55,7 +67,7 @@ describe("EventQueue", function() {
 		q.add("duplicate", 6);
 		q.add("first", 2);
 
-		expect(q.getEventTime("duplicate")).toBe(10);
+		expect(q.getEventTime("duplicate")).toBe(6);
 		expect(q.remove("duplicate")).toBe(true);
 		expect(q.getEventTime("duplicate")).toBe(6);
 		expect(q.get()).toBe("first");

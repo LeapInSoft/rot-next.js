@@ -44,12 +44,15 @@ export class MinHeap<T> {
 		}
 		return { ...top, key: top.key + this.offset };
 	}
+	/**
+	 * Find the earliest-key entry matching a value. Ties use insertion order.
+	 */
 	find(v: T): HeapWrapper<T> | null {
-		const index = this.findIndex(v);
+		const index = this.findIndex(v, (candidate, current) => this.lessThan(candidate, current));
 		return index === -1 ? null : { ...this.heap[index], key: this.heap[index].key + this.offset };
 	}
 	remove(v: T) {
-		const index = this.findIndex(v);
+		const index = this.findIndex(v, (candidate, current) => candidate.timestamp < current.timestamp);
 		if (index === -1) { return false; }
 
 		const lastIndex = this.len() - 1;
@@ -68,10 +71,10 @@ export class MinHeap<T> {
 		}
 		return true;
 	}
-	private findIndex(v: T): number {
+	private findIndex(v: T, isEarlier: (candidate: HeapWrapper<T>, current: HeapWrapper<T>) => boolean): number {
 		let index = -1;
 		for (let i = 0; i < this.len(); i++) {
-			if (v === this.heap[i].value && (index === -1 || this.heap[i].timestamp < this.heap[index].timestamp)) {
+			if (v === this.heap[i].value && (index === -1 || isEarlier(this.heap[i], this.heap[index]))) {
 				index = i;
 			}
 		}
