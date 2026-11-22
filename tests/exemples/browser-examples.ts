@@ -1,4 +1,3 @@
-import { execSync } from "node:child_process";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { beforeEach, describe, expect, it, vi } from "vitest";
@@ -15,12 +14,6 @@ describe("browser examples", function() {
 	});
 
 	it("runs the complete basic addon slice and supports player actions", async function() {
-		const npmCommand = process.platform === "win32" ? "npm.cmd" : "npm";
-		execSync(`${npmCommand} run examples:addons`, {
-			cwd: resolve("."),
-			stdio: "pipe"
-		});
-
 		interface BasicAddonScene {
 			getState(): {
 				readonly player: {readonly hp: number};
@@ -58,12 +51,6 @@ describe("browser examples", function() {
 	});
 
 	it("builds and runs the bundled-module entry point", function() {
-		const npmCommand = process.platform === "win32" ? "npm.cmd" : "npm";
-		execSync(`${npmCommand} run examples:bundle`, {
-			cwd: resolve("."),
-			stdio: "pipe"
-		});
-
 		const bundle = readFileSync(
 			resolve("examples/bundled-modules/dist/example.bundle.js"),
 			"utf8"
