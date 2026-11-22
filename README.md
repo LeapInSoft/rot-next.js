@@ -19,6 +19,16 @@ For browser examples, see [native modules](./examples/native-modules/), [bundled
 
 The map generators are available individually (`Arena`, `Digger`, and others) and through the `Maps` namespace. The legacy `Map` namespace remains as an alias for compatibility; the base generator class is exported as `BaseMap` to avoid confusing it with that namespace.
 
+### Addon architecture
+
+ROT.js already provides reusable roguelike primitives. rot-next.js builds on that foundation and is evolving an additional layer of opt-in addons for higher-level game capabilities.
+
+An addon is intended to provide one focused, reusable behavior—not a complete game template. Addons should work with small, structural TypeScript contracts so developers can use their own item, actor, and game-state types, and compose capabilities without coupling them to a particular game. Where practical, addon operations are functional: they accept data or state and return results, updated state, and typed events or effects. The consuming game decides application-specific policy, such as whether an action advances a turn and how an event is presented.
+
+For example, a backpack addon can provide item storage operations for the consumer's item type. The game remains responsible for ground pickup, item effects, turn policy, and user-facing messages. A complete turn-based game is better presented as an example that composes addons with rot-next.js core APIs.
+
+Addons should build on existing core facilities—such as scheduling, map generation, pathfinding, field of view, and random number generation—rather than duplicate them. The core remains a general-purpose roguelike toolkit, not a game framework that imposes a universal player, monster, or entity-component-system model. This addon architecture is an evolving design goal; the published addon APIs are not all aligned with it yet.
+
 ### Downloading
 
 - Clone this repository to access the source and included distribution files.
