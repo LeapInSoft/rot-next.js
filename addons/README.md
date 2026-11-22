@@ -12,6 +12,9 @@ global state or monkey-patching the core library.
   result/handler contracts. Handlers use caller-owned context, action, event,
   effect, and failure types; unsupported and failed results retain the input
   context without prescribing presentation or other game behavior.
+- `backpack/backpack.ts`: immutable, generic item storage with a configurable
+  one-item-per-slot capacity (default 20), duplicate-ID rejection, typed
+  add/remove outcomes, and item lookup helpers.
 - `pubsub/event_bus.ts`: typed event publication and subscriptions.
 - `text/text_buffer.ts`: bounded message history.
 - `turns/actor.ts`: the turn-aware actor contract and scheduler registration.
