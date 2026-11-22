@@ -161,12 +161,34 @@ describe("Lighting", function() {
 		expect(collect(lighting)["1,0"]).toEqual([50, 50, 50]);
 	});
 
-	it("treats an undefined range update as omitted", function() {
-		const lighting = createLighting(() => 0, {range: 2});
+	it("treats undefined option updates as omitted", function() {
+		const lighting = createLighting((x, y) => x === 1 && y === 0 ? 1 : 0, {
+			passes: 2,
+			emissionThreshold: 0,
+			range: 2
+		});
 
-		expect(() => lighting.setOptions({range: undefined})).not.toThrow();
+		lighting.setOptions({passes: undefined, emissionThreshold: undefined, range: undefined});
 		lighting.setLight(0, 0, [100, 100, 100]);
-		expect(collect(lighting)["1,0"]).toEqual([50, 50, 50]);
+
+		expect(collect(lighting)["2,0"]).toEqual([25, 25, 25]);
+	});
+
+	it.each([0, -1, 1.5, NaN, Infinity, -Infinity])("rejects invalid passes update %s", function(passes) {
+		const lighting = createLighting(() => 0);
+
+		expect(() => lighting.setOptions({passes})).toThrow(RangeError);
+	});
+
+	it.each([-1, NaN, Infinity, -Infinity])("rejects invalid emission threshold update %s", function(emissionThreshold) {
+		const lighting = createLighting(() => 0);
+
+		expect(() => lighting.setOptions({emissionThreshold})).toThrow(RangeError);
+	});
+
+	it("rejects invalid constructor passes and emission thresholds", function() {
+		expect(() => createLighting(() => 0, {passes: 0})).toThrow(RangeError);
+		expect(() => createLighting(() => 0, {emissionThreshold: NaN})).toThrow(RangeError);
 	});
 
 	it.each([-1, NaN, Infinity, -Infinity])("rejects invalid range update %s with a clear error", function(range) {

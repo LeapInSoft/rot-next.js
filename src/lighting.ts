@@ -53,15 +53,28 @@ export class Lighting {
 	 * A range of zero lights only the source cell.
 	 */
 	setOptions(options: Partial<Options>) {
+		const hasPasses = Object.prototype.hasOwnProperty.call(options, 'passes');
+		const hasEmissionThreshold = Object.prototype.hasOwnProperty.call(options, 'emissionThreshold');
 		const hasRange = Object.prototype.hasOwnProperty.call(options, 'range');
-		const {range, ...remainingOptions} = options;
+		const {passes, emissionThreshold, range, ...remainingOptions} = options;
+		const passesIsDefined = hasPasses && passes !== undefined;
+		const emissionThresholdIsDefined = hasEmissionThreshold && emissionThreshold !== undefined;
 		const rangeIsDefined = hasRange && range !== undefined;
+
+		if (passesIsDefined && (typeof passes !== 'number' || !Number.isInteger(passes) || passes <= 0)) {
+			throw new RangeError('Lighting passes must be a positive integer');
+		}
+		if (emissionThresholdIsDefined && (typeof emissionThreshold !== 'number' || !Number.isFinite(emissionThreshold) || emissionThreshold < 0)) {
+			throw new RangeError('Lighting emission threshold must be a finite non-negative number');
+		}
 		if (rangeIsDefined && (typeof range !== 'number' || !Number.isFinite(range) || range < 0)) {
 			throw new RangeError('Lighting range must be a finite non-negative number');
 		}
 
 		Object.assign(this.options, remainingOptions);
-		if (hasRange && range !== undefined) {
+		if (passesIsDefined) { this.options.passes = passes; }
+		if (emissionThresholdIsDefined) { this.options.emissionThreshold = emissionThreshold; }
+		if (rangeIsDefined) {
 			this.options.range = range;
 			this.reset();
 		}
