@@ -19,6 +19,7 @@
 		"addons/game/**/*.ts",
 		"addons/items/**/*.ts",
 		"addons/backpack/**/*.ts",
-		"addons/equipment/**/*.ts"
+		"addons/equipment/**/*.ts",
+		"addons/game_state/**/*.ts"
 	]
 }

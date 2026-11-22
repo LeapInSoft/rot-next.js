@@ -11,6 +11,7 @@ global state or monkey-patching the core library.
   combatants, returning damage, remaining health, defeat status, and typed
   combat events without mutating game state or formatting messages.
 - `game/`: sample game state, scenarios, inventory, controls, and monster turns.
+- `game_state/game_state.ts`: ordered composition of pure transitions over consumer-defined state and action types, returning typed events/effects without imposing game fields, turn policy, or effect execution.
 - `items/items.ts`: consumer-extensible item identity and typed interaction
   result/handler contracts. Handlers use caller-owned context, action, event,
   effect, and failure types; unsupported and failed results retain the input
