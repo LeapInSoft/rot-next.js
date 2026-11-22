@@ -1,19 +1,15 @@
-# rot.js addons
+# rot-next.js addons
 
-Addon modules are opt-in architecture patterns. They have no global state and
-do not monkey-patch the core library.
+These opt-in TypeScript addons provide reusable game functionality without
+global state or monkey-patching the core library.
 
-## Phase A domain foundation
+## Available addons
 
 - `core/grid.ts`: immutable grid coordinates and spatial helpers.
 - `entities/registry.ts`: entity and component registries.
-- `turns/actor.ts`: the turn-aware actor contract and scheduler registration.
+- `game/`: game state, scenarios, combat, inventory, controls, and monster turns.
 - `pubsub/event_bus.ts`: typed event publication and subscriptions.
 - `text/text_buffer.ts`: bounded message history.
+- `turns/actor.ts`: the turn-aware actor contract and scheduler registration.
 
-## Legacy examples
-
-The JavaScript files in this directory are legacy rot.js 0.5-era samples and
-are not included in the npm package. The Phase A TypeScript modules above are
-the supported addon foundation, are covered by contract tests, and are published
-as ESM modules with declarations under the `rot-next.js/addons/*` subpaths.
+Import addons from the `rot-next.js/addons/*` package subpaths.
