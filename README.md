@@ -10,7 +10,8 @@ Programming concepts, design, and the craft of building software matter. AI and 
 
 rot-next.js is written in TypeScript and provides several ways to use the library:
 
-- The build's `lib/` directory contains ES modules for modern JavaScript projects and bundlers.
+- The package root supports both CommonJS (`require('rot-next.js')`) and ESM (`import ... from 'rot-next.js'`).
+- The build's `lib/` directory contains ES modules and TypeScript declarations for modern JavaScript projects and bundlers. Display-specific imports are also available from `rot-next.js/display`; supported TypeScript addons are published from `rot-next.js/addons/...`.
 - The `dist/rot.js` bundle can be included in a browser with a traditional `<script>` tag. It exposes the library through the global `ROT` namespace.
 - The `dist/rot.min.js` bundle provides the same browser API in a minified file.
 

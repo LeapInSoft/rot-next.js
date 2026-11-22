@@ -8,7 +8,8 @@
     "lib": ["ES2022", "DOM"],
     "types": [],
     "paths": {
-      "rot-next.js": ["../../lib/index.d.ts"]
+      "rot-next.js": ["../../lib/index.d.ts"],
+      "rot-next.js/display": ["../../lib/display-entry.d.ts"]
     }
   },
   "files": ["display-consumer.ts"]

@@ -13,6 +13,7 @@ do not monkey-patch the core library.
 
 ## Legacy examples
 
-The JavaScript files in this directory are legacy rot.js 0.5-era samples. They
-remain available for reference, but the Phase A TypeScript modules above are the
-supported addon foundation and are covered by contract tests.
+The JavaScript files in this directory are legacy rot.js 0.5-era samples and
+are not included in the npm package. The Phase A TypeScript modules above are
+the supported addon foundation, are covered by contract tests, and are published
+as ESM modules with declarations under the `rot-next.js/addons/*` subpaths.

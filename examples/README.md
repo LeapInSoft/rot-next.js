@@ -21,8 +21,8 @@ npm install
 npm run build
 ```
 
-The build creates `lib/` ES modules and the `dist/rot.js` and
-`dist/rot.min.js` browser bundles.
+The build creates `lib/` ES modules and declarations, `dist/rot.cjs` for Node.js
+CommonJS, and the `dist/rot.js` and `dist/rot.min.js` browser bundles.
 
 To serve the browser examples on Node.js:
 
@@ -34,13 +34,13 @@ Then open one of the URLs listed below. Stop the server with `Ctrl+C`.
 
 ## Node.js CommonJS entry point
 
-[`node/example.js`](node/example.js) loads the package through
+[`node/example.cjs`](node/example.cjs) loads the package through
 `require("../..")` and uses the terminal display layout.
 
 Run it from the repository root:
 
 ```sh
-node examples/node/example.js
+node examples/node/example.cjs
 ```
 
 This entry point uses the package's published `main` field and does not import
@@ -105,7 +105,7 @@ scenario, combat, monster-turn, inventory, and keyboard-control modules. The
 slice includes player movement, melee combat, HP, death, XP, loot, inventory, a
 healing potion, and weapon/armor slots.
 
-Build the addon modules and serve the repository from the root:
+Build the supported TypeScript addon modules to `lib/addons/` and serve the repository from the root:
 
 ```text
 npm run examples:addons

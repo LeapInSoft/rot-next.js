@@ -5,8 +5,8 @@
 		"module": "es2022",
 		"moduleResolution": "bundler",
 		"rootDir": "addons",
-		"outDir": "examples/basic-addon/addons",
-		"declaration": false,
+		"outDir": "lib/addons",
+		"declaration": true,
 		"noEmit": false
 	},
 	"include": [

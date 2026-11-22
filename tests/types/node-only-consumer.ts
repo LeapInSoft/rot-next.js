@@ -1,4 +1,7 @@
 import {
+	createInitialGameState,
+} from 'rot-next.js/addons/game/game.js';
+import {
 	Arena,
 	BaseMap,
 	Backend,
@@ -33,4 +36,5 @@ const callbacks: [ComputeCallback, LightPassesCallback, PassableCallback, Visibi
 const dungeonType: Dungeon | null = null;
 const roomType: Room | null = null;
 const backend: Backend | null = null;
-void [map, mapNamespace, displayOptions, createMap, callbacks, dungeonType, roomType, backend];
+const addonState = createInitialGameState();
+void [map, mapNamespace, displayOptions, createMap, callbacks, dungeonType, roomType, backend, addonState];

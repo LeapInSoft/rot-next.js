@@ -1,10 +1,10 @@
 import { Display } from "../../lib/index.js";
-import { ComponentRegistry, EntityRegistry } from "./addons/entities/registry.js";
-import { createInitialGameState, transitionGame } from "./addons/game/game.js";
-import { gameActionForKey } from "./addons/game/controls.js";
-import { TypedEventBus } from "./addons/pubsub/event_bus.js";
-import { TextBuffer } from "./addons/text/text_buffer.js";
-import { registerTurnActor } from "./addons/turns/actor.js";
+import { ComponentRegistry, EntityRegistry } from "../../lib/addons/entities/registry.js";
+import { createInitialGameState, transitionGame } from "../../lib/addons/game/game.js";
+import { gameActionForKey } from "../../lib/addons/game/controls.js";
+import { TypedEventBus } from "../../lib/addons/pubsub/event_bus.js";
+import { TextBuffer } from "../../lib/addons/text/text_buffer.js";
+import { registerTurnActor } from "../../lib/addons/turns/actor.js";
 
 const displayOptions = {width: 38, height: 17};
 const mapOptions = {width: 11, height: 9, top: 1};

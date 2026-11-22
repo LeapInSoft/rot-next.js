@@ -15,13 +15,10 @@
     "roguelike",
     "tiles"
   ],
+  "type": "module",
   "files": [
     "lib",
     "dist",
-    "doc",
-    "examples",
-    "addons",
-    "manual",
     "license.txt"
   ],
   "homepage": "https://github.com/LeapInSoft/rot-next.js",
@@ -31,14 +28,30 @@
   "contributors": [
     "Ondřej Žára <ondrej.zara@gmail.com> (original author of rot.js; https://ondras.zarovi.cz/)"
   ],
-  "main": "dist/rot.js",
-  "module": "lib/index.js",
-  "types": "lib/index.d.ts",
+  "main": "./dist/rot.cjs",
+  "module": "./lib/index.js",
+  "types": "./lib/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./lib/index.d.ts",
+      "import": "./lib/index.js",
+      "require": "./dist/rot.cjs"
+    },
+    "./display": {
+      "types": "./lib/display-entry.d.ts",
+      "import": "./lib/display-entry.js",
+      "require": "./dist/display.cjs"
+    },
+    "./addons/*.js": {
+      "types": "./lib/addons/*.d.ts",
+      "import": "./lib/addons/*.js"
+    }
+  },
   "scripts": {
-    "clean": "node scripts/clean.js",
+    "clean": "node scripts/clean.cjs",
     "typecheck": "tsc --project tsconfig.json && node scripts/resolve-paths.cjs",
     "typecheck:tests": "tsc --project tsconfig.tests.json",
-    "typecheck:consumer": "npm run typecheck && tsc --project tests/types/tsconfig.json --noEmit && tsc --project tests/types/display-tsconfig.json --noEmit",
+    "typecheck:consumer": "npm run typecheck && npm run addons:build && tsc --project tests/types/tsconfig.json --noEmit && tsc --project tests/types/display-tsconfig.json --noEmit",
     "lint": "eslint src tests",
     "bundle": "rollup --config rollup.config.mjs",
     "docs": "typedoc --out doc --readme none --excludePrivate --excludeProtected --validation.invalidLink --name \"rot.js\" src/index.ts",

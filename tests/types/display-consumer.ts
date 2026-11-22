@@ -1,5 +1,5 @@
-import { Display } from '../../lib/display/display.js';
-import type { DisplayCanvas, DisplayOptions } from '../../lib/display/types.js';
+import { Display } from 'rot-next.js/display';
+import type { DisplayCanvas, DisplayOptions } from 'rot-next.js/display';
 
 declare const options: Partial<DisplayOptions>;
 const display = new Display(options);
