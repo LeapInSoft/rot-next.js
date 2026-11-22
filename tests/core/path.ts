@@ -69,6 +69,10 @@ describe("Path", function() {
 	
 	
 	describe("Dijkstra", function() {
+		it('should reject invalid topology at construction', () => {
+			expect(() => new ROT.Path.Dijkstra(0, 0, () => true, {topology: 5 as 4 | 6 | 8})).toThrow(RangeError);
+		});
+
 		it("should use default options when none are provided", function() {
 			const dijkstra = new ROT.Path.Dijkstra(0, 0, () => true);
 			const path: number[] = [];
@@ -156,6 +160,10 @@ describe("Path", function() {
 	}); /* dijkstra */
 
 	describe("A*", function() {
+		it('should reject invalid topology at construction', () => {
+			expect(() => new ROT.Path.AStar(0, 0, () => true, {topology: 5 as 4 | 6 | 8})).toThrow(RangeError);
+		});
+
 		it("should use default options when none are provided", function() {
 			const astar = new ROT.Path.AStar(0, 0, () => true);
 			const path: number[] = [];

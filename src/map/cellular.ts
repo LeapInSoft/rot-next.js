@@ -2,6 +2,7 @@ import { Map } from '@/src/map/map.js';
 import type { CreateCallback } from '@/src/map/map.js';
 import { DIRS } from '@/src/constants.js';
 import { RNG } from '@/src/rng.js';
+import { assertValidTopology } from '@/src/topology.js';
 
 interface Options {
 	born: number[];
@@ -56,6 +57,9 @@ export class Cellular extends Map {
 	 * @see ROT.Map.Cellular
 	 */
 	setOptions(options: Partial<Options>) {
+		if (options.topology !== undefined) {
+			assertValidTopology(options.topology);
+		}
 		Object.assign(this.options, options);
 		this.directions = DIRS[this.options.topology];
 	}

@@ -1,4 +1,5 @@
 import { DIRS } from "@/src/constants.js";
+import { assertValidTopology } from '@/src/topology.js';
 
 export type ComputeCallback = (x: number, y: number) => unknown;
 export type PassableCallback = (x: number, y: number) => boolean;
@@ -26,6 +27,9 @@ export abstract class Path {
 		this.toX = toX;
 		this.toY = toY;
 		this.passableCallback = passableCallback;
+		if (options.topology !== undefined) {
+			assertValidTopology(options.topology);
+		}
 		this.options = Object.assign({
 			topology: 8
 		}, options);

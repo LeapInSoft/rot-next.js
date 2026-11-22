@@ -40,6 +40,14 @@ describe('Map.Cellular', () => {
 		expect(reachable.size).toBe(floors.size);
 	}
 
+	it('should reject invalid topology without changing the current option', () => {
+		const map = new ROT.Map.Cellular(3, 3, {topology:8, born:[1], survive:[]});
+		map.set(0, 0, 1);
+
+		expect(() => map.setOptions({topology:5 as 4 | 6 | 8})).toThrow(RangeError);
+		expect(captureAlive(map)).toEqual(['1,0', '0,1', '1,1']);
+	});
+
 	it('should report an empty randomized map without a callback', () => {
 		const map = new ROT.Map.Cellular(3, 3);
 		map.randomize(0);
