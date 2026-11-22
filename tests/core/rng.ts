@@ -150,4 +150,46 @@ describe("RNG", function() {
 		});
 	});
 
+	describe("independent RNG streams", () => {
+		it("should reproduce a sequence when created with the same seed", () => {
+			const seed = 123456;
+			const first = ROT.createRNG(seed);
+			const second = ROT.createRNG(seed);
+
+			const firstSequence = Array.from({length: 5}, () => first.getUniform());
+			const secondSequence = Array.from({length: 5}, () => second.getUniform());
+
+			expect(firstSequence).toEqual(secondSequence);
+		});
+
+		it("should keep independently seeded streams isolated", () => {
+			const stream = ROT.createRNG(123456);
+			const control = ROT.createRNG(123456);
+			const other = ROT.createRNG(654321);
+			Array.from({length: 5}, () => other.getUniform());
+
+			expect(stream.getUniform()).toEqual(control.getUniform());
+		});
+
+		it("should restore or clone the current sequence", () => {
+			const stream = ROT.createRNG(123456);
+			stream.getUniform();
+			const state = stream.getState();
+			const clone = stream.clone();
+			const expected = stream.getUniform();
+
+			stream.setState(state);
+			expect(stream.getUniform()).toEqual(expected);
+			expect(clone.getUniform()).toEqual(expected);
+		});
+
+		it("should not alter the legacy singleton when creating a stream", () => {
+			const state = ROT.RNG.getState();
+			const expected = ROT.RNG.clone().getUniform();
+
+			ROT.createRNG(123456);
+			expect(ROT.RNG.getUniform()).toEqual(expected);
+			ROT.RNG.setState(state);
+		});
+	});
 });

@@ -5,7 +5,12 @@
 
 const FRAC = 2.3283064365386963e-10; // 2^-32
 
-class RandomNumberGenerator {
+/** The minimal random operation required by consumers that need randomness. */
+export interface RandomSource {
+	getUniform(): number;
+}
+
+class RandomNumberGenerator implements RandomSource {
 	private seed = 0;
 	private state0 = 0;
 	private state1 = 0;
@@ -152,6 +157,14 @@ class RandomNumberGenerator {
 		const clone = new RandomNumberGenerator();
 		return clone.setState(this.getState());
 	}
+}
+
+/**
+ * Create an independent RNG seeded with the provided seed.
+ * Equal seeds produce equal sequences; saved states can be restored with `setState`.
+ */
+export function createRNG(seed: number): RandomNumberGenerator {
+	return new RandomNumberGenerator().setSeed(seed);
 }
 
 export const RNG = new RandomNumberGenerator().setSeed(Date.now());

@@ -1,4 +1,5 @@
-export {RNG} from '@/src/rng.js';
+export {RNG, createRNG} from '@/src/rng.js';
+export type {RandomSource} from '@/src/rng.js';
 export {Display} from "@/src/display/display.js";
 export {Backend} from "@/src/display/backend.js";
 export type {DisplayOptions} from "@/src/display/types.js";

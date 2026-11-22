@@ -18,9 +18,13 @@ import {
 	Room,
 	Path,
 	RNG,
+	createRNG,
+	type RandomSource,
 } from 'rot-next.js';
 
 RNG.getUniform();
+const randomSource: RandomSource = createRNG(1234);
+randomSource.getUniform();
 new Path.AStar(1, 1, () => true).compute(0, 0, () => {});
 new Display().destroy();
 const map: BaseMap = new Arena(20, 20);
