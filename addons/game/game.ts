@@ -1,5 +1,5 @@
 import {createGridCoordinate} from '../core/grid.js';
-import {attackMonster} from './combat.js';
+import {resolveCombat} from '../combat/combat.js';
 import {advanceMonster} from './monster_turn.js';
 import {dropLoot, equipItem, pickupLoot, useItem} from './inventory.js';
 import {basicScenario, createInitialGameState} from './scenario.js';
@@ -46,16 +46,30 @@ function movePlayer(state: GameState, direction: Direction): GameTransition {
 		player.position.y + delta.y,
 	);
 	if (target.x === monster.position.x && target.y === monster.position.y && monster.alive) {
-		const attack = attackMonster(player, monster);
+		const combat = resolveCombat({
+			attacker: player,
+			target: monster,
+			action: {damage: player.attack + (player.equipment.weapon?.attack ?? 0)},
+		});
+		const updatedMonster = {...monster, hp: combat.remainingHp, alive: !combat.defeated};
+		const updatedPlayer = combat.defeated
+			? {...player, xp: player.xp + monster.xpReward}
+			: player;
+		const messages = [
+			`${player.name} hits ${monster.name} for ${combat.damage} damage.`,
+			...(combat.defeated
+				? [`${monster.name} dies. ${player.name} gains ${monster.xpReward} XP.`]
+				: []),
+		];
 		const nextState = {
 			...state,
-			player: attack.player,
-			monster: attack.monster,
-			groundLoot: attack.monsterDefeated
+			player: updatedPlayer,
+			monster: updatedMonster,
+			groundLoot: combat.defeated
 				? dropLoot(monster.position, monster.drops)
 				: state.groundLoot,
 		};
-		return finishTurn(nextState, attack.messages);
+		return finishTurn(nextState, messages);
 	}
 
 	const {width, height} = basicScenario.room;

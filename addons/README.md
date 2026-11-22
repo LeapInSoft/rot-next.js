@@ -7,7 +7,10 @@ global state or monkey-patching the core library.
 
 - `core/grid.ts`: immutable grid coordinates and spatial helpers.
 - `entities/registry.ts`: entity and component registries.
-- `game/`: game state, scenarios, combat, inventory, controls, and monster turns.
+- `combat/combat.ts`: structural combat resolution over consumer-defined
+  combatants, returning damage, remaining health, defeat status, and typed
+  combat events without mutating game state or formatting messages.
+- `game/`: sample game state, scenarios, inventory, controls, and monster turns.
 - `items/items.ts`: consumer-extensible item identity and typed interaction
   result/handler contracts. Handlers use caller-owned context, action, event,
   effect, and failure types; unsupported and failed results retain the input

@@ -11,6 +11,7 @@
 	},
 	"include": [
 		"addons/core/**/*.ts",
+		"addons/combat/**/*.ts",
 		"addons/entities/**/*.ts",
 		"addons/pubsub/**/*.ts",
 		"addons/text/**/*.ts",

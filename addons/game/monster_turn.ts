@@ -1,5 +1,5 @@
 import {createGridCoordinate, manhattanDistance} from '../core/grid.js';
-import {attackPlayer} from './combat.js';
+import {resolveCombat} from '../combat/combat.js';
 import type {GameState} from './types.js';
 
 export interface MonsterTurn {
@@ -14,8 +14,22 @@ export function advanceMonster(state: GameState): MonsterTurn {
 	}
 
 	if (manhattanDistance(monster.position, player.position) === 1) {
-		const attack = attackPlayer(player, monster);
-		return {state: {...state, player: attack.player}, messages: attack.messages};
+		const combat = resolveCombat({
+			attacker: monster,
+			target: player,
+			action: {damage: monster.attack - (player.equipment.armor?.defense ?? 0)},
+			context: {minimumDamage: 1},
+		});
+		const updatedPlayer = {
+			...player,
+			hp: combat.remainingHp,
+			alive: !combat.defeated,
+		};
+		const messages = [
+			`${monster.name} hits ${player.name} for ${combat.damage} damage.`,
+			...(combat.defeated ? [`${player.name} falls in battle.`] : []),
+		];
+		return {state: {...state, player: updatedPlayer}, messages};
 	}
 
 	const deltaX = player.position.x - monster.position.x;

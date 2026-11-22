@@ -30,4 +30,21 @@ describe('monster turns', () => {
 		expect(skipped.state).toBe(deadPlayerState);
 		expect(skipped.messages).toEqual([]);
 	});
+
+	it('marks a defeated player and prevents further game actions', () => {
+		const initialState = createInitialGameState();
+		const adjacentState = {
+			...initialState,
+			player: {...initialState.player, hp: 2},
+			monster: {...initialState.monster, position: {x: 4, y: 4}},
+		};
+		const attacked = advanceMonster(adjacentState);
+		const blocked = transitionGame({...adjacentState, player: attacked.state.player}, {type: 'wait'});
+
+		expect(attacked.state.player.hp).toBe(0);
+		expect(attacked.state.player.alive).toBe(false);
+		expect(attacked.messages).toContain('Ada falls in battle.');
+		expect(blocked.state).toEqual({...adjacentState, player: attacked.state.player});
+		expect(blocked.messages).toContain('You cannot act while dead.');
+	});
 });
