@@ -129,9 +129,6 @@ export class MinHeap<T> {
 			this.updateDown(m);
 		}
 	}
-	debugPrint() {
-		console.log(this.heap.map(({ key, value, timestamp }) => ({ key: key + this.offset, value, timestamp })));
-	}
 
 }
 

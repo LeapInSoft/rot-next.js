@@ -24,7 +24,6 @@ interface TestPositionCallback { (x: number, y: number): boolean; }
 abstract class Feature {
 	abstract isValid(isWallCallback: TestPositionCallback, canBeDugCallback: TestPositionCallback): boolean;
 	abstract create(digCallback: DigCallback): void;
-	abstract debug(): void;
 }
 
 /**
@@ -171,10 +170,6 @@ export class Room extends Feature {
 		return this;
 	}
 
-	debug() {
-		console.log("room", this.x1, this.y1, this.x2, this.y2);
-	}
-
 	isValid(isWallCallback: TestPositionCallback, canBeDugCallback: TestPositionCallback) { 
 		const left = this.x1-1;
 		const right = this.x2+1;
@@ -258,10 +253,6 @@ export class Corridor extends Feature {
 		const length = RNG.getUniformInt(min, max);
 		
 		return new this(x, y, x + dx*length, y + dy*length);
-	}
-
-	debug() {
-		console.log("corridor", this.startX, this.startY, this.endX, this.endY);
 	}
 
 	isValid(isWallCallback: TestPositionCallback, canBeDugCallback: TestPositionCallback){ 

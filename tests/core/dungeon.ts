@@ -1,5 +1,5 @@
 import * as ROT from "@/src";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 describe("Map.Dungeon", function() {
 	const names: ("Digger" | "Uniform")[] = ["Digger", "Uniform"];

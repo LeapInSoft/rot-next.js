@@ -202,10 +202,6 @@ export class Uniform extends Dungeon {
 	}
 
 	connectRooms(room1: Room, room2: Room) {
-		/*
-			room1.debug();
-			room2.debug();
-		*/
 		const center1 = room1.getCenter();
 		const center2 = room2.getCenter();
 
