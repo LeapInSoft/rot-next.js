@@ -17,6 +17,7 @@
 		"addons/turns/**/*.ts",
 		"addons/game/**/*.ts",
 		"addons/items/**/*.ts",
-		"addons/backpack/**/*.ts"
+		"addons/backpack/**/*.ts",
+		"addons/equipment/**/*.ts"
 	]
 }

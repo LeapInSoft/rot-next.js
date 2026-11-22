@@ -15,6 +15,10 @@ global state or monkey-patching the core library.
 - `backpack/backpack.ts`: immutable, generic item storage with a configurable
   one-item-per-slot capacity (default 20), duplicate-ID rejection, typed
   add/remove outcomes, and item lookup helpers.
+- `equipment/equipment.ts`: generic, immutable equipment slots configured by
+  consumers, equip/unequip transitions, and typed transition events. Consumers
+  provide their own state shape, item eligibility policy, and handling of
+  displaced or unequipped items.
 - `pubsub/event_bus.ts`: typed event publication and subscriptions.
 - `text/text_buffer.ts`: bounded message history.
 - `turns/actor.ts`: the turn-aware actor contract and scheduler registration.

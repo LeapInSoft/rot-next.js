@@ -12,5 +12,5 @@
       "rot-next.js/addons/*": ["../../lib/addons/*"]
     }
   },
-  "files": ["node-only-consumer.ts", "backpack-consumer.ts"]
+  "files": ["node-only-consumer.ts", "backpack-consumer.ts", "equipment-consumer.ts"]
 }

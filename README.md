@@ -25,7 +25,7 @@ ROT.js already provides reusable roguelike primitives. rot-next.js builds on tha
 
 An addon is intended to provide one focused, reusable behavior—not a complete game template. Addons should work with small, structural TypeScript contracts so developers can use their own item, actor, and game-state types, and compose capabilities without coupling them to a particular game. Where practical, addon operations are functional: they accept data or state and return results, updated state, and typed events or effects. The consuming game decides application-specific policy, such as whether an action advances a turn and how an event is presented.
 
-For example, a backpack addon can provide item storage operations for the consumer's item type. The game remains responsible for ground pickup, item effects, turn policy, and user-facing messages. A complete turn-based game is better presented as an example that composes addons with rot-next.js core APIs.
+For example, backpack and equipment addons can provide item storage and configurable equipment-slot transitions for consumer-defined item and state types. The game remains responsible for ground pickup, item effects, inventory policy, turn policy, and user-facing messages. A complete turn-based game is better presented as an example that composes addons with rot-next.js core APIs.
 
 Addons should build on existing core facilities—such as scheduling, map generation, pathfinding, field of view, and random number generation—rather than duplicate them. The core remains a general-purpose roguelike toolkit, not a game framework that imposes a universal player, monster, or entity-component-system model. This addon architecture is an evolving design goal; the published addon APIs are not all aligned with it yet.
 
