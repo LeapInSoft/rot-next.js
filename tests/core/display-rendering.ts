@@ -2,6 +2,24 @@ import * as ROT from '@/src';
 import { describe, expect, it, vi } from 'vitest';
 
 describe('Display rendering', () => {
+	it('uses default colors when drawing without explicit colors', () => {
+		const schedule = vi.spyOn(ROT.Display.Rect.prototype, 'schedule').mockImplementation(() => {});
+		const draw = vi.spyOn(ROT.Display.Rect.prototype, 'draw');
+		const display = new ROT.Display({ width: 3, height: 2, fg: '#fff', bg: '#000' });
+
+		try {
+			display.draw(1, 1, '@');
+			display.draw(2, 1, '@', '#0f0');
+			schedule.mock.calls[0][0]();
+
+			expect(draw).toHaveBeenNthCalledWith(1, [1, 1, '@', '#fff', '#000'], false);
+			expect(draw).toHaveBeenNthCalledWith(2, [2, 1, '@', '#0f0', '#000'], false);
+		} finally {
+			schedule.mockRestore();
+			draw.mockRestore();
+		}
+	});
+
 	it('renders cells on the initial frame and redraws an overlaid cell', () => {
 		const schedule = vi.spyOn(ROT.Display.Rect.prototype, 'schedule').mockImplementation(() => {});
 		const draw = vi.spyOn(ROT.Display.Rect.prototype, 'draw');
