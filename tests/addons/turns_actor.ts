@@ -1,19 +1,15 @@
-import { describe, expect, it, vi } from 'vitest';
+import {describe, expect, it, vi} from 'vitest';
 
-import { registerTurnActor } from '@/addons/turns/actor.js';
+import type {TurnActor} from '@/addons/turns/actor.js';
+import {Simple} from '@/src/scheduler/simple.js';
 
 describe('turn actor addon', () => {
-	it('registers a turn-aware actor once with a compatible scheduler', () => {
-		interface TestScheduler {
-			add(actor: {act(): void}, repeat: boolean): this;
-		}
+	it('uses the core scheduler to register a turn actor', () => {
+		const actor: TurnActor = {act: vi.fn()};
+		const scheduler = new Simple<TurnActor>();
 
-		const actor = {act: vi.fn()};
-		const scheduler: TestScheduler = {
-			add: vi.fn().mockReturnThis(),
-		};
+		scheduler.add(actor, true);
 
-		expect(registerTurnActor(scheduler, actor)).toBe(scheduler);
-		expect(scheduler.add).toHaveBeenCalledWith(actor, true);
+		expect(scheduler.next()).toBe(actor);
 	});
 });

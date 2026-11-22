@@ -20,7 +20,7 @@ export type {ComputeCallback, PassableCallback} from "@/src/path/path.js";
 export type {VisibilityCallback, LightPassesCallback} from "@/src/fov/fov.js";
 export {MinHeap} from "@/src/min_heap.js";
 export type {HeapWrapper} from "@/src/min_heap.js";
-export {Engine} from "@/src/engine.js";
+export {Engine, type EngineActor, type EngineScheduler} from "@/src/engine.js";
 export {Lighting} from "@/src/lighting.js";
 
 export { DEFAULT_WIDTH, DEFAULT_HEIGHT, DIRS, KEYS } from "@/src/constants.js";

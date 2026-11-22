@@ -4,7 +4,6 @@ import { createInitialGameState, transitionGame } from "../../lib/addons/game/ga
 import { gameActionForKey } from "../../lib/addons/game/controls.js";
 import { TypedEventBus } from "../../lib/addons/pubsub/event_bus.js";
 import { TextBuffer } from "../../lib/addons/text/text_buffer.js";
-import { registerTurnActor } from "../../lib/addons/turns/actor.js";
 
 const displayOptions = {width: 38, height: 17};
 const mapOptions = {width: 11, height: 9, top: 1};
@@ -98,7 +97,7 @@ export function createBasicAddonScene() {
 			return this;
 		},
 	};
-	registerTurnActor(scheduler, gameActor);
+	scheduler.add(gameActor, true);
 
 	const handleKeyDown = event => {
 		// side-effect: translate keyboard input into a game action.

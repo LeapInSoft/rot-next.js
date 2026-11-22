@@ -1,15 +1,23 @@
 import { Scheduler } from "@/src/scheduler/scheduler.js";
 
+/** An object the engine can invoke for one synchronous or asynchronous action. */
+export interface EngineActor {
+	act(): void | PromiseLike<unknown>;
+}
+
+/** Minimal scheduler contract consumed by the engine. */
+export interface EngineScheduler<TActor extends EngineActor = EngineActor> {
+	next(): TActor | null;
+}
+
 /**
  * @class Asynchronous main loop
- * @param {ROT.Scheduler} scheduler
  */
-
-export class Engine {
-	scheduler: Scheduler;
+export class Engine<TActor extends EngineActor = EngineActor> {
+	scheduler: EngineScheduler<TActor> | Scheduler<unknown>;
 	lockCount: number;
 
-	constructor(scheduler: Scheduler) {
+	constructor(scheduler: EngineScheduler<TActor> | Scheduler<unknown>) {
 		this.scheduler = scheduler;
 		this.lockCount = 1;
 	}
