@@ -49,21 +49,20 @@
   },
   "scripts": {
     "clean": "node scripts/clean.cjs",
+    "build": "npm run typecheck && npm run bundle && npm run addons:build && npm run docs",
     "typecheck": "tsc --project tsconfig.json && node scripts/resolve-paths.cjs",
     "typecheck:tests": "tsc --project tsconfig.tests.json",
     "typecheck:consumer": "npm run typecheck && npm run addons:build && tsc --project tests/types/tsconfig.json --noEmit && tsc --project tests/types/display-tsconfig.json --noEmit",
-    "lint": "eslint src tests",
+    "lint": "eslint .",
     "bundle": "rollup --config rollup.config.mjs",
-    "docs": "typedoc --out doc --readme none --excludePrivate --excludeProtected --validation.invalidLink --name \"rot.js\" src/index.ts",
-    "build": "npm run clean && npm run typecheck && npm run bundle && npm run addons:build && npm run docs",
+    "docs": "typedoc --out doc --readme none --excludePrivate --excludeProtected --validation.invalidLink --name \"rot-next.js\" src/index.ts",
     "prepack": "npm run build",
     "test:prepare": "npm run clean && npm run typecheck && npm run bundle && npm run addons:build && npm run examples:bundle",
     "pretest": "npm run test:prepare",
     "test": "npm run typecheck:tests && npm run typecheck:consumer && vitest run",
     "test:examples": "npm run test:prepare && vitest run tests/exemples",
-    "examples:bundle": "npm run typecheck && rollup --config examples/bundled-modules/rollup.config.mjs",
+    "build:examples": "npm run typecheck && rollup --config examples/bundled-modules/rollup.config.mjs",
     "addons:build": "tsc --project tsconfig.addons.json",
-    "examples:addons": "npm run addons:build",
     "examples:serve": "http-server . -p 8080 -c-1"
   },
   "repository": {
@@ -71,19 +70,17 @@
     "url": "https://github.com/LeapInSoft/rot-next.js.git"
   },
   "devDependencies": {
-    "@babel/core": "^7.29.13",
-    "@babel/preset-env": "^7.29.14",
+    "@eslint/js": "^10.0.1",
     "@napi-rs/canvas": "^1.1.1",
-    "@rollup/plugin-babel": "^7.1.0",
     "@rollup/plugin-terser": "^1.0.2",
     "@types/node": "^26.6.6",
-    "@typescript-eslint/parser": "^8.73.0",
     "eslint": "^10.15.0",
     "happy-dom": "^21.0.4",
     "http-server": "^14.1.1",
     "rollup": "^4.68.5",
-    "typedoc": "^0.28.20",
+    "typedoc": "^0.23.25",
     "typescript": "^6.0.3",
+    "typescript-eslint": "^8.74.0",
     "vitest": "^4.1.12"
   }
 }

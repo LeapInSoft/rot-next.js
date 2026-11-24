@@ -31,8 +31,8 @@ Addons should build on existing core facilities—such as scheduling, map genera
 
 ### Downloading
 
-- Clone this repository to access the source and included distribution files.
-- For a published npm release, install the package with `npm install rot-next.js`.
+- Clone this repository to access the source.
+- For a published npm release, install the package with `npm install rot-next.js` (not published yet).
 - Or use `dist/rot.js` or `dist/rot.min.js` directly in a browser.
 
 ## Node.js

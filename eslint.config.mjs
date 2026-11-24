@@ -1,14 +1,12 @@
-import tsParser from "@typescript-eslint/parser";
+import js from '@eslint/js';
+import { defineConfig } from 'eslint/config';
+import tseslint from 'typescript-eslint';
 
-export default [
-	{
-		files: ["src/**/*.ts", "tests/**/*.ts"],
-		languageOptions: {
-			parser: tsParser
-		},
-		rules: {
-			"no-var": "error",
-			"prefer-const": "error"
-		}
-	}
-];
+export default defineConfig({
+	files: [
+		"src/**/*.ts", 
+		"tests/**/*.ts",
+		"addons/**/*.ts"
+	],
+	extends: [js.configs.recommended, tseslint.configs.recommended]
+});

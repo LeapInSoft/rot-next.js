@@ -198,7 +198,7 @@ export class Room extends Feature {
 		const top = this.y1-1;
 		const bottom = this.y2+1;
 		
-		let value = 0;
+		let value;
 		for (let x=left; x<=right; x++) {
 			for (let y=top; y<=bottom; y++) {
 				if (x+","+y in this.doors) {

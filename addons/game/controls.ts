@@ -1,4 +1,4 @@
-import type {Direction, GameAction, GameItem} from './types.js';
+import type {GameAction, GameItem} from './types.js';
 
 export function gameActionForKey(
 	key: string,

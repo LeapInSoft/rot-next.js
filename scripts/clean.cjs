@@ -7,4 +7,4 @@ for (const directory of ["doc", "dist", "lib"]) {
 	fs.mkdirSync(target);
 }
 
-fs.rmSync(path.join(__dirname, "..", ".ts.flag"), { force: true });
+fs.rmSync(path.join(__dirname, ".."), { force: true });

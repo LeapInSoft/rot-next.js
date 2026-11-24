@@ -23,7 +23,7 @@ interface HasMap {
 }
 
 /**
- * Format a string in a flexible way. Scans for %s strings and replaces them with arguments. List of patterns is modifiable via String.format.map.
+ * Format a string in a flexible way. Scans for %s strings and replaces them with arguments. List of patterns is modifiable via Util.format.map.
  * @param {string} template
  * @param {any} [argv]
  */

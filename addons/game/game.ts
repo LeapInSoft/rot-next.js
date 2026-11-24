@@ -2,7 +2,7 @@ import {createGridCoordinate} from '../core/grid.js';
 import {resolveCombat} from '../combat/combat.js';
 import {advanceMonster} from './monster_turn.js';
 import {dropLoot, equipItem, pickupLoot, useItem} from './inventory.js';
-import {basicScenario, createInitialGameState} from './scenario.js';
+import {basicScenario} from './scenario.js';
 import type {Direction, GameAction, GameState, GameTransition} from './types.js';
 
 export {createInitialGameState} from './scenario.js';
@@ -116,4 +116,5 @@ export function transitionGame(state: GameState, action: GameAction): GameTransi
 			return {state, messages: []};
 	}
 }
-
+
+
